@@ -1,0 +1,8 @@
+# contributor: commanders
+# name: org-begin
+# key: b
+# --
+
+#+begin_$1
+$0
+#+end_$1

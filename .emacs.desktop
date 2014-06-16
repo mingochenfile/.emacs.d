@@ -1,0 +1,18 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun Jun 15 18:54:42 2014
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/.emacs.d/init.el" "~/polluted_data.org" "~/polluted_data.tex" "~/Dropbox/Func_TS/manu/ftsband051214.tex" "~/Dropbox/Func_TS/manu/ftsband050914.tex" "~/Dropbox/Func_TS/manu/ftsband050914_ming.tex" "~/Dropbox/Func_TS/manu/ftsband051214.bbl" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.sty" "~/Downloads/10.1007%2Fs11459-009-0019-y.bib" "~/Dropbox/Research/Finance/economtex_2009-11-18/test.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/intr.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/fea.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/data.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/result.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/con.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/pae.tex" "~/Dropbox/Research/Finance/StruturalVARTan/RATS/pic.r" "~/Dropbox/thesis/thesis.tex" "~/Dropbox/thesis/mythesis.sty"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:

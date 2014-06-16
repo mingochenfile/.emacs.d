@@ -1,0 +1,83 @@
+From f193df8b1b7d1330a0dde89907a607051f632775 Mon Sep 17 00:00:00 2001
+From: Litvinov Sergey <slitvinov@gmail.com>
+Date: Fri, 16 Dec 2011 20:12:39 +0100
+Subject: [PATCH] ob-octave.el: Add graphical output
+
+    * lisp/ob-octave.el: add graphical output to png file
+
+    * testing/examples/ob-octave-test.org: add a test for graphical
+      output, and a test for session
+---
+ lisp/ob-octave.el                   |   30 +++++++++++++++++++++++-------
+ testing/examples/ob-octave-test.org |   10 ++++++++++
+ 2 files changed, 33 insertions(+), 7 deletions(-)
+
+diff --git a/lisp/ob-octave.el b/lisp/ob-octave.el
+index f840739..796a5c7 100644
+--- a/lisp/ob-octave.el
++++ b/lisp/ob-octave.el
+@@ -86,13 +86,24 @@ end")
+ 	  (org-babel-expand-body:generic
+ 	   body params (org-babel-variable-assignments:octave params)))
+ 	 (result (org-babel-octave-evaluate
+-		  session full-body result-type matlabp)))
+-    (org-babel-reassemble-table
+-     result
+-     (org-babel-pick-name
+-      (cdr (assoc :colname-names params)) (cdr (assoc :colnames params)))
+-     (org-babel-pick-name
+-      (cdr (assoc :rowname-names params)) (cdr (assoc :rownames params))))))
++		  session
++		  (if (org-babel-octave-graphical-output-file params)
++		      (mapconcat 'identity
++				 (list
++				  "set (0, \"defaultfigurevisible\", \"off\");"
++				  full-body
++				  (format "print -dpng %s" (org-babel-octave-graphical-output-file params)))
++				 "\n")
++		    full-body)
++		  result-type matlabp)))
++    (if (org-babel-octave-graphical-output-file params)
++	nil
++      (org-babel-reassemble-table
++       result
++       (org-babel-pick-name
++	(cdr (assoc :colname-names params)) (cdr (assoc :colnames params)))
++       (org-babel-pick-name
++	(cdr (assoc :rowname-names params)) (cdr (assoc :rownames params)))))))
+ 
+ (defun org-babel-prep-session:matlab (session params)
+   "Prepare SESSION according to PARAMS."
+@@ -259,6 +270,11 @@ This removes initial blank and comment lines and then calls
+       (match-string 1 string)
+     string))
+ 
++(defun org-babel-octave-graphical-output-file (params)
++  "Name of file to which maxima should send graphical output."
++  (and (member "graphics" (cdr (assq :result-params params)))
++       (cdr (assq :file params))))
++
+ (provide 'ob-octave)
+ 
+ 
+diff --git a/testing/examples/ob-octave-test.org b/testing/examples/ob-octave-test.org
+index 97d9b00..9839d63 100644
+--- a/testing/examples/ob-octave-test.org
++++ b/testing/examples/ob-octave-test.org
+@@ -43,3 +43,13 @@ Input elisp nil
+ #+begin_src octave :exports results :results silent :var s='nil
+ ans = s
+ #+end_src
++
++
++* Graphical tests
++#+begin_src octave :results graphics :file chart.png
++sombrero;
++#+end_src
++
++#+begin_src octave :session
++sombrero;
++#+end_src
+-- 
+1.7.4.1
+

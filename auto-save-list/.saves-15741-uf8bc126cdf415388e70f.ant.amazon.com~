@@ -1,0 +1,8 @@
+/ssh:mingche@mingche.desktop.amazon.com:/home/mingche/boxsuite/src/WhichSuitePrototype/*R*
+#_assh_bmingche@mingche.desktop.amazon.com_b_ahome_amingche_aboxsuite_asrc_aWhichSuitePrototype_a*R*#
+/ssh:mingche@mingche.desktop.amazon.com:/home/mingche/boxsuite/src/WhichSuitePrototype/evaluation.r
+#_assh_bmingche@mingche.desktop.amazon.com_b_ahome_amingche_aboxsuite_asrc_aWhichSuitePrototype_aevaluation.r#
+/ssh:mingche@mingche.desktop.amazon.com:/home/mingche/boxsuite/src/WhichSuitePrototype/bsis.r
+#_assh_bmingche@mingche.desktop.amazon.com_b_ahome_amingche_aboxsuite_asrc_aWhichSuitePrototype_absis.r#
+/ssh:mingche@mingche.desktop.amazon.com:/home/mingche/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py
+#_assh_bmingche@mingche.desktop.amazon.com_b_ahome_amingche_aboxsuite_asrc_aWhichSuitePrototype_abin_acompute__air__shipped.py#

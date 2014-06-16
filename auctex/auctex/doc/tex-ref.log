@@ -1,0 +1,136 @@
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdftex 2005.4.1)  2 APR 2013 12:17
+**tex-ref.tex
+(./tex-ref.tex{/var/lib/texmf/pdftex/config/pdftex.cfg}
+\columnsperpage=\count26
+\intercolumnskip=\dimen16
+\columna=\box16
+\columnb=\box17
+ [3 columns per page]
+\keyindent=\dimen17
+\metaxbox=\box18
+\metaxwidth=\dimen18
+
+Underfull \vbox (badness 10000) detected at line 397
+
+\vbox(161.80061+2.0)x104.068
+.\hbox(6.80002+2.0)x104.068, glue set 17.8531fil
+..\glue(\tabskip) 0.0
+..\hbox(6.80002+2.0)x64.11172, glue set 8.50012fil
+...\rule(6.80002+*)x0.0
+...\hbox(4.30554+0.0)x20.66666, glue set 14.23262fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.80002+2.0)x4.25006
+.../cmtt8/a
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.\glue(\baselineskip) 0.6556
+.\hbox(6.94444+2.0)x104.068, glue set 17.8531fil
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+2.0)x64.11172, glue set 12.75018fil
+...\hbox(6.94444+1.94444)x20.66666, glue set 14.48264fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+.../cmtt8/b
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.94444+2.0)x4.25006
+.../cmtt8/b
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.\glue(\baselineskip) 1.60004
+.\hbox(6.0+2.0)x104.068, glue set 17.8531fil
+..\glue(\tabskip) 0.0
+..\hbox(6.0+2.0)x64.11172, glue set 8.50012fil
+...\hbox(4.30554+1.94444)x20.66666, glue set 14.9338fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+.../cmtt8/g
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.0+2.0)x4.25006
+.../cmtt8/g
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.etc.
+
+
+Underfull \vbox (badness 10000) detected at line 438
+
+\vbox(181.00069+2.0)x104.068
+.\hbox(6.80002+2.0)x104.068, glue set 7.22795fil
+..\glue(\tabskip) 0.0
+..\hbox(6.80002+2.0)x76.86191
+...\rule(6.80002+*)x0.0
+...\hbox(3.0239+0.0)x20.66666, glue set 12.16653fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.80002+2.0)x12.75018
+.../cmtt8/C
+.../cmtt8/-
+.../cmtt8/f
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.\glue(\baselineskip) 1.60004
+.\hbox(6.0+2.0)x104.068, glue set 7.22795fil
+..\glue(\tabskip) 0.0
+..\hbox(6.0+2.0)x76.86191, glue set 4.25006fil
+...\hbox(3.0239+0.0)x20.66666, glue set 12.16653fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+.../cmtt8/l
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.0+2.0)x12.75018
+.../cmtt8/C
+.../cmtt8/-
+.../cmtt8/b
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.\glue(\baselineskip) 1.60004
+.\hbox(6.0+2.0)x104.068, glue set 7.22795fil
+..\glue(\tabskip) 0.0
+..\hbox(6.0+2.0)x76.86191, glue set 12.75018fil
+...\hbox(5.55556+1.55554)x20.66666, glue set 16.4166fill []
+...\glue 2.83337 plus 1.41669 minus 0.94446
+.../cmr8/(
+.../cmtt8/\
+.../cmtt8/u
+...etc.
+..\glue(\tabskip) 0.0 plus 1.0fil
+..\hbox(6.0+2.0)x12.75018
+.../cmtt8/C
+.../cmtt8/-
+.../cmtt8/p
+...\hbox(0.0+0.0)x0.0
+...\glue 0.0 plus 1.0fil
+..\glue(\tabskip) 0.0 plus 1.0fil
+.etc.
+
+[1{/var/lib/texmf/dvips/config/pdftex.map}] [2] ){/usr/share/texmf/dvips/tetex/
+f7b6d320.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmr7.pfb>{/usr/share/texm
+f/dvips/tetex/aae443f0.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb>
+{/usr/share/texmf/dvips/tetex/bbad153f.enc}</usr/share/texmf/fonts/type1/bluesk
+y/cm/cmsy6.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr6.pfb></usr/share/te
+xmf/fonts/type1/bluesky/cm/cmsy8.pfb></usr/share/texmf/fonts/type1/bluesky/cm/c
+msl8.pfb>{/usr/share/texmf/dvips/tetex/74afc74c.enc}</usr/share/texmf/fonts/typ
+e1/bluesky/cm/cmti8.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx8.pfb>{/us
+r/share/texmf/dvips/tetex/0ef0afca.enc}</usr/share/texmf/fonts/type1/bluesky/cm
+/cmcsc10.pfb>{/usr/share/texmf/dvips/tetex/09fbbfac.enc}</usr/share/texmf/fonts
+/type1/bluesky/cm/cmtt8.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr8.pfb><
+/usr/share/texmf/fonts/type1/bluesky/cm/cmbx10.pfb>
+Output written on tex-ref.pdf (2 pages, 102363 bytes).

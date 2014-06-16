@@ -1,0 +1,193 @@
+;; -*- emacs-lisp -*- <14/06/13 23:55:13 /Users/mingchen/.emacs.d/tramp>
+;; Tramp connection history.  Don't change this file.
+;; You can delete it, forcing Tramp to reapply the checks.
+
+((["sudo" "root" "localhost" nil nil]
+  ("uname" "Linux 3.8.0-22-generic")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("readlink" "\\readlink")
+  ("stat" "\\stat")
+  ("file-exists" "test -e")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 0)
+  ("uid-integer" 0)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("ls" "/bin/ls --color=never"))
+ (["ssh" "mxc104720" "apache.utdallas.edu" nil nil]
+  ("uname" "SunOS 5.10")
+  ("test" "test")
+  ("remote-path"
+   ("/usr/xpg4/bin" "/usr/ccs/bin" "/usr/bin" "/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin"))
+  ("remote-shell" "/usr/bin/bash")
+  ("busybox" nil)
+  ("~" "/home/eng/m/mxc104720")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl5")
+  ("ls" "/usr/bin/ls")
+  ("ls-dired" nil)
+  ("stat" nil)
+  ("readlink" nil))
+ ([#("ssh" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t))
+   #("mxc104720" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t)
+     3 4
+     (fontified t)
+     4 5
+     (fontified t)
+     5 6
+     (fontified t)
+     6 7
+     (fontified t)
+     7 8
+     (fontified t)
+     8 9
+     (fontified t))
+   #("giant.utdallas.edu" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t)
+     3 4
+     (fontified t)
+     4 5
+     (fontified t)
+     5 6
+     (fontified t)
+     6 7
+     (fontified t)
+     7 8
+     (fontified t)
+     8 9
+     (fontified t)
+     9 10
+     (fontified t)
+     10 11
+     (fontified t)
+     11 12
+     (fontified t)
+     12 13
+     (fontified t)
+     13 14
+     (fontified t)
+     14 15
+     (fontified t)
+     15 16
+     (fontified t)
+     16 17
+     (fontified t)
+     17 18
+     (fontified t))
+   nil nil]
+  ("uname" "SunOS 5.10")
+  ("test" "test")
+  ("remote-path"
+   ("/usr/xpg4/bin" "/usr/ccs/bin" "/usr/bin" "/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin"))
+  ("remote-shell" "/usr/bin/bash")
+  ("busybox" nil)
+  (#("~" 0 1
+     (fontified t))
+   "/home/eng/m/mxc104720")
+  ("file-exists" "test -e")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl5")
+  ("readlink" nil)
+  ("stat" nil)
+  ("id" "/usr/xpg4/bin/id")
+  ("gid-integer" 256)
+  ("ls" "/usr/xpg4/bin/ls")
+  ("uid-integer" 260722))
+ ([#("sshx" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t)
+     3 4
+     (fontified t))
+   #("mxc104720" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t)
+     3 4
+     (fontified t)
+     4 5
+     (fontified t)
+     5 6
+     (fontified t)
+     6 7
+     (fontified t)
+     7 8
+     (fontified t)
+     8 9
+     (fontified t))
+   #("ms2" 0 1
+     (fontified t)
+     1 2
+     (fontified t)
+     2 3
+     (fontified t))
+   nil nil]
+  ("uname" "Linux 2.6.43.8-1.fc15.x86_64")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  (#("~" 0 1
+     (fontified t))
+   "/home/eng/m/mxc104720")
+  ("file-exists" "test -e")
+  ("readlink" "\\readlink")
+  ("stat" "\\stat")
+  ("ls" "/bin/ls --color=never")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 256)
+  ("uid-integer" 260722))
+ ([#("ssh" 0 3
+     (fontified t))
+   #("commanders2005" 0 14
+     (fontified t))
+   #("10.160.117.107" 0 14
+     (fontified t))
+   nil nil]
+  ("uname" "Linux 3.11.0-19-generic")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("file-exists" "test -e")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 1000)
+  ("~" "/home/commanders2005")
+  ("readlink" "\\readlink")))

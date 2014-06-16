@@ -1,0 +1,127 @@
+This is auctex.info, produced by makeinfo version 4.8 from auctex.texi.
+
+   This manual is for AUCTeX (version 20130402-a from 2013-03-29), a
+sophisticated TeX environment for Emacs.
+
+   Copyright (C) 1992-1995, 2001, 2002, 2004-2012 Free Software
+Foundation, Inc.
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License."
+
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* AUCTeX: (auctex).     A sophisticated TeX environment for Emacs.
+END-INFO-DIR-ENTRY
+INFO-DIR-SECTION TeX
+START-INFO-DIR-ENTRY
+* AUCTeX: (auctex).     A sophisticated TeX environment for Emacs.
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+auctex.info-1: 924
+auctex.info-2: 292308
+
+Tag Table:
+(Indirect)
+Node: Top924
+Node: Copying6959
+Node: Introduction8915
+Node: Summary9185
+Node: Installation11929
+Node: Prerequisites13306
+Node: Configure16317
+Node: Build/install21739
+Node: Loading the package22230
+Node: Advice for package providers24037
+Node: Advice for non-privileged users27985
+Node: Installation under MS Windows31942
+Node: Customizing47145
+Node: Quick Start48728
+Ref: Quick Start-Footnote-150717
+Node: Editing Facilities50864
+Node: Processing Facilities55660
+Node: Editing59554
+Node: Quotes60870
+Node: Font Specifiers65246
+Node: Sectioning67072
+Node: Environments71386
+Node: Equations73752
+Node: Floats74343
+Node: Itemize-like75882
+Node: Tabular-like76424
+Node: Customizing Environments77053
+Node: Mathematics77293
+Node: Completion80220
+Node: Marking84282
+Node: Marking (LaTeX)84906
+Node: Marking (Texinfo)85848
+Node: Commenting87458
+Node: Indenting88783
+Node: Filling94576
+Node: Display99899
+Node: Font Locking101210
+Node: Fontification of macros103285
+Node: Fontification of quotes112732
+Node: Fontification of math114227
+Node: Verbatim content115947
+Node: Faces116721
+Node: Known problems117210
+Node: Folding118138
+Node: Outline128571
+Node: Processing129825
+Node: Commands130988
+Node: Starting a Command131544
+Node: Selecting a Command135286
+Node: Processor Options138435
+Node: Viewing144119
+Node: Starting Viewers144493
+Node: I/O Correlation150661
+Node: Debugging153034
+Node: Checking154548
+Node: Control155722
+Node: Cleaning156451
+Node: Documentation157664
+Node: Customization158444
+Node: Modes and Hooks158937
+Node: Multifile160145
+Node: Parsing Files164856
+Node: Internationalization169768
+Node: European170949
+Node: Japanese177770
+Node: Automatic179467
+Node: Automatic Global181992
+Node: Automatic Private183153
+Node: Automatic Local184466
+Node: Style Files185553
+Node: Simple Style186346
+Node: Adding Macros187645
+Node: Adding Environments193886
+Node: Adding Other198155
+Node: Hacking the Parser198742
+Node: Appendices202615
+Node: Copying this Manual202911
+Node: GNU Free Documentation License203795
+Node: Changes228933
+Node: Development253165
+Node: Mid-term Goals253811
+Node: Wishlist255373
+Node: Bugs262269
+Node: FAQ263664
+Node: Texinfo mode269708
+Node: Exploiting270844
+Node: Superseding271662
+Node: Mapping275865
+Node: Unbinding277694
+Node: Indices278515
+Node: Key Index278678
+Node: Function Index284053
+Node: Variable Index292308
+Node: Concept Index308751
+
+End Tag Table

@@ -1,0 +1,38 @@
+# -*- mode: snippet -*-
+# name: #+LaTeX_CLASS: article ...
+# key: article
+# key: article
+# --
+
+#+TITLE: ${1:My Presentation}
+#+AUTHOR: `user-full-name`
+#+EMAIL: `user-mail-address`
+#+DATE: \today
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+#+CATEGORY: TA
+#+LaTex_header: \usepackage[margin=3em]{geometry}
+#+latex_header: \newtheorem{theorem}{Theorem}[section]
+#+latex_header:\newtheorem{lemma}[theorem]{Lemma}
+#+latex_header:\newtheorem{proposition}[theorem]{Proposition}
+#+latex_header:\newtheorem{corollary}[theorem]{Corollary}
+#+latex_header:\newenvironment{proof}[1][Proof]{\begin{trivlist}
+#+latex_header:\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+#+latex_header:\newenvironment{definition}[1][Definition]{\begin{trivlist}
+#+latex_header:\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+#+latex_header:\newenvironment{example}[1][Example]{\begin{trivlist}
+#+latex_header:\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+#+latex_header:\newenvironment{remark}[1][Remark]{\begin{trivlist}
+#+latex_header:\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+
+$0

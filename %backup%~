@@ -1,0 +1,1589 @@
+%\newfloat{algorithm}{tbp}{loa}
+
+
+\documentclass[12pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphics}
+\usepackage{epsfig,amssymb,latexsym,verbatim, subfigure}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{color}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{multirow}
+\usepackage{subfigure}
+\usepackage[doublespacing]{setspace}
+\usepackage{amsmath}
+\usepackage{natbib}
+\setcounter{MaxMatrixCols}{10}
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{LastRevised=Wednesday, December 04, 2013 14:08:24}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+
+\newtheorem{theorem}{{\sc Theorem}}
+\newtheorem{lemma}{{\sc Lemma}}
+\newtheorem{corollary}{{\sc Corollary}}
+\newtheorem{proposition}{{\sc Proposition}}
+\input tcilatex
+\def\T{{\mbox{\rm\tiny T}}}
+\def\tcr{\textcolor{red}}
+\def \bm {\mathbf}
+\def\r{\textcolor{red}}
+\floatname{algorithm}{Algorithm}
+\thispagestyle{empty}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+ \setlength{\topmargin}{-.2in}
+\setlength{\textheight}{9.2in} \setlength{\textwidth}{6.5in}
+\newdimen\defpicwidth
+\setlength{\defpicwidth}{0.65\textwidth}
+\newdimen\defcapwidth
+\setlength{\defcapwidth}{0.9\textwidth}
+\setlength{\parindent}{0.3in} \setlength{\headsep}{0.1in}
+\renewcommand{\baselinestretch}{1.5}
+\pagestyle{plain}
+
+\begin{document}
+
+\author{Ming Chen and Qiongxia Song\thanks{%
+Email: song@utdallas.edu} \\
+%EndAName
+\\
+\ \textit{University of Texas at Dallas }}
+\title{{\textbf{Modeling Financial Volatility: An Exogenous Log-GARCH
+Approach }}}
+\date{}
+\maketitle
+
+\begin{abstract}
+In this article, we develop a new model for financial volatility estimation
+and forecast by including exogenous variables in a semi-parametric log-GARCH
+model. With additional information, we expect an increased prediction power.
+We propose a quasi maximum likelihood procedure with Gaussian likelihood
+function via spline smoothing technique. Consistent estimators and
+asymptotic normality are obtained under mild regularity conditions.
+Simulation experiments provide strong evidence that corroborates the
+asymptotic theories. Additionally, an application to S$\&$P 500 index data demonstrates 
+advantages of our model comparing with GARCH(1,1) and log-GARCH(1,1) models.
+
+\bigskip Keywords: financial volatility, log-GARCH, exogenous variable,
+semi-parametric regression, spline, quasi likelihood estimation
+\end{abstract}
+
+\section{Introduction}
+
+Financial markets have been recently experiencing many unusually short and
+long periods of instability or uncertainty such as the Asian crisis in 97,
+the technology-bubble, the world financial crisis in 2008, and so on. The
+market and institutional changes have long been assumed to cause structure
+breaks in financial time series, which is confirmed in stock-price and
+exogenous series, e.g. S$\&$P 500 index data. Several models have been used
+to capture features of financial data and most of the models have the
+property that the conditional variance depends on the past observations/volatilies.
+
+Consider a time series $\left\{ Y_{t}\right\} _{t=1}^{\infty }$ of the form $%
+Y_{t}=\sigma _{t}\epsilon _{t}$, where the $\left\{ \epsilon _{t}\right\}
+_{t=1}^{\infty }$'s are i.i.d noises with mean $0$ and variance $1$, and $\left\{
+\sigma _{t}^{2}\right\} _{t=1}^{\infty }$ denotes the conditional volatility
+series. Conditional heteroscedasdicity models such as  ARCH (Engle (1982)) and GARCH (Bollerslev
+(1986)), model volatility as a quadratic function of past observations/volatilies. For
+instance, an ARCH model of order $q$ is defined as
+\begin{equation*}
+\sigma _{t}^{2}=\gamma +\alpha _{1}Y_{t-1}^{2}+\cdots +\alpha
+_{q}Y_{t-q}^{2},\quad \gamma >0, \ \alpha _{i}\geq 0,\ i=1,...,q.
+\end{equation*}%
+And, a popular GARCH($1,1$) is
+\begin{equation}\label{Def:GARCH}
+\sigma _{t}^{2}=\gamma _{0}+\alpha _{0}Y_{t-1}^{2}+\beta _{0}\sigma
+_{t-1}^{2},\quad \gamma _{0}>0,\ \alpha _{0},\ \beta _{0}\geq 0,
+\end{equation}%
+or equivalently $\sigma_t^2=\beta_0\sigma^2_{t-1}+m_0(Y_{t-1})$, where $m_0(y)=\alpha_0y^2+\gamma_0$ is the \textquotedblleft news 
+impact curves\textquotedblright. However, those quadratic forms cannot deal with structural breaks or time
+variation in the models.
+
+To deal with time-variation in these parameters, several authors have
+proposed regime switching models; see Cai (1994), Hamilton and Susmel
+(1994), Gray (1996a and 1996b) and Klaassen (2002). Recently, \v{C}\'{\i}%
+\v{z}ek and Spokoiny (2009) proposed a varying coefficient GARCH model which
+partially incorporated information about exogenous variables by allowing the
+GARCH coefficients to vary with time $t$. However, the introduction of this
+time variation seems to be driven by empirical observation, rather than by
+economic rationale, and the time variation does not model the impact of
+exogenous variables on volatility dynamics directly. In fitting a
+statistical model to financial volatility time series, it has been suggested
+that exogenous variables can enhance the model and hence improve volatility
+forecast accuracy; see Francq, Wintenberger and Zako\"ian (2013). For instance, when the variable of interest is stock index
+return, the marginal impact of innovation on volatility depends on macro
+economic and political variables, such as inflation rate, GDP growth
+rate and policy uncertainty index. The standard practice has been to control for these variables by
+including them linearly in the conditional variance equation; see Culter et
+al. (1990) and Andersen and Bollerslev (1998). However, when volatility
+dynamics depends on exogenous variables in a nonlinear way, these approaches
+fail to capture the true structure of the volatility function and may yield
+misleading conclusions in understanding
+the relationship between the volatility and exogenous variables.
+
+In this paper, the authors introduce a new semi-parametric model for the
+volatility function. To release the positive constraint, we include
+exogenous variables in a log-GARCH model. To be specific, the model allows the marginal impact to be a function
+of exogenous variables with a data driven partially linear additive function
+which imposes less restriction on volatility dynamics. With this feature, we name our model as
+exogenous log-GARCH model (X-logGARCH in short).
+To estimate the model, we propose a spline 
+based quasi maximum likelihood procedure with Gaussian likelihood function.
+We approximate unknown functions of exogenous variables with spline
+functions, and we maximize its likelihood function to obtain estimators.
+Consistent estimators and asymptotic normality are obtained under regularity conditions with some mild
+moment conditions.
+
+When applied to financial volatility forecasting, the proposed method are able to predict structural changes one-step ahead better than conventional GARCH(1,1) and
+log-GARCH(1,1) models with obvious advantage. In particular, our approach is adaptive to the changing
+policy and economic environment.
+The model
+can be adopted as a generic tool applicable to a wide range of problems
+including electricity load forecasting in Engle (1982).
+
+The rest of the article is organized as follows. In Section 2, we introduce the exogenous
+log-GARCH model. In Section 3, we present
+the proposed estimation and its asymptotic properties. In
+Section 4, we conduct simulation studies to assess the finite sample
+performance of the proposed method. In Section 5, the value of the proposed
+method is demonstrated by an example of S$\&$P 500 log returns. Some
+concluding remarks are made in Section 6, and all the technical details are
+given in Appendix.
+
+\section{Semi-parametric exogenous log-GARCH model}
+
+Let $\{Y_{t},\mathbf{Z}_{t}\}_{t=1}^{T}$ be a sequence of time series random
+vectors, where $Y_{t}$ is a scalar, and $\mathbf{Z_{t}}=(\mathbf{Z}^1_{t},%
+\mathbf{Z}^2_{t})^{^{{\mbox{\rm\tiny T}}}}$ are exogenous variables. Here
+$\mathbf{Z}^1_{t}=\left\{ Z^1_{ts_1}\right\} _{s_1=1}^{d_1}$ is a known $d_1$%
+-vector and $\mathbf{Z}^2_{t}=\left\{ Z^2_{ts_2}\right\} _{s_2=1}^{d_2}$ is
+a known $d_2$-vector. Let %$\mathbf{Y_{t-1}}=(Y_{t-1},\cdots Y_{t-J})$ be
+%lagged values of $Y_{t}$, satisfying
+
+\begin{equation}
+Y_{t}=\sigma_t (Y_{t-1},\mathbf{Z}_{t}, \sigma_{t-1})\epsilon _{t},\ \ t=1,\cdots ,T,
+\label{DEF:Model1}
+\end{equation}%
+where $\sigma_t ^{2}(Y_{t-1},\mathbf{Z}_{t}, \sigma_{t-1})$ is the variance function $Var(Y_{t}\vert \mathcal F_{t-1})$ conditioning
+on the information set $\mathcal F_{t-1}$ of all information through time $t-1$, and the i.i.d. error $\epsilon _{t}$
+satisfies $E(\epsilon _{t} )=0,\ E(\epsilon _{t}^{2})=1$.
+
+A major benefit of log-GARCH modeling is that nonnegativity of volatility
+prediction is automatically ensured. For instance, the log-ARCH($p$)
+specification is given by
+%\begin{equation*}
+$\log \sigma_t^2= a_0 + \sum_{j=1}^pa_j \log y_{t-j}^2.$
+%\end{equation*}
+Adding $\ln(\epsilon_t^2)$ to each side and then adding $E \log(\epsilon_t^2)
+- E \log(\epsilon_t^2)$ to the right-hand side, yields an $AR(P)$ model equal
+to
+\begin{equation*}
+\log y_t^2 = \phi_0 +\sum_{j=1}^Pa_j \log y_{t-j}^2 + u_t,
+\end{equation*}
+where $\phi_0 = a_0 + E\log(\epsilon_t^2)$, and where ${u_t}$ is a zero-mean
+i.i.d. process with $u_t = \log(\epsilon_t^2) - E \log(\epsilon_t^2)$. Hence, $%
+\phi_0$ and $a_j$ can be estimated consistently by common methods subject to
+appropriate assumptions.
+
+Considering exogenous covariates, we introduce a flexible semi-parametric form for the news impact
+function as
+\begin{equation}  \label{Mod:semi}
+\log(\sigma _{t}^{2})=c+m\left( {\mathbf{Z}}_{t}\right) \log
+Y_{t-1}^{2}+a\log(\sigma _{t-1}^{2}),\ \ m\mathbf{(Z_{t})}=\beta
+_{0}+\sum_{s_1=1}^{d_1}\beta _{s_1}Z^1_{ts_1}+\eta(\mathbf{Z}^2_{t}),
+\end{equation}%
+with $\mathbf{\beta}=\left\{\beta _{0}, \beta_{s_1}, s_1=1,\cdots
+,d_1\right\}^{{\mbox{\rm\tiny T}}}$ an unknown vector and $\eta$ an
+unknown function. For the unknown function, we only consider the estimation of bounded measurable functions on a compact
+interval, and without loss of generality, we assume the interval to
+be $[0, 1]$.
+
+To avoid the \textquotedblleft curse of dimensionality \textquotedblright ,
+we take an additive modeling approach and let $\eta(\mathbf{Z}%
+^2_{t})=\sum_{s_2=1}^{d_2}\eta_{s_2}(Z^2_{ts_2})$. Therefore, the coefficient of $\log(Y_{t-j})^2$ are allowed to
+vary with exogenous variables in a partially linear additive form. For
+identifiability of the model, we assume $E(\mathbf{Z}^1_{t})=\mathbf{0}$ and
+$E\eta_{s_2} (Z^2_{ts_2})=0$, for $s_2=1, \cdots, d_2$.
+
+%\r{The model specified by (\ref{Mod:semi}) is quite general,
+%containing many existing models as special cases. Some of the examples
+%include: in a simple case when $m(\cdot )$ is $\beta ^{j-1}$, the model is
+%semi-parametric GARCH model considered in Wang et. al (2011). In another case
+%when $\mathbf{Z}_{t}$ is simplified as $t$, it is a varying coefficient
+%GARCH model, see \v{C}\'{\i}%
+%\v{z}ek and Spokoiny (2009).}
+
+
+In what follows, $\Vert\cdot \Vert$ denotes the Euclidean norm and $||\cdot||_{\infty}$ denotes the
+supremum norm of a function $w$ on $[0,1]$, i.e., $||w||_{\infty}=\sup_{x\in%
+[0,1]}|w(x)|$. We have the following lemma to guarantee the existence of the
+exogenous log-GARCH model.
+
+\begin{theorem}
+\label{lem:existense} Assume that $||m||_{\infty}+a\leq\delta$ for a $\delta
+< 1$ , then $\log \sigma^2_T$ exists and converges almost surely as $T$ goes
+to infinity, and $\log \sigma^2_T$ are stationary and ergodic.
+\end{theorem}
+
+%As for almost all nonparametric methods applied to correlated data, an essential condition,
+%when $T$ is large, is that the series satisfies certain mixing condition so that the whitening by
+%window principle (Hart, 1996) is achievable. Among various mixing conditions used in the literature, $\alpha$-mixing
+%is reasonably weak and is known to be fulfilled by many nonlinear time series models under some
+%regularity conditions. $\alpha
+%$-mixing with geometric decay, ie. mixing coefficients $\alpha (k)\leq
+%c_{0}r^{k}$ for some constant $c_{0}$ and $0<r<1$, with
+%\begin{equation*}
+%\alpha \left( k\right) =\sup_{B\in \sigma \left\{ \mathbf{Y}_{s},s\leq
+%t\right\} ,C\in \sigma \left\{ \mathbf{Y}_{s},s\geq t+k\right\} }\left\vert
+%P\left( B\cap C\right) -P\left( B\right) P\left( C\right) \right\vert ,%
+%\mbox{\ }k\geq 1.
+%\end{equation*}
+
+%
+%
+%We assume the conditional density of $Y_{t}$ given $Y_{t-j}=y_{t-j}$ belongs
+%to the exponential family
+%\begin{equation*}
+%f_{Y_{t}|Y_{t-j}}=exp[y\xi (y_{t-j})-b(\xi (y_{t-j}))+\psi (y)]
+%\end{equation*}%
+%for known functions $b$ and $\psi $, then the unknown mean response is
+%represented by
+%\begin{equation*}
+%\mu (y_{t-j})=E\left( Y|y_{t-j}\right) =b^{\prime }\{\xi (y_{t-j})\}.
+%\end{equation*}%
+%In our article, the mean function $\mu $ is defined via a known link
+%function $G$ by
+%\begin{equation*}
+%G(\mu )=\sum_{j}\left\{ \sum \beta _{js}z_{1s}+\eta _{j}(z_{2})\right\}
+%Y_{t-j}^{2},
+%\end{equation*}%
+%with $\eta _{j}$ and $\beta _{js}$ defined in model.
+
+The primary goal of this article is to provide a semi-parametric modeling of
+volatility using exogenous variables, and the secondary goal is to estimate
+$\mathbf{\beta}$ and $\eta(\cdot)$ based on a quasi-likelihood procedure
+with polynomial splines.
+
+\section{Estimation}
+
+\subsection{Quasi Maximum likelihood}
+
+For estimating the unknown vector $\mathbf{\beta }$ and unknown function $%
+\eta (\cdot )$, one usually applies the quasi maximum likelihood approach.
+%assuming
+%independent standard normal innovations $\epsilon _{t}$.
+The conditional log-likelihood for model (\ref{Mod:semi}) up to a constant
+term can be represented in the form
+\begin{equation}\label{Eq:Like}
+L_T(\mathbf{\gamma },\eta )=1/T\sum_{t=1}^{T}l_t(\mathbf{%
+\gamma },\eta ),
+\end{equation}%
+where $\mathbf{\gamma }=\Big\{c,a,\beta _{0},\left\{ \beta _{s_{1}}\right\}
+_{s_{1}=1}^{d_{1}}\Big\}^{\mbox{\rm\tiny T}}$, $\eta
+=\dsum\limits_{s_{2}=1}^{d_{2}}\eta _{s_{2}}^{{}}$, and $l_t(\mathbf{%
+\gamma },\eta )$
+is conditional quasi log-likelihood function. Estimation of GARCH model is frequently done under
+the assumption that $\epsilon _{t}$, is Gaussian so the log-likelihood is easily
+specified as
+\begin{equation}\label{Eq:likelihood}
+l_t(\mathbf{\gamma },\eta )=-\frac12\left\{\log \sigma _{t}(\mathbf{\gamma },\eta
+)^{2}+\frac{y_{t}^{2}}{\sigma _{t}(\mathbf{\gamma },\eta )^{2}}\right\},
+\end{equation}%
+up to a constant term. We follow this practice by assuming that the Gaussian
+likelihood is used to form the estimator. Since the likelihood need not be
+the correct density, it is typically referred to as a quasi-likelihood. 
+%We
+%define the (quasi) maximum likelihood estimate ((Q)MLE) $\mathbf{\hat{\gamma}%
+%}$ of the parameter $\mathbf{\gamma }$ by maximizing $L(\mathbf{\gamma ,}%
+%\eta )$. To be specific, let $\mathbf{\hat{\theta}}_{T}=\{\mathbf{\hat{\gamma%
+%}},\hat{\eta}\}$,
+%\begin{equation*}
+%\mathbf{\hat{\theta}}_{T}=\underset{\mathbf{\gamma} \in \Theta, \eta\in C^p[0,1] }{\text{%
+%argmax}}L(\mathbf{\gamma ,}\eta \mathbf{)}.
+%\end{equation*}%
+
+%
+%We seek a function $\eta \in G$
+%and a value of $\beta $ that maximize the likelihood function
+%\begin{equation*}
+%L_T(\mathbf{\eta ,\beta })=\sum_{t=1}^T(\log \sigma_t(\eta, \beta) ^{2}+y_t^{2}/\sigma_t(\eta,\beta) ^{2})/2.
+%\end{equation*}%
+
+
+%Now we concentrate on $\log\sigma^2_t $ in (\ref{Eq:likelihood}). Iterating (\ref{Mod:semi})
+%\begin{equation*}
+%\log \sigma^2_t = c\left(\sum_{j=0}^{t}a^j\right)+\sum_{j=0}^{t}\left\{a^jm(%
+%\mathbf{Z}_{t-j})\log y_{t-j-1}^{2}\right\}+a^{t}\log \sigma^2_{t-t}.
+%\end{equation*}
+%Further, we work with an unobserved variance processes $%
+%\log \breve{\sigma}^2_t  $:
+%\begin{equation}\label{Def:sigma_breve}
+%\log \breve{\sigma}^2_t = c\left(\sum_{j=0}^{t}a^j\right)+\sum_{j=0}^{t}\left\{a^jm(\mathbf{Z}%
+%_{t-j})\log y_{t-j-1}^{2}\right\}.
+%\end{equation}
+%Correspondingly, let
+%\begin{equation}  \label{Ln}
+%L_T= \frac{1}{T} \sum_{t=1}^{T}l_t, \breve{L}_T = \frac{1}{T}%
+%\sum_{t=1}^T\breve{l}_{t},
+%\end{equation}
+%with
+%${l}_t=\log \sigma_t^2+ \frac{y_{t}^{2}}{\sigma_{t}^{2}}$ and $\breve{l}_{t} =
+%\log\breve \sigma_t^2 + \frac{y_{t}^{2}}{ \breve{\sigma}^2_t }.$
+%We show
+%$\breve{L}_T $ is consistent to $L_T$; more precisely we have,
+%\begin{proposition}
+%\label{Thm: likelihood} If there exists a $\delta<1$ such that $%
+%||m||_{\infty}+a\leq\delta$, then $|\breve{L}_{T}-L_{T}|=o_{a.s.}(1)$
+%as $T$ goes to infinity.
+%\end{proposition}
+
+\subsection{Spline estimation}
+
+Next we show that estimators of both the parametric and nonparametric components
+have nice asymptotic properties. For measurable functions $\phi_1$, $\phi_2$ on $[0,1]^{d_2}$, define the
+empirical inner product and the corresponding norm as
+\[\langle\phi_1, \phi_2\rangle_n = 1/n\sum_{i=1}^n\phi_1(\mathbf{X}_i)\phi_2(\mathbf{X}_i), \Vert\phi\Vert_n^2=1/n\sum_{i=1}^n\phi^2(\mathbf{X}_i).\]
+If $\phi_1$ and $\phi_2$ are $L^2$-integrable, define the theoretical inner product and the corresponding
+norm as
+\[\langle\phi_1, \phi_2\rangle_2 = E\phi_1(\mathbf{X})\phi_2(\mathbf{X}), ||\phi||_2^2=E\phi^2(\mathbf{X}).\]
+Besides, for$1\leq s_2\leq d_2$, let $\Vert\phi\Vert_{2s_2}$ and $\Vert\phi\Vert_{ns_2}$ be the empirical and theoretical norm of $\phi$ on $[a, b]$, defined in the same way on each dimension.
+
+ Let $%
+\mathcal{S}_{p}$ be the space of polynomial splines on $[a,b]$ of degree $%
+p\geq 1$. We introduce a knot sequence with $N$ interior knots,
+\begin{equation*}
+u_{-p}=...=u_{-1}=u_{0}=a<u_{1}<...<u_{N}<b=u_{N+1}=...=u_{N+p+1},
+\end{equation*}%
+where $N\equiv N_T$ increases with order when sample size $T$ increases. For
+multivariate variable $X_{s_2}$, $s_2=1,...,d_2$, the spline of degree $p$
+for the $j$th variable is constructed recursively and denoted as $\left\{
+b_{s_2,k}\right\} _{k=-p}^{N}$ (de Boor, 2001). For the simplicity of proof, we
+use equally spaced interior knot, and we define $h=1/N$ as the distance between two neighboring knots. In particular, when $p=1,2$,
+respectively, $b_{s_2,k}(x_{s_2})=I_{I_{k}}(x_{s_2}),\,k=0,\dots ,N,$ and $%
+b_{s_2,k}(x_{s_2})=K\left\{ \left( x_{s_2}-t_{k+1}\right) h^{-1}\right\}
+,\,k=-1,\dots ,N,$ where $I_{I_{k}}(\cdot )$ is the indicator function on $%
+I_{k}=\left[ u_{k},u_{k+1}\right) $\ and $K(u)=(1-|u|)_{+}$. Then spline
+space $\mathcal{S}_{p}$ consists of functions $g(\cdot )$ satisfying {(i)} $%
+g(\cdot )$ is a polynomial of degree $p$ on each of the subintervals $I_{k}=%
+\left[ u_{k},u_{k+1}\right) $, $k=0,...,N-1$, $I_{N}=\left[ u_{N},b\right] $%
+; {(ii)} for $p\geq 2$, $g(\cdot )$ is $p-1$ time continuously
+differentiable on $[a,b]$. Define the following standardized spline basis
+with degree $p$ for any $s_2=1,...,d_2,$%
+\begin{equation*}
+B_{s_2,k}\left( x_{s_2 }\right) =\frac{b_{s_2,k}\left( x_{s_2}\right) }{%
+\left\Vert b_{s_2,k}\right\Vert _{2}},\forall k=-p,...,N.
+\end{equation*}
+
+According to de Boor (2001), $\eta _{s_2}(\cdot )$ can be approximated well by a spline
+function in $\mathcal{S}_{p}$, so that%
+\begin{equation}
+\eta _{s_2}\left( z\right) \approx \widetilde{\eta }_{s_2}\left( z\right)
+=\sum_{k=-(p-1)}^{N}\lambda _{s_2k}B_{s_2k}\left( z\right) ,
+\label{EQ:spline}
+\end{equation}%
+where $N$ is number of preselected knots.
+And we have $||\eta_{s_2}-\tilde{\eta}_{s_2}||_{\infty}=O(h^{p})$.
+Using (\ref{EQ:spline}), we approximate $\log \sigma^2_t$ in (\ref{Eq:likelihood}) with
+\begin{equation*}
+\log \tilde{\sigma}^2_t = c\left(\sum_{j=0}^{t}a^j\right)+\sum_{j=0}^{t}\left\{a^j\left\{\mathbf{Z}^{1{\mbox{\rm\tiny T}}}_{t-j}\mathbf\beta+\tilde\eta(\mathbf{Z}^2_{t-j})\right\}\log y_{t-j-1}^{2}\right\}.
+\end{equation*}
+Now let the empirical likelihood
+\begin{equation}  \label{or3}
+\tilde{L}_{T} = \frac{1}{T}\sum_{t=1}^{T}\tilde{l}_{t} = \frac{1}{T}%
+\sum_{t=1}^{T} \log \tilde{\sigma}^{2}_{t} + \frac{y_{t}^{2}}{\tilde{\sigma%
+}_{t}^{2}}
+\end{equation}
+and we show in Appendix that it is a nice approximation of $L_{T}$ in ( \ref{Eq:Like}).
+%Let
+%\begin{equation}  \label{betastar}
+%\tilde{\boldsymbol{\gamma}} = \underset{\boldsymbol{\gamma}\in \Theta_1}{%
+%\text{arg}\min} \tilde{L}_{T}
+%\end{equation}
+
+%Fn \ref{betastar} is
+%\begin{equation}
+%\label{betastar2}
+%\tilde{\boldsymbol{\beta}}_{j} = \underset{\boldsymbol{\beta}_{j}\in \Theta_{j}}{\text{arg}\min} \mathbb{L}_{n}
+%\end{equation}
+%MLE of fn \ref{Ln}.
+
+Let $\mathbf{\lambda }=\{\lambda _{s_{2},k},k=-p,\cdots ,N,s_{2}=1,\cdots
+,d_{2}\}^{{\mbox{\rm\tiny T}}}$ be the collection of the coefficient in (\ref%
+{EQ:spline}) and let
+\begin{equation*}
+\mathbf{B}_{s_2}=\left[ \left\{ B_{s_2,k}\left( Z^2_{s_2}\right) :-p\leq k\leq
+N\right\} ^{{\mbox{\rm\tiny T}}}\right] _{N\times 1}\text{, }\mathbf{%
+B}=\left\{ \left( \mathbf{B}_{1}^{{\mbox{\rm\tiny T}}},...,\mathbf{B}%
+_{d_{2}}^{{\mbox{\rm\tiny T}}}\right) ^{{\mbox{\rm\tiny T}}}\right\}
+_{d_{2}N\times 1},
+\end{equation*}%
+then we have an approximation $m\approx \mathbf{Z}^{1{\mbox{\rm\tiny T}}}%
+\mathbf{\beta +B}^{{\mbox{\rm\tiny T}}}\mathbf{\lambda }$ with here an abused notation $\mathbf{Z}^1=\{1,
+\{Z^1_{s_1}\}_{s_1=1}^{d_1}\}^{\mbox{\rm\tiny T}}$.
+Let $\widehat{\mathbf{\gamma }}=\left( \hat c,\hat a,\widehat{\beta }_{0},\widehat{\beta }_{1},\ldots ,\widehat{%
+\beta }_{d_{1}}\right) ^{{\mbox{\rm\tiny T}}}$ and $\widehat{\mathbf{\lambda
+}}=\{\hat\lambda _{s_{2},k},k=-p,\cdots ,N,s_{2}=1,\cdots
+,d_{2}\} ^{{%
+\mbox{\rm\tiny T}}}$ be the minimizer of
+\begin{equation}
+\hat L_T(\mathbf{\ \gamma, \lambda })=\frac12\sum_{t=1}^T\left\{\log \hat\sigma_t(\mathbf{\gamma, \lambda})
+^{2}+\frac{y_t^{2}}{\hat\sigma_t(\mathbf{\gamma,\lambda}) ^{2}}\right\}  \label{DEF:Qn}
+\end{equation}
+with
+\begin{equation*}
+\log \hat{\sigma}_{t}^{2}= c\left(\sum_{j=0}^{t}a^j\right)+\sum_{j=1}^{t}a^{j-1}\left(
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\mathbf{B}(Z)%
+\mathbf{\lambda }\right) \log y_{t-j}^{2}.
+\end{equation*}%
+Or, in other words,
+\[\hat{\mathbf\theta}=\left\{\hat{\mathbf\gamma},\hat{\mathbf\lambda}\right\}=argmin_{\mathbf\theta\in\Theta_1,\mathbf\lambda\in\Theta_2}\hat L_T(\mathbf{\gamma, \lambda }),\]
+here $\Theta_1$ and $\Theta_2$ are parametric spaces for $\gamma$ and $\lambda$ respectively. 
+The centered additive component $\eta _{s_2}(z)$, for $1\leq s_2\leq d_2$, is estimated by the
+empirically centered estimator
+\begin{equation*}
+\widehat{\eta }_{s_2}(z)=\sum_{k=-(p-1)}^{N}\widehat{\lambda }_{s_2k}\left\{
+B_{s_2,k}\left( z\right) -T^{-1}\sum_{t=1}^{T}B_{s_2,k}\left( Z^2_{s_2t}\right) \right\} .
+\end{equation*}
+
+For our theoretical results, we enforce the following technical assumptions.
+
+\begin{enumerate}
+\item[(A1)] \textit{The additive components $\eta_{s_2}\in C^p[0,1]$ in (\ref{Mod:semi}) for $1\leq s_2\leq d_2$.}
+
+\item[(A2)] \textit{There exists a $\delta<1$ such that $||m||_{\infty}+a%
+\leq\delta$.}
+
+\item[(A3)] \textit{For any }$t,t^{\prime }=1,2,...,T,t\neq t^{\prime }$,
+\textit{the joint density }$f\left( y_{t},y_{t^{\prime }}\right) $\textit{\
+of }$\left( Y_{t},Y_{t^{\prime }}\right) $\textit{\ is continuous, and} $%
+0<c_{f}\leq \inf_{\left( y_{t},y_{t^{\prime }}\right) \in \left[ 0,1\right]
+^{2}}f\left( y_{t},y_{t^{\prime }}\right) \leq \sup_{\left(
+y_{t},y_{t^{\prime }}\right) \in \left[ 0,1\right] ^{2}}f\left(
+y_{t},y_{t^{\prime }}\right) \leq C_{f}<\infty .$
+
+\item[(A4)] $\epsilon _{t}$\textit{\ satisfies }$E\left( \epsilon
+_{t}\right) =0,E\left( \epsilon _{t}^{2}\right) =1$, $E\left( \log \epsilon
+_{t}^{2}\right) <\infty $ and $E\left( \left\vert \epsilon _{t}\right\vert
+^{4}\right) <M_{c}$\textit{\ for some }$c>0$\textit{\ and a finite positive }%
+$M_{c}$.
+
+\item[(A5)] \textit{The number of interior knots of the spline basis
+functions with degree $p>1$ is such that}: $c_{N}T^{1/(2p)}\log T\leq N\leq
+C_{N}T^{1/2p}\log T,$ \textit{\ for some positive constants }$c_{N}$\textit{%
+and }$C_{N}$.
+
+\item[(A6)] $\mathbf{Z}_{t}$ is stationary process and independent to $%
+\epsilon _{t}$.
+
+%\item[(A7)] The random vector $\mathbf{Z}_{2}$ satisfies that for any vector
+%$\mathbf{v}\in R^{d_{2}},$%
+%\begin{equation*}
+%c\left\Vert \mathbf{v}\right\Vert ^{2}\mathbf{\leq v}^{T}\mathbf{E(Z}%
+%_{2}^{\otimes 2}|\mathbf{Z}_{1}=\mathbf{z}_{1}\mathbf{)v\leq }C\left\Vert
+%\mathbf{v}\right\Vert ^{2},
+%\end{equation*}%
+%\textit{\ for some positive constants }$c$ \textit{and }$C$.
+\end{enumerate}
+
+\textbf{Remark 1.} Assumption (A1) is standard and very relaxed in
+nonparametric smoothing. Assumption (A2) ensures the existence of Model (\ref%
+{Mod:semi}). This assumption is comparable with the wide-sense stationarity condition
+$\alpha_0+\beta_0<1$ for GARCH(1,1) in (\ref{Def:GARCH}). Assumption (A3) only requires that the pairwise joint density
+be bounded away from $0$ and $\infty $; thus it is a much weaker assumption
+than Assumption (iv) in Carroll \textit{et al.} (2002) and Assumption (c) of
+Huang and Yang (2004) that require the boundedness of the joint density of
+the $J$ variables. Assumption (A4) is comparable with Assumption (vi) in
+Carroll, H\"{a}rdle and Mammen (2002). Assumption (A5) gives the order of
+the number of interior knots. %Assumption (A7) is similar to Condition (C5) in Wang et al. (2013).
+
+We now describe our asymptotic results in Theorems \ref%
+{Thm:nonpara} and \ref{Thm:para}.
+
+
+
+
+\begin{theorem}
+\label{Thm:nonpara} Under Assumptions A(1)-A(6), $\left\Vert \hat{\eta}-\eta \right\Vert _{2}=O\left(
+N^{1/2}\left( h^{p}+T^{-1}\right) \right) $,$\left\Vert \hat{\eta}-\eta
+\right\Vert _{n}=O\left( N^{1/2}\left( h^{p}+T^{-1}\right) \right) $,$%
+\left\Vert \hat{\eta}_{s_2}-\eta_{s_2} \right\Vert _{2s_2}=O\left( N^{1/2}\left(
+h^{p}+T^{-1}\right) \right) $,$\left\Vert \hat{\eta}_{s_2}-\eta_{s_2} \right\Vert
+_{ns_2 }=O\left( N^{1/2}\left( h^{p}+T^{-1}\right) \right) $ for $1\leq s_2\leq d_2$.
+\end{theorem}
+
+\begin{theorem}
+\label{Thm: consistency} Under Assumptions (A1)-(A6), as $T$ goes to infinity, $\hat{\mathbf{\gamma}}\to\mathbf{\gamma}$ a.s.
+\end{theorem}
+
+\begin{theorem}
+\label{Thm:para} Under Assumptions A(1)-A(6), as $T$ goes to infinity,
+\begin{equation*}
+\sqrt{T}(\mathbf{\hat{\gamma}}-\mathbf{\gamma })\overset{D}{\rightarrow }%
+N(0,c\mathbf{J}^{-1})
+\end{equation*}
+where covariance matrix $\mathbf{J} = E_{\gamma_0}\left(\frac{\partial^2 l_1(\mathbf\gamma_0)}{\partial \mathbf\gamma\partial \mathbf\gamma^{\T}}\right)$.
+\end{theorem}
+
+An important aspect of regression splines is the choice of the knots:
+splines with few knots are generally smoother than splines with many knots;
+increasing the knots usually improves the fit of the spline function to the
+data. The number of knots used in our simulation is $N=O_p(T^{1/(2p)}\log T)$. In
+practice, we adopt the consistent BIC knot selection method for non-linear
+additive autoregressive models (Huang and Yang (2004)), where
+\begin{equation}  \label{DEF:BIC}
+BIC(N)= \left[ \frac{1}{T}\sum_{t=1}^{T}\{ \log Y_{t}^{2} -\log \hat{Y}_{t}^2%
+\} ^{2}\right] +\frac{\log\log(T)}{T}\left\{1+d_2(N+p+1)\right\}.
+\end{equation}
+Numerical results on knots and lags selection are reported in Section 4.
+
+\section{Simulation}
+
+We conducted simulation by generating data from model (\ref{Mod:semi}) with
+\begin{equation*}
+\begin{array}{lllll}
+A & :\ \  & \log \sigma _{t}^{2} & = & 0.1+\left\{ 0.15Z_{t,1}+\eta
+_{1}(Z_{t,2})\right\} \log Y_{t-1}^{2}+0.1\log \sigma _{t-1}^{2}, \\
+B & :\ \  & \log \sigma _{t}^{2} & = & 1+\left\{ 0.2Z_{t,1}+\eta
+_{2}(Z_{t,2})\right\} \log Y_{t-1}^{2}+0.3\log \sigma _{t-1}^{2}, \\
+C & :\ \  & \log \sigma _{t}^{2} & = & 1+\left\{ 0.1Z_{t,1}+\eta
+_{3}(Z_{t,2})+\eta _{4}(Z_{t,3})\right\} \log Y_{t-1}^{2}+0.2\log \sigma
+_{t-1}^{2},%
+\end{array}%
+\end{equation*}%
+where $\eta _{1}(z)=0.1+0.2\cos (2\pi z)$, $\eta _{2}(z)=0.3\cos (2\pi z)$, $%
+\eta _{3}(z)=0.1+0.2\cos (2\pi z)$ and $\eta _{4}(z)=0.3\sin (2\pi z)$. The
+exogenous variables $Z_{t,1}$, $Z_{t,2}$ and $Z_{t,3}$ were generated
+independently from a uniform distribution on $[0,1]$. The error $\epsilon
+_{t}$ in model (\ref{DEF:Model1}) was simulated from a NID (0,1) process. In
+this simulation study, we used cubic spline and equally-spaced knots. For $%
+T=500$, $1000$, $2000$ and $5000$, we generated $200$ replications for the
+three processes of size $T+200$; the first $200$ observations were
+discarded. We denote $n_{grid}$ as the grid points where $\eta _{i}(\cdot ),$
+$i=1,2,3,4$ are evaluated, and we define $ASE=1/n_{grid}%
+\sum_{n=1}^{n_{grid}}\left\{ \eta (z_{n})-\hat{\eta}(z_{n})\right\} ^{2}$ to
+evaluate the performance of the estimation. $MASE$ is obtained by taking
+average of $ASE$ from the $200$ replication.
+
+The $MASE$ results for Models A, B and C are reported in Table \ref%
+{TAB:simu_ise} with standard errors in parentheses. As expected, increases
+in the sample size reduce $MASE$ with decreased standard errors for all
+models. To have an impression of the actual function estimates, with sample
+size $T=500$, $1000$, $2000$ and $5000$, we have plotted the estimators in
+Figure \ref{FIG:simu}. The results are satisfactory and show that the
+estimator works well as the asymptotic theory indicates, and that
+performance improves with increasing sample size. Table \ref{TAB:simu_par}
+summarizes the parameter estimation results. As one can see, when the sample
+size increases, the parameters $c$, $\beta $ and $a$ are more accurately
+estimated with smaller MSEs, confirmative to the consistency conclusion of
+Theorem \ref{Thm:para}.
+
+\begin{table}[tbp]
+\caption{MASE of Nonparametric Functions in Models A, B and C}
+\label{TAB:simu_ise}\centering
+\begin{tabular}{c|c|c|cc}
+\hline
+& Model A & Model B & \multicolumn{2}{c}{Model C} \\ \hline
+& $\eta_1$ & $\eta_2$ & $\eta_3$ & $\eta_4$ \\ \hline
+$n=500$ & 3.2046e-3 & 8.2062e-3 & 3.7726e-3 & 4.4093e-3 \\
+& (0.0027) & (0.0073) & (0.0024) & (0.0034) \\ \hline
+$n=1000$ & 1.4842e-3 & 3.6744e-3 & 2.2754e-3 & 2.0413e-3 \\
+& (0.0012) & (0.0030) & (0.0013) & (0.0015) \\ \hline
+$n=2000$ & 7.9755e-4 & 1.8592e-3 & 1.1263e-3 & 1.0203e-3 \\
+& (0.0006) & (0.0014) & (0.0007) & (0.0007) \\ \hline
+$n=5000$ & 3.8361e-4 & 7.8183e-4 & 4.1969e-4 & 3.4368e-4 \\
+& (0.0004) & (0.0006) & (0.0002) & (0.0002) \\ \hline
+\end{tabular}%
+\end{table}
+
+\begin{figure}[]
+\centering
+\subfigure{\includegraphics[width=0.4\textwidth]{model11functional.pdf}} %
+\subfigure{\includegraphics[width=0.4\textwidth]{model12functional.pdf}}%
+\newline
+\subfigure{\includegraphics[width=0.4\textwidth]{model31functional.pdf}} %
+\subfigure{\includegraphics[width=0.4\textwidth]{model32functional.pdf}}
+\caption{Plots of $\protect\eta_1(x_1)$ (top left), $\protect\eta_2(x_2)$
+(top right), $\protect\eta_3(x_3)$ (bottom left) and $\protect\eta_4(x_4)$
+(bottom right) (solid line) as well as their estimators for n = 500 (dashed
+line), $n = 1000$ (dotted line), $n = 2000$ (dash-dotted line) and $n = 5000$
+(long dashed line).}
+\label{FIG:simu}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Estimation of parameters in Models A, B and C}
+    \begin{tabular}{l|rr|rr|rr}
+\hline
+       Model A      &  \multicolumn{2}{c}{c\quad 0.1}  \vline   &  \multicolumn{2}{c}{$\beta$  \quad 0.15 }   \vline &   \multicolumn{2}{c}{$a$  \quad 0.11 }   \\ \hline
+    $T=500$  &  0.0696  &  (0.1113)  &  0.1462  &  (0.0602)  &  0.0854  &  (0.0539)  \\
+    $T=1000$  &  0.0861  &  (0.0658)  &  0.1535  &  (0.0374)  &  0.0905  &  (0.0335)  \\
+    $T=2000$  &  0.0916  &  (0.0404)  &  0.1496  &  (0.0282)  &  0.0947  &  (0.0220)  \\
+    $T=5000$  &  0.0956  &  (0.0298)  &  0.1509  &  (0.0182)  &  0.0964  &  (0.0165)  \\\hline
+      Model B      &  \multicolumn{2}{c}{c\quad 1}  \vline   &  \multicolumn{2}{c}{$\beta$  \quad 0.2 }   \vline &   \multicolumn{2}{c}{$a$  \quad 0.3 }   \\ \hline
+    $T=500$  &  1.0551  &  (0.1591)  &  0.2105  &  (0.1153)  & 0.2681 &  (0.0921) \\
+    $T=1000$  &  1.0219  &  (0.1004)  &  0.1970  &  (0.0664)  & 0.285 &  (0.0621)   \\
+    $T=2000$  &  1.0090 &  (0.0728)  &  0.1985  &  (0.0514)  & 0.2931 &  (0.0430)   \\
+    $T=5000$  &  1.0000  &  (0.0394)  &  0.2004  &  (0.0308)  & 0.2986 &  (0.0262)   \\\hline
+        Model C      &  \multicolumn{2}{c}{c\quad 1}  \vline   &  \multicolumn{2}{c}{$\beta$  \quad 0.1 }   \vline &   \multicolumn{2}{c}{$a$  \quad 0.2 }   \\ \hline
+    $T=500$  & 1.0333 & (0.1498) & 0.1026 & (0.1170) & 0.1716 & (0.0964) \\
+    $T=1000$  & 1.0180 & (0.1168) & 0.0982 & (0.0923) & 0.1810 & (0.0776) \\
+    $T=2000$  & 1.0003 & (0.0763) & 0.0993 & (0.0490) & 0.1948 & (0.0515) \\
+    $T=5000$  & 1.0000 & (0.0422) & 0.0999 & (0.0313) & 0.2003 & (0.0313) \\\hline
+    \end{tabular}%
+  \label{TAB:simu_par}%
+\end{table}%
+
+In our analysis, we compare the proposed X-LogGARCH model with GARCH(1,1)
+and Log-GARCH(1,1) in terms of loss functions. It is not possible to
+identify a unique and natural criterion for the comparison. So rather than
+making a single choice, we specify six different loss functions, which can
+give different interpretations; see Hansen and Lunde (2005). The loss
+functions are
+\begin{equation}
+\begin{array}{rclrcl}
+MSE_{1} & = & T^{-1}\sum_{t=1}^{T}(\hat{\sigma}_{t}-h_{t})^{2} & MSE_{2} & =
+& T^{-1}\sum_{t=1}^{T}(\hat{\sigma}_{t}^{2}-h_{t}^{2})^{2} \\
+QLIKE & = & T^{-1}\sum_{t=1}^{T}\left( \log (h_{t}^{2})+\hat{\sigma}%
+_{t}^{2}h_{t}^{-2}\right) & R2LOG & = & T^{-1}\sum_{t=1}^{T}\left[ \log (%
+\hat{\sigma}_{t}^{2}h_{t}^{-2})\right] ^{2} \\
+MAD_{1} & = & T^{-1}\sum_{t=1}^{T}\left\vert \hat{\sigma}_{t}-h_{t}\right%
+\vert & MAD_{2} & = & T^{-1}\sum_{t=1}^{T}\left\vert \hat{\sigma}%
+_{t}^{2}-h_{t}^{2}\right\vert .%
+\end{array}
+\label{DEF:cr}
+\end{equation}%
+The first four criteria were suggested by Bollerslev, Engle, and Nelson
+(1994). The last two mean absolute deviation criteria are interesting
+because they are more robust to outliers than the mean squared forecast
+error criteria. Table \ref{TAB:model11cr} shows the comparison results. In
+all our simulation experiments, one can see that the proposed X-LogGARCH
+model outperforms its competitors uniformly under different criteria.
+
+\begin{table}[ht]
+\caption{Comparisons of Different GARCH Models ($T=5000$)}
+\label{TAB:model11cr}\centering
+\begin{tabular}{rrrrrrr}
+\hline
+& MSE$_1$ & MSE$_2$ & QLIKE & R2LOG & MAD$_1$ & MAD$_2$ \\ \hline
+Model 1 &  &  &  &  &  &  \\ \hline
+X-LogGarch(1,1) & 0.18 & 1.52 & -0.95 & 6.58 & 0.29 & 0.43 \\
+Garch(1,1) & 0.48 & 6.95 & 0.12 & 15.43 & 0.55 & 0.86 \\
+Log-Garch(1,1) & 0.22 & 1.72 & -0.50 & 10.53 & 0.37 & 0.49 \\ \hline
+Model 2 &  &  &  &  &  &  \\ \hline
+X-LogGarch(1,1) & 2.36 & 152.92 & 2.49 & 6.57 & 1.21 & 5.64 \\
+Garch(1,1) & 3.28 & 207.04 & 2.74 & 8.38 & 1.50 & 6.93 \\
+Log-Garch(1,1) & 2.46 & 198.77 & 2.71 & 6.65 & 1.21 & 5.48 \\ \hline
+Model 3 &  &  &  &  &  &  \\ \hline
+X-LogGarch(1,1) & 1.77 & 85.02 & 2.24 & 6.56 & 1.06 & 4.25 \\
+Garch(1,1) & 2.36 & 121.21 & 2.47 & 8.10 & 1.27 & 5.03 \\
+Log-Garch(1,1) & 2.06 & 120.27 & 2.47 & 7.36 & 1.15 & 4.48 \\ \hline
+\end{tabular}%
+\end{table}
+
+\section{Applications}
+
+In this section, we applied the proposed X-LogGARCH model to S$\&$P 500
+weekly return data. In fitting a statistical model to financial volatility
+time series, it has been suggested that exogenous variables can enhance the
+model and hence improve volatility forecast accuracy. Our particular
+interest is prediction of financial volatility based on the returns as well
+as exogenous variables.
+
+Weekly index of S$\&$P 500 is available through FRED\footnote{\url{http://research.stlouisfed.org/fred2/series/SP500}}. The response variable $Y$ is  weekly log return generated by S$\&$P 500 spanning from 1/7/1991 through 3/25/2013 (the left panel in Figure \ref{FIG:app_index}). Observing that financial volatility is related to the policy uncertainty, see Baker et al (2012), we included
+policy uncertainty index as an exogenous variable parametrically. We use
+the weekly, policy-related uncertainty index by Baker et al. (2012) in the same time period which combines three index
+components. The policy uncertainty index is based on newspaper archives in
+the United States from Access World New's NewsBank service. The primary
+measure for this index is the number of articles that contain at least one
+term from each of 3 sets of terms. The first set is economic or economy. The
+second is uncertain or uncertainty. The third set is legislation or deficit
+or regulation or congress or federal reserve or white house. Another
+exogenous variable we used in the model is crude oil price. Throughout modern history, oil has played a prominent role in shaping the economic and political developments of industrialized economies, and it is viewed as having an important real effect on the U.S. economy. Within the same time period, we use the weekly crude oil price through West Texas Intermediate(WTI)\footnote{\url{http://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm}} (the right panel in Figure \ref{FIG:app_index}).
+
+\begin{figure}[tbp]
+\centering
+\subfigure{\includegraphics[width=2.5in]{crudeoil_LRsp500.pdf}} %
+\subfigure{\includegraphics[width=2.5in]{crudeoil_LRcrudeoil.pdf}}
+\caption{Plots of S$\&$P 500 log-return series and house index series}
+\label{FIG:app_index}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=3.5in,height=3in]{crudeoil_functional.pdf}
+\caption{Estimation of function of house index.}
+\label{FIG:app_func}
+\end{figure}
+
+\begin{table}[tbp]
+\caption{Comparison of Different models in Application data}
+\label{TAB:applicationcr}\centering
+\begin{tabular}{rrrrrrr}
+\hline
+& MSE$_1$ & MSE$_2$ & QLIKE & R2LOG & MAD$_1$ & MAD$_2$ \\ \hline
+X-LogGarch(1,1) & 2.63011e-04 & 2.31095e-06 & -6.69444 & 6.95573 & 0.01255 &
+5.82127e-04 \\
+Garch(1,1) & 2.77137e-04 & 2.60945e-06 & -6.60988 & 7.15660 & 0.01288 &
+5.86962e-04 \\
+Log-Garch(1,1) & 4.54085e-04 & 2.75223e-06 & -6.44166 & 9.63196 & 0.01827 &
+8.81079e-04 \\ \hline
+\end{tabular}%
+\end{table}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=3.5in,height=3in]{prediction.pdf}
+\caption{Comparison of estimation of volatility of different GARCH models}
+\label{FIG:prediction}
+\end{figure}
+
+For this data set, we used cubic spline, and we selected $8$ knots through
+the BIC in (\ref{DEF:BIC}). Figure \ref{FIG:app_func} plots the estimated
+function on the crude oil returns. From this plot, one can see that large crude oil return (negative or positive)
+have negative impacts on S$\&$P 500 return. While, within a
+range of moderate crude oil returns, S$\&$P 500 return variates lightly with the change of crude
+oil return. We do notice that when the oil return is very large, 
+the S$\&$P 500 return then start to decrease. We think this may be caused by a boundary issue 
+since there are very few observations in the area when the crude oil 
+return is extremely large. The parameter estimate for
+policy uncertainty index is $-0.082$, showing a positive impact of policy on
+stock returns.
+
+
+Literature review reveals, basically,  two conflicting viewpoints on the relationship between stock markets and crude oil market.
+On one side, Jones and Kaul (1996), Sadorsky (1999) and Ciner (2001), Gogineni (2008) reported a significant negative relationship between oil price shocks and stock market returns. On the other side, Chen et al (1986) and Huang et al.(1996) claimed no significant relationship between them. According to our finding, when the 
+change of crude oil return is large, it does cause negative impact on volatility of stock market significantly, 
+but when this change is small, it leads to insignificant influence to stock market. Generally, our conclusion agrees with each of the above two existing views partly, and it actually gives a new perspective on such a question. 
+
+For this data set, we also compare the proposed X-LogGARCH model with GARCH(1,1)
+and Log-GARCH(1,1) in terms of loss functions in (\ref{DEF:cr}) in Table \ref%
+{TAB:applicationcr}. One can clearly see that the proposed X-LogGARCH model
+outperformed its competitors with obvious advantage under all criteria. In
+addition, we do a one-step ahead prediction from April 2009 to February
+2013 using GARCH(1,1), Log-GARCH(1,1) and X-LogGARCH. Figure \ref{FIG:prediction}
+plots the predictions as well as the true volatility. From there, one sees that the stability of GARCH(1,1) cannot catch big fluctuations of volatility, and the intense vibration produced by log-GARCH(1,1) cannot catch 
+them either. Although X-LogGARCH still has low prediction, it does
+present big changes in May 2010, August 2011, May 2012 and December 2013, in line
+with the truely high volatility during those time periods. Therefore, we conclude an
+advantage of using our model comparing with the competitors.
+
+\section{Concluding Remarks}
+
+In this article, we have developed a new model for financial volatility
+estimation and forecasting by including exogenous variables in conventional
+log-GARCH model semi-parametrically. We have rigorously established the
+consistency and asymptotic normality of the proposed estimators. The
+assumptions for asymptotics are quite reasonable because few fail to satisfy
+these assumptions. Numerical studies have showed that modeling with
+exogenous variables leads to more accurate estimation and forecasting than
+without them through conventional GARCH(1,1) model or log-GARCH(1,1) model.
+
+The current article focused on adding exogenous variables to log-GARCH(1,1) model, because of the
+nonnegativity of the volatility. However, we can extend the proposed methods
+to accommodate more generalized link functions. For instance, one can
+consider exogenous GARCH model or exogenous EGARCH model. However we would rather say that
+our work is not just a simple extension of GARCH family since it can adopt much more information than conventional 
+GARCH family. One can also naturally extend this work to 
+log-GARCH(p,q) models. Contrary to existing GARCH models and GARCH-like family, an obvious feature
+of model (\ref{Mod:semi}) is that the process could be nonstationary. To our best
+knowledge, the research on nonstationary GARCH models is sparse, see Jensen
+and Rahber (2004a, b). Research in this direction will also be interesting. 
+
+In the absence of prior knowledge, a large number of variables may be
+included at the initial stage of modeling in order to reduce possible model
+bias. This may lead to a complicated model including many insignificant
+variables, resulting in less predictive powers and difficulty in
+interpretation. Selection of significant exogenous covariates is fundamental
+to this statistical modeling, and it will be an interesting future research
+topic. Penalized likelihood approaches have
+gained popularity in recent years to automatically and simultaneously select
+significant variables, and it could be taken to select significant variables for our model.
+
+
+
+
+\section*{Appendix: Proof of the theorems}
+
+Through the section, let $\Vert\cdot \Vert$ be the Euclidean norm and $||\phi
+||_{\infty }=sup_{x}|\phi (x)|$. For any matrix $\mathbf{A}$, denote its $L_2$
+norm as $\left\Vert \mathbf{A}\right\Vert $ =sup$_{\mathbf{x\neq 0}}\frac{%
+\left\Vert \mathbf{Ax}\right\Vert }{\left\Vert \mathbf{x}\right\Vert }$.
+Throughout the section, $c,C$ will be used as constants in a generic way.
+
+\textbf{Proof of theorem \ref{lem:existense}.}
+\begin{proof} Recursively use the
+expression in (\ref{Mod:semi}), we have
+\begin{eqnarray*}
+\log \sigma _{t}^{2} &=&c\left[ 1+\sum_{j=0}^{\infty }\prod_{k=0}^{j}\left\{
+m(\mathbf{Z}_{t-k})+a\right\} \right]  \\
+&&+\sum_{j=1}^{\infty }\left[ \prod_{k=0}^{j-1}\{m(\mathbf{Z}_{t-k})+a\}%
+\right] m(\mathbf{Z}_{t-j})\log \epsilon _{t-j-1}^{2}+m(\mathbf{Z}_{t})\log
+\epsilon _{t-1}^{2} \\
+&=&I_{1}+I_{2}.
+\end{eqnarray*}
+Under the Assumption (A2), $I_{1}$ is convergent almost surely since
+\begin{equation*}
+P\left( \lim_{t\rightarrow \infty }\left\vert \sum_{j=t}^{\infty
+}\prod_{k=0}^{j}\left( m\left( \mathbf{Z}_{t-k}\right) +a\right)
+c\right\vert \leq \lim_{t\rightarrow \infty }\left\vert \sum_{j=t}^{\infty
+}\delta ^{j+1}c\right\vert =0\right) =1.
+\end{equation*}
+For $I_{2}$, under the same assumption,
+\begin{equation*}
+P\left( \lim_{t\rightarrow \infty }\left\vert \sum_{j=t}^{\infty }\left[
+\prod_{k=0}^{j-1}\left\{ m\left( \mathbf{Z}_{t-k}\right) +a\right\} \right]
+m\left( \mathbf{Z}_{t-j}\right) \right\vert \leq \lim_{t\rightarrow \infty
+}\left\vert \sum_{j=t}^{\infty }\delta ^{j+1}\right\vert =0\right) =1.
+\end{equation*}%
+Therefore $I_{2}$ is convergent almost surely, and $I_{1}+I_{2}$ is
+convergent almost surely.
+Under Assumption (A6), $\mathbf{Z}_{t}$ is stationary and ergodic, then $%
+\log \sigma _{t}^{2}$, as a function of ergodic process, is stationary and
+ergodic accordingly.
+\end{proof}
+
+In the following we list and prove Lemmas \ref{Lem:mleC1}, \ref{Lem:mleC2}
+and \ref{Lem:mleC3} to show the regularity conditions for maximum likelihood
+estimation.
+
+\begin{lemma}
+Under Assumption (A4), $E_{\mathbf{\gamma }_{0}}\left\Vert \frac{\partial
+l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }}\right\Vert <\infty
+,E_{\mathbf{\gamma }_{0}}\left( \frac{\partial l_{t}(\mathbf{\gamma }_{0})}{%
+\partial \mathbf{\gamma }}\right) =0,E_{\mathbf{\gamma }_{0}}\left\Vert
+\frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }%
+\partial \mathbf{\gamma }}\right\Vert <\infty $ \label{Lem:mleC1}
+\end{lemma}
+
+\begin{proof} Notice that
+\begin{equation*}
+\frac{\partial l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }}%
+=(1-\frac{y_{t}^{2}}{\sigma _{t}^{2}})\frac{\partial \log \sigma _{t}^{2}}{\partial
+\mathbf{\gamma }}=(1-\epsilon _{t}^{2})\frac{\partial \log \sigma _{t}^{2}}{%
+\partial \mathbf{\gamma }}
+\end{equation*}%
+We have $E_{\mathbf{\gamma }_{0}}\left( \frac{\partial l_{t}(\mathbf{\gamma }%
+_{0})}{\partial \mathbf{\gamma }}\right) =0$ immediately. Recalling that
+\textbf{$\mathbf{\gamma }$}$=\left( c,a,\mathbf{\beta }^{{\mbox{\rm\tiny T}}%
+}\right) ^{{\mbox{\rm\tiny T}}}$,
+\begin{equation}
+\frac{\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }}=\left(
+\begin{array}{c}
+\frac{1}{1-a} \\
+\frac{c}{(1-a)^{2}}+\sum_{j=1}^{\infty }\left[ (j-1)a^{j-2}\log
+y_{t-j}^{2}\left\{ \mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\boldsymbol{%
+\beta }_{1}+{\eta }(\mathbf{Z}_{t-j+1}^{2})\right\} \right]  \\
+\sum_{j=1}^{\infty }a^{j-1}\log y_{t-j}^{2}(\mathbf{Z}_{t-j+1}^{1})%
+\end{array}%
+\right) .
+\end{equation}%
+We have $E_{\mathbf{\gamma }_{0}}\left\Vert \frac{\partial l_{t}(\mathbf{%
+\gamma }_{0})}{\partial \mathbf{\gamma }}\right\Vert $ is bouned since both $%
+\log y_{t}^{2}$ and $\mathbf{Z}_{t}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }%
++\eta (Z_{t}^{2})$ are bounded. For $E_{\mathbf{\gamma }_{0}}\left\Vert
+\frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }%
+\partial \mathbf{\gamma }}\right\Vert $, we have
+
+\begin{equation*}
+\frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }%
+\partial \mathbf{\gamma }^{{\mbox{\rm\tiny T}}}}=(1-\epsilon _{t}^{2})\frac{%
+\partial ^{2}\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }\partial \mathbf{%
+\gamma }^{{\mbox{\rm\tiny T}}}}+\epsilon _{t}^{2}\frac{\partial \log \sigma
+^{2}}{\partial \mathbf{\gamma }}\frac{\partial \log \sigma _{t}^{2}}{%
+\partial \mathbf{\gamma }^{{\mbox{\rm\tiny T}}}}.
+\end{equation*}%
+Then the boundedness of $E_{\mathbf{\gamma }_{0}}\left\Vert \frac{\partial
+^{2}l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }\partial \mathbf{%
+\gamma }}\right\Vert $ follows immediately. \end{proof}
+
+\begin{lemma}
+\label{Lem:mleC2} $E_{\mathbf{\gamma }_{0}}\left( \frac{\partial ^{2}l_{t}(%
+\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }}%
+\right) =\mathbf{J}$, $\mathbf{J}$ is invertable.
+\end{lemma}
+
+\begin{proof} Assuming that $\mathbf{J}$ is not invertable, then there exists a
+nonzero vector $\mathbf{w}$, such that $\mathbf{w}^{{\mbox{\rm\tiny T}}}E_{%
+\mathbf{\gamma }_{0}}\left( \frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{0})}{%
+\partial \mathbf{\gamma }\partial \mathbf{\gamma }}\right) \mathbf{w}=0$
+\begin{equation*}
+\text{Var}_{\mathbf{\gamma }_{0}}\left\{ \mathbf{w}^{{\mbox{\rm\tiny T}}}%
+\frac{\partial l_{t}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }}%
+\right\} =\mathbf{w}^{{\mbox{\rm\tiny T}}}E_{\mathbf{\gamma }_{0}}\frac{%
+\partial l_{t}}{\partial \mathbf{\gamma }}\frac{\partial l_{t}}{\partial
+\mathbf{\gamma }^{\prime }}\mathbf{w}=\mathbf{w}^{{\mbox{\rm\tiny T}}}E{%
+(1-\epsilon _{t}^{2})^{2}}E_{\mathbf{\gamma }_{0}}\left\{ \frac{\partial
+\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }}\frac{\partial \log \sigma
+_{t}^{2}}{\partial \mathbf{\gamma }^{T}}\right\} \mathbf{w}=c\mathbf{w}^{{%
+\mbox{\rm\tiny T}}}\mathbf{Jw}=0
+\end{equation*}
+
+This means $\mathbf{w}^{{\mbox{\rm\tiny T}}}\frac{\partial \log \sigma
+_{t}^{2}}{\partial \mathbf{\gamma }}=0,a.s.$. Since $\frac{\partial \log
+\sigma _{t}^{2}}{\partial \mathbf{\gamma }}$ is stationarity, we have
+\begin{equation*}
+\mathbf{w}^{{\mbox{\rm\tiny T}}}\frac{\partial \log \sigma _{t}^{2}}{%
+\partial \mathbf{\gamma }}=\mathbf{w}^{{\mbox{\rm\tiny T}}}\left(
+\begin{array}{c}
+1 \\
+\log \sigma _{t-1}^{2} \\
+\mathbf{Z}_{t}^{1}\log y_{t-1}^{2}%
+\end{array}%
+\right) +a\mathbf{w}^{{\mbox{\rm\tiny T}}}\frac{\partial \log \sigma
+_{t-1}^{2}}{\partial \mathbf{\gamma }}=0.
+\end{equation*}%
+It follows that $\mathbf{w}=\mathbf{0}$, which is a contradiction.
+Therefore, $\mathbf{J}$ is invertable.
+\end{proof}
+
+  
+\begin{lemma}
+\label{Lem:mleC3} Under Assumptions (A1)-(A6), let $V(\mathbf{\gamma }%
+_{0})=\left\{ \mathbf{\gamma }:\left\Vert \mathbf{\gamma }-\mathbf{\gamma }%
+_{0}\right\Vert _{\infty }<\xi ,\mathbf{\gamma }\in \Theta_1 \right\} $,
+\begin{equation*}
+E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }%
+_{0})}\left\vert \frac{\partial ^{3}l_{t}(\mathbf{\gamma })}{\partial
+\mathbf{\gamma }_{i}\partial \mathbf{\gamma }_{j}\partial \mathbf{\gamma }%
+_{k}}\right\vert <\infty .
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\begin{eqnarray*}
+\frac{\partial ^{3}l_{t}}{\partial \mathbf{\gamma }_{1}\partial \mathbf{%
+\gamma }_{2}\partial \mathbf{\gamma }_{3}} &=&\frac{y^{2}}{\sigma _{t}^{2}}%
+\left( \frac{\partial ^{2}\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }%
+_{1}\partial \mathbf{\gamma }_{2}}\frac{\partial \log \sigma _{t}^{2}}{%
+\partial \mathbf{\gamma }_{3}}+\frac{\partial ^{2}\log \sigma _{t}^{2}}{%
+\partial \mathbf{\gamma }_{1}\partial \mathbf{\gamma }_{3}}\frac{\partial
+\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{2}}+\frac{\partial ^{2}\log
+\sigma _{2}^{t}}{\partial \mathbf{\gamma }_{2}\partial \mathbf{\gamma }_{3}}%
+\frac{\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{1}}\right)
+\\
+&+&\left( 1-\frac{y_{t}^{2}}{\sigma _{t}^{2}}\right) \frac{\partial ^{3}\log
+\sigma _{t}^{2}}{\partial \mathbf{\gamma }_{1}\partial \mathbf{\gamma }%
+_{2}\partial \mathbf{\gamma }_{3}}-\frac{y_{t}^{2}}{\sigma _{t}^{2}}\frac{%
+\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{1}}\frac{\partial
+\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{2}}\frac{\partial \log
+\sigma _{t}^{2}}{\partial \mathbf{\gamma }_{3}}
+\end{eqnarray*}%
+Let $\left\vert \log y_{t-j}^{2}\right\vert <K_{1}$,
+\begin{eqnarray*}
+&&\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }_{0})}\left\vert \log \sigma
+_{t}^{2}(\mathbf{\gamma }_{0})-\log \sigma _{t}^{2}(\mathbf{\gamma }%
+)\right\vert  \\
+&\leq &\left\vert \frac{c_{0}}{1-a_{0}}-\frac{c}{1-a}%
+\right\vert +\sum_{j=1}^{\infty }\left\vert a_{0}^{j-1}\log y_{t-j}^{2}%
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }_{0}-a^{j-1}\log
+y_{t-j}^{2}\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }%
+\right\vert  \\
+&&+\sum_{j=1}^{\infty }\left\vert \left( a_{0}^{j-1}-a^{j-1}\right) \eta
+\left( \mathbf{Z}_{t-j+1}^{2}\right) \log y_{t-j}^{2}\right\vert  \\
+&\leq &2\frac{\xi }{1-\delta }+4K_{1}\frac{\delta }{1-\delta }<\infty
+\end{eqnarray*}%
+$\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }_{0})}\left\vert \frac{\sigma
+_{t}^{2}(\mathbf{\gamma })}{\sigma _{t}^{2}(\mathbf{\gamma })}\right\vert
+<\infty $, $\left\Vert \sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }_{0})}%
+\frac{\sigma _{t}^{2}(\mathbf{\gamma }_{0})}{\sigma _{t}^{2}(\mathbf{\gamma }%
+)}\right\Vert _{2}<\infty $, it is easy to see that
+\begin{equation*}
+\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma} _{0})}\left\vert \frac{\partial ^{3}\log
+\sigma _{t}^{2}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }_{1}\partial
+\mathbf{\gamma }_{2}\partial \mathbf{\gamma }_{3}}\right\vert <\infty
+,\left\Vert \sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }_{0})}\frac{\partial
+^{3}\log \sigma _{t}^{2}(\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }%
+_{1}\partial \mathbf{\gamma }_{2}\partial \mathbf{\gamma }_{3}}\right\Vert
+_{2}<\infty ,\text{\quad and \quad }\left\Vert \sup_{\mathbf{\gamma }\in V(%
+\mathbf{\gamma }_{0})}\frac{\partial ^{3}\log \sigma _{t}^{2}(\mathbf{\gamma
+}_{0})}{\partial \mathbf{\gamma }_{1}\partial \mathbf{\gamma }_{2}\partial
+\mathbf{\gamma }_{3}}\right\Vert _{d}<\infty
+\end{equation*}%
+Applying Cauchy-Schwartz inequality, we have
+\begin{equation*}
+E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }%
+_{0})}\left\vert \left( 1-\frac{y_{t}^{2}}{\sigma _{t}^{2}(\mathbf{\gamma })}%
+\right) \frac{\partial ^{3}\log \sigma _{t}^{2}(\mathbf{\gamma })}{\partial
+\mathbf{\gamma }_{1}\partial \mathbf{\gamma }_{2}\partial \mathbf{\gamma }%
+_{3}}\right\vert \leq \left\Vert 1-\frac{y_{t}^{2}}{\sigma _{t}^{2}(\mathbf{%
+\gamma })}\right\Vert _{2}\left\Vert \frac{\partial ^{3}\log \sigma _{t}^{2}(%
+\mathbf{\gamma })}{\partial \mathbf{\gamma }_{1}\partial \mathbf{\gamma }%
+_{2}\partial \mathbf{\gamma }_{3}}\right\Vert _{2}<\infty
+\end{equation*}%
+Similarly, $E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }\in V(\mathbf{%
+\gamma }_{0})}\left\vert \frac{\partial ^{2}\log \sigma _{t}^{2}(\mathbf{%
+\gamma }_{0})}{\partial \mathbf{\gamma }_{1}\partial \mathbf{\gamma }_{2}}%
+\right\vert ^{2}<\infty $ and $E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }%
+\in V(\mathbf{\gamma }_{0})}\left\vert \frac{\partial \log \sigma _{t}^{2}(%
+\mathbf{\gamma }_{0})}{\partial \mathbf{\gamma }_{1}}\right\vert ^{2}<\infty
+$, Therefore,
+\begin{equation*}
+E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }%
+)}\left\vert \frac{y_{t}^{2}}{\sigma _{t}^{2}(\mathbf{\gamma })}\frac{%
+\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{1}}\frac{\partial
+\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{2}}\frac{\partial \log
+\sigma _{t}^{2}}{\partial \mathbf{\gamma }_{3}}\right\vert \leq \left\Vert
+\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }_{0})}\left\vert \frac{y_{t}^{2}%
+}{\sigma _{t}^{2}(\mathbf{\gamma })}\right\vert \right\Vert _{2}\left\Vert
+\frac{\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{1}}\frac{%
+\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{2}}\frac{\partial
+\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }_{3}}\right\Vert _{2}<\infty
+\end{equation*}%
+In all,
+\begin{equation*}
+E_{\mathbf{\gamma }_{0}}\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma }%
+_{0})}\left\vert \frac{\partial ^{3}l_{t}(\mathbf{\gamma })}{\partial
+\mathbf{\gamma }_{1}\partial \mathbf{\gamma }_{2}\partial \mathbf{\gamma }%
+_{3}}\right\vert <\infty
+\end{equation*}
+
+\end{proof}
+
+********************************************************************************
+Next we consider an approximation to the likelihood. Define $\breve{l}_{t}=\log
+\breve{\sigma}_{t}^{2}+\frac{y_{t}^{2}}{\breve{\sigma}_{t}^{2}}$, where
+\begin{equation}
+\log \breve{\sigma}_{t}^{2}=\frac{1-a^{t}}{1-a}c+\sum_{j=1}^{t}a^{j-1}\left(
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\eta \left( \mathbf{%
+Z}_{t-j+1}^{2}\right) \right) \log y_{t-j}^{2}.  \label{Eq:sigmabreve}
+\end{equation}%
+
+\begin{lemma}
+  Under Assumption (A1)-(A6),
+  \begin{enumerate}
+  \item $\lim_{n\rightarrow \infty}\sup_{\mathbf{\gamma}\in \Theta_{1}}1/T\left|l_{t}(\mathbf{\gamma}_{0})-\breve{l}_{t}(\mathbf{\gamma}_{0})\right|=0,a.s$
+    \item $\exists t \in \mathcal{Z}$ such that $\log \sigma^{2}_{t}(\mathbf{\gamma})=\log\breve{\sigma}_{t}^{2}(\mathbf{\gamma}_{0}),as.\rightarrow \mathbf{\gamma}=\mathbf{\gamma}_{0}$
+    \item $E_{\mathbf{\gamma}_{0}}\left|l_{t}(\mathbf{\gamma}_{0})\right|<\infty, and if $\mathbf{\gamma}\neq \mathbf{\gamma}_0$,
+  \end{enumerate}
+\end{lemma}
+
+\begin{lemma}
+Under Assumptions (A1)-(A6),
+\begin{equation*}
+\left\Vert T^{-1/2}\sum_{t=1}^{T}\left\{ \frac{\partial l_{t}(\mathbf{\gamma}_{0})}{\partial
+\mathbf{\gamma }}-\frac{\partial \breve{l}_{t}(\mathbf{\gamma}_{0})}{\partial \mathbf{\gamma }}%
+\right\} \right\Vert =o_{p}(1)
+\end{equation*}%
+\begin{equation*}
+\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma })}\left\Vert
+T^{-1}\sum_{t=1}^{T}\left\{ \frac{\partial ^{2}l_{t}(\mathbf{\gamma})}{\partial \mathbf{%
+\gamma }\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\breve{l}_{t}(\mathbf{\gamma})}{%
+\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right\} \right\Vert
+=o_{p}(1)
+\end{equation*}%
+\label{Lem:like-appr}
+\end{lemma}
+
+\begin{proof}
+\begin{equation*}
+\left\Vert \log \sigma _{t}^{2}-\log \breve{\sigma}_{t}^{2}\right\Vert
+=\left\Vert \frac{a^{t}}{1-a}c+\sum_{j=t+1}^{\infty }a^{j-1}\left( \mathbf{Z}%
+_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\eta \left( \mathbf{Z}%
+_{t-j+1}^{2}\right) \right) \log y_{t}^{2}\right\Vert <c\delta ^{t}
+\end{equation*}%
+\begin{equation*}
+\left\vert \sigma _{t}^{2}-\breve{\sigma}_{t}^{2}\right\vert =e^{\zeta
+}\left\Vert \log \sigma _{t}^{2}-\log \breve{\sigma}_{t}^{2}\right\Vert
+<c\delta ^{t},
+\end{equation*}%
+where $\zeta \in \lbrack \min (\log \sigma _{t}^{2},\log \breve{\sigma}%
+_{t}^{2}),\max (\log \sigma _{t}^{2},\log \breve{\sigma}_{t}^{2})]$.
+\begin{eqnarray*}
+&&\left\Vert \frac{\partial \log \sigma _{t}^{2}}{\partial \mathbf{\gamma }}-%
+\frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}%
+\right\Vert \\
+&=&\left\Vert \left(
+\begin{array}{c}
+0 \\
+\frac{ta^{t-1}-ta^{t}+a^{t}}{(1-a)^{2}}c+\sum_{j=t+1}^{\infty
+}(j-1)a^{j-2}\left( \mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }%
++\eta \left( \mathbf{Z}_{t-j+1}^{2}\right) \right) \log y_{t-j}^{2} \\
+\sum_{j=t+1}^{\infty }a^{j-1}\mathbf{Z}_{t-j+1}^{1}\log y_{t-j}^{2}%
+\end{array}%
+\right) \right\Vert <ct\delta ^{t}
+\end{eqnarray*}%
+Thus,
+\begin{equation*}
+E_{\mathbf{\gamma}_{0}}\left\Vert T^{-1/2}\sum_{t=1}^{T}\left\{ \frac{\partial l_{t}}{\partial
+\mathbf{\gamma }}-\frac{\partial \breve{l}_{t}}{\partial \mathbf{\gamma }}%
+\right\} \right\Vert \leq T^{-1/2}\sum_{t=1}^{T}E_{\mathbf{\gamma}_{0}}\left\Vert \frac{\partial
+l_{t}}{\partial \mathbf{\gamma }}-\frac{\partial \breve{l}_{t}}{\partial
+\mathbf{\gamma }}\right\Vert \leq cT^{-1/2}\sum_{t=1}^{T}t\delta ^{t}\leq
+CT^{-1/2}
+\end{equation*}%
+Thus, under Assumptions (A1)-(A6), as $T\rightarrow 0$,
+\begin{equation*}
+\left\Vert T^{-1/2}\sum_{t=1}^{T}\left\{ \frac{\partial l_{t}(\mathbf{\gamma}_{0})}{\partial
+\mathbf{\gamma }}-\frac{\partial \breve{l}_{t}(\mathbf{\gamma}_{0})}{\partial \mathbf{\gamma }}%
+\right\} \right\Vert =o_{p}(1)
+\end{equation*}
+
+\end{proof}
+
+Let $\mathbf{\gamma }_{i,j}^{\ast }$ be MLE of $T^{-1}\sum_{t=1}^{T}\breve{l}%
+_{t}$
+\begin{lemma}
+Under Assumptions (A1)-(A6), as $T\to\infty$,
+\begin{equation*}
+T^{-1/2}\sum_{t=1}^{T}\frac{\partial l_{t}}{\partial \mathbf{\gamma }}%
+\overset{D}{\rightarrow }N(0,c\mathbf{J})
+\end{equation*}%
+\begin{equation*}
+T^{-1}\sum_{t=1}^{T}\frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{i,j}^{\ast })%
+}{\partial \mathbf{\gamma }_{i}\partial \mathbf{\gamma }_{j}}\overset{P}{%
+\rightarrow }\mathbf{J}(i,j)
+\end{equation*}%
+where $\mathbf{J} = \text{Var}_{\mathbf{\gamma}_0}\left( \partial l_{t}(\mathbf{\gamma}_0)/\partial \mathbf{\gamma }\right)$
+\label{Lem:gammanormal}
+\end{lemma}
+
+\begin{proof} We use CLT for martingale difference(Billingsley, 1986, P498). $E_{\mathbf{\gamma}_0}\left(
+\left. \frac{\partial l_{t}\left( \mathbf{\gamma }_{0}\right) }{\partial
+\mathbf{\gamma }}\right\vert \mathcal{F}_{t}\right) =0$, and $\text{Var}%
+\left( \partial l_{t}/\partial \mathbf{\gamma }\right) =\mathbf{J}$ is
+finite and invertable. Therefore, $\forall \mathbf{w }\in \mathcal{R}%
+^{2+d_{1}+d_{2}},T^{-1/2}\sum_{t=1}^{T}\mathbf{w }^{^{{%
+\mbox{\rm\tiny
+T}}}}\frac{\partial l_{t}\left( \mathbf{\gamma }_{0}\right) }{\partial
+\mathbf{\gamma }}\overset{D}{\rightarrow }N(0,c\mathbf{w }^{^{{%
+\mbox{\rm\tiny T}}}}\mathbf{Jw })$, from Cram\'{e}r-Wold
+device(Billingsley, 1986, P397),
+\begin{equation*}
+T^{-1/2}\sum_{t=1}^{T}\frac{\partial l_{t}\left( \mathbf{\gamma }_{0}\right)
+}{\partial \mathbf{\gamma }}\overset{D}{\rightarrow }N(0,c\mathbf{J})
+\end{equation*}
+
+Since $\log \sigma _{t}^{2}$ is  ergodic and stationary, 
+$l_{t}=\log y_{t}^{2}+y_{t}^{2}/\sigma _{t}^{2}$, $\frac{\partial l_{t}}{%
+\partial \mathbf{\gamma }}=\left( 1-\epsilon _{t}^{2}\right) \frac{\partial
+l_{t}}{\partial \mathbf{\gamma }}$ and $\frac{\partial ^{2}l_{t}}{\partial
+\mathbf{\gamma }_{i}\partial \mathbf{\gamma }_{j}}=(1-\epsilon _{t}^{2})%
+\frac{\partial ^{2}\log \sigma _{t}^{2}}{\partial \mathbf{\gamma }%
+_{i}\partial \mathbf{\gamma }_{j}}+\epsilon _{t}^{2}\frac{\partial \log
+\sigma _{t}^{2}}{\partial \mathbf{\gamma }_{i}}\frac{\partial \log \sigma
+_{t}^{2}}{\partial \mathbf{\gamma }_{j}}$ are all ergodic and stationary. Therefore,
+\begin{equation*}
+T^{-1}\sum_{t=1}^{T}\frac{\partial ^{2}l_{t}(\mathbf{\gamma }_{i,j}^{\ast })%
+}{\partial \mathbf{\gamma }_{i}\partial \mathbf{\gamma }_{j}}\overset{P}{%
+\rightarrow }E_{\mathbf{\gamma}_0}\left( \frac{\partial ^{2}l_{1}}{\partial \mathbf{\gamma }%
+\partial \mathbf{\gamma }^{T}}\right) (i,j)=\mathbf{J}(i,j)
+\end{equation*}%
+\end{proof}
+
+
+Now we consider the likelihood function with $\eta $ approximated by $\tilde{%
+\eta}$ in (\ref{Eq:sigmabreve}). Define $\tilde{l}_{t}=\log \tilde{\sigma}%
+_{t}^{2}+\frac{y_{t}^{2}}{\tilde{\sigma}_{t}^{2}}$, where
+\begin{equation*}
+\log \tilde{\sigma}_{t}^{2}=\frac{1-a^{t}}{1-a}c+\sum_{j=1}^{t}a^{j-1}\left(
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\tilde{\eta}\left(
+\mathbf{Z}_{t-j+1}^{2}\right) \right) \log y_{t-j}^{2}.
+\end{equation*}
+
+\begin{lemma}
+\label{lem6}Under Assumptions (A1)-(A6),
+\begin{equation*}
+\left\Vert T^{-1/2}\sum_{t=1}^{T}\left\{ \frac{\partial \breve{l_{t}}}{%
+\partial \mathbf{\gamma }}-\frac{\partial \tilde{l}_{t}}{\partial \mathbf{%
+\gamma }}\right\} \right\Vert =o_{p}(1)
+\end{equation*}%
+\begin{equation*}
+\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma })}\left\Vert
+T^{-1}\sum_{t=1}^{n}\left\{ \frac{\partial ^{2}\breve{l}_{t}}{\partial
+\mathbf{\gamma }\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\tilde{l}%
+_{t}}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right\}
+\right\Vert =o_{p}(1)
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+
+According to de Boor (2001), we have $\left\Vert \tilde{\eta}-\eta
+\right\Vert _{\infty }=O(h^{p})$, then we conclude that
+
+\begin{equation}
+\left\Vert \frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial \mathbf{%
+\gamma }}-\frac{\partial \log \hat{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }%
+}\right\Vert =\left\Vert
+\begin{array}{c}
+\mathbf{0} \\
+\sum_{j=1}^{t}(j-1)a^{j-2}\left( \eta \left( \mathbf{Z}_{t-j+1}^{2}\right) -%
+\tilde{\eta}\left( \mathbf{Z}_{t-j+1}^{2}\right) \right) \log y_{t-j}^{2} \\
+\mathbf{0}%
+\end{array}%
+\right\Vert =O(h^{p}).  \label{Eq:trunc-oracle}
+\end{equation}
+
+Following (\ref{Eq:trunc-oracle}), simple computations give%
+\begin{eqnarray*}
+\left\Vert \frac{\partial \breve{l}_{t}}{\partial \mathbf{\gamma }}-\frac{%
+\partial \tilde{l}_{t}}{\partial \mathbf{\gamma }}\right\Vert &=&\left\Vert
+\frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}-\frac{%
+\partial \log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}-\frac{%
+y_{t}^{2}}{\breve{\sigma}^{2}}\frac{\partial \log \breve{\sigma}}{\partial
+\mathbf{\gamma }}+\frac{y_{t}^{2}}{\tilde{\sigma}_{t}^{2}}\frac{\partial
+\log \tilde{\sigma}^{2}}{\partial \mathbf{\gamma }}\right\Vert \\
+&\leq &\left\Vert \frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial
+\mathbf{\gamma }}-\frac{\partial \log \tilde{\sigma}_{t}^{2}}{\partial
+\mathbf{\gamma }}\right\Vert +\left\Vert \frac{y_{t}^{2}}{\breve{\sigma}^{2}}%
+\frac{\log \breve{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}-\frac{y_{t}^{2}%
+}{\tilde{\sigma}_{t}^{2}}\frac{\partial \log \tilde{\sigma}^{2}}{\partial
+\mathbf{\gamma }}\right\Vert \\
+&\leq &O(h^{p})+\left\Vert \frac{y_{t}^{2}}{\breve{\sigma}_{t}^{2}}\left(
+\frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}-\frac{%
+\partial \log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}\right)
+\right\Vert +\left\Vert y_{t}^{2}\frac{\partial \log \tilde{\sigma}_{t}^{2}}{%
+\partial \mathbf{\gamma }}\left( \frac{1}{\breve{\sigma}_{t}^{2}}-\frac{1}{%
+\tilde{\sigma}_{t}^{2}}\right) \right\Vert \\
+&=&O\left( h^{p}\right) .
+\end{eqnarray*}
+
+Therefore,
+
+\begin{equation*}
+\left\Vert T^{-1/2}\sum_{t=1}^{T}\left\{ \frac{\partial \breve{l_{t}}}{%
+\partial \mathbf{\gamma }}-\frac{\partial \tilde{l}_{t}}{\partial \mathbf{%
+\gamma }}\right\} \right\Vert \leq T^{-1/2}\sum_{t=1}^{T}\left\Vert \frac{%
+\partial \breve{l_{t}}}{\partial \mathbf{\gamma }}-\frac{\partial \tilde{l}%
+_{t}}{\partial \mathbf{\gamma }}\right\Vert \leq O\left(
+T^{-1/2}Th^{p}\right),
+\end{equation*}
+which goes to $0$ as $T$ goes to infinity under Assumption (A5).
+
+For the second derivative,
+\begin{equation}
+\left\Vert \frac{\partial ^{2}\log \breve{\sigma}_{t}^{2}}{\partial \mathbf{%
+\gamma }\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\log \tilde{\sigma}%
+_{t}^{2}}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right\Vert
+=\left\Vert \sum_{t=1}^{t}(j-1)(j-2)a^{j-3}\left( \eta \left( \mathbf{Z}%
+_{t-j+1}^{2}\right) -\tilde{\eta}\left( \mathbf{Z}_{t-j+1}^{2}\right)
+\right) \log y_{t-j}^{2}\right\Vert =O(h^{p}).  \label{Eq:secderiva}
+\end{equation}
+
+Thus
+
+\begin{eqnarray*}
+&&\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma })}\left\Vert
+T^{-1}\sum_{t=1}^{T}\left\{ \frac{\partial ^{2}\breve{l}_{t}}{\partial
+\mathbf{\gamma }\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\tilde{l}%
+_{t}}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right\}
+\right\Vert \\
+&\leq &\sup_{\mathbf{\gamma }\in V(\mathbf{\gamma })}T^{-1}\sum_{t=1}^{T}%
+\left\Vert \frac{\partial ^{2}\breve{l}_{t}}{\partial \mathbf{\gamma }%
+\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\tilde{l}_{t}}{\partial
+\mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right\Vert \\
+&\leq &\left\Vert \left( 1-\frac{y_{t}^{2}}{\breve{\sigma}_{t}^{2}}\right)
+\left( \frac{\partial ^{2}\log \breve{\sigma}_{t}^{2}}{\partial \mathbf{%
+\gamma }\partial \mathbf{\gamma }^{T}}-\frac{\partial ^{2}\log \tilde{\sigma}%
+_{t}^{2}}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\right)
+\right\Vert +\left\Vert y_{t}^{2}\frac{\partial ^{2}\log \tilde{\sigma}%
+_{t}^{2}}{\partial \mathbf{\gamma }\partial \mathbf{\gamma }^{T}}\left(
+\frac{1}{\breve{\sigma}_{t}^{2}}-\frac{1}{\tilde{\sigma}_{t}^{2}}\right)
+\right\Vert \\
+&&+\left\Vert \frac{y_{t}^{2}}{\tilde{\sigma}_{t}^{2}}\left( \frac{\partial
+\log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}\frac{\partial \log
+\tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }^{T}}-\frac{\partial \log
+\breve{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}\frac{\partial \log \breve{%
+\sigma}_{t}^{2}}{\partial \mathbf{\gamma }^{T}}\right) \right\Vert
++\left\Vert y_{t}^{2}\frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial
+\mathbf{\gamma }}\frac{\partial \log \breve{\sigma}_{t}^{2}}{\partial
+\mathbf{\gamma }^{T}}\left( \frac{1}{\breve{\sigma}_{t}^{2}}-\frac{1}{\tilde{%
+\sigma}_{t}^{2}}\right) \right\Vert
+\end{eqnarray*}
+All the preceding terms are of $O(h^{p})=o_{p}(1)$ according to (\ref%
+{Eq:trunc-oracle}) and (\ref{Eq:secderiva}).
+
+\end{proof}
+
+Combining the results from Lemmas \ref{Lem:gammanormal}, \ref{Lem:like-appr}, \ref{lem6}%
+with Slutkey's Lemma, we immediately have the following main lemma,
+
+\begin{lemma}
+\label{lem7} Under Assumptions (A1)-(A6), define,
+\begin{equation*}
+\mathbf{\tilde{\gamma}}=\underset{\mathbf{\gamma }\in \Theta_1 }{\text{argmin}}%
+\ \frac{1}{T}\sum_{t=1}^{T}\tilde{l}_{t},
+\end{equation*}%
+then
+\begin{equation*}
+\sqrt{T}\left( \mathbf{\tilde{\gamma}}-\mathbf{\gamma }_{0}\right)
+\rightarrow N\left( 0,c\mathbf{J}^{-1}\right)
+\end{equation*}
+\end{lemma}
+
+Next, define %\begin{equation*}
+$\hat{l}_{t}=\log \hat{\sigma}_{t}^{2}+\frac{y^{2}}{\hat{\sigma}_{t}^{2}}$ with
+%\end{equation*}%
+\begin{equation*}
+\log \hat{\sigma}_{t}^{2}=\frac{1-a^{t}}{1-a}+\sum_{j=1}^{t}a^{j-1}\left(
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\mathbf{B}(Z)%
+\mathbf{\lambda }\right) \log y_{t-j}^{2}.
+\end{equation*}%
+
+%\begin{equation*}
+%\mathbf{\theta }=\left(
+%\begin{array}{c}
+%c \\
+%a \\
+%\mathbf{\beta } \\
+%\mathbf{\lambda }%
+%\end{array}%
+%\right) =\left(
+%\begin{array}{c}
+%\mathbf{\gamma } \\
+%\mathbf{\lambda }%
+%\end{array}%
+%\right)
+%\end{equation*}%
+Recall that $\mathbf{\theta }=\left(c,a,\mathbf{\beta }^\T,\mathbf{\lambda }^\T\right)^\T
+=\left(\mathbf{\gamma }^\T,\mathbf{\lambda }^\T\right)^\T$
+\begin{equation*}
+\hat{\mathbf{\theta }}=\left(
+\begin{array}{c}
+\mathbf{\hat{\gamma}} \\
+\hat{\mathbf{\lambda }}%
+\end{array}%
+\right) =\underset{\mathbf\theta \in \Theta }{\text{argmin}}\frac{1}{T}%
+\sum_{t=1}^{T}\hat{l}_{t}
+\end{equation*}
+with $\Theta=\Theta_1\times\Theta_2$.
+
+Let $\tilde{\eta}(\cdot )=\mathbf{B}\tilde{\mathbf{\lambda }},\tilde{\mathbf{%
+\theta }}=\left(
+\begin{array}{c}
+\mathbf{\tilde{\gamma}} \\
+\tilde{\mathbf{\lambda }}%
+\end{array}%
+\right) $
+% \begin{lemma}
+%   \label{invertable}
+%   For  $\forall \mathbf{\gamma}\in \Theta, \frac{\partial^{2}l_{t}(\mathbf{\gamma})}{\partial \mathbf{\gamma}\partial \mathbf{\gamma}^{\T}}$ is invertable. 
+% \end{lemma}
+% \begin{proof}
+% \end{proof}                     
+
+
+\begin{lemma}
+  \label{invertable}
+  $$\sup_{\theta\in \Theta}\left( \frac{\partial^{2}\hat{\mathcal{L}}(\mathbf{\theta})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}\right)^{-1}=O(1)$$
+\end{lemma}
+\begin{proof}
+  Define $\log \breve{\hat{\sigma}}^{2}_{t}(\mathbf{\gamma},\mathbf{\lambda})= \frac{c}{1-a}+\sum_{j=1}^{\infty}a^{j-1}\left(\mathbf{Z}_{t-j+1}^{1}\mathbf{\beta}+\mathbf{B}(\mathbf{Z}_{t-j+1}^{2})\mathbf\lambda\right)\log y_{t-j}^{2}$.
+  And $\breve{\hat{l}}_{t}= \log \breve{\hat{\sigma}}^{2}_{t} + y^{2}_{t}e^{-\log \breve{\hat{\sigma}}^{2}_{t}}$
+  
+ $ \frac{\partial^{2}\breve{\hat{l}}_{t}(\mathbf{\theta})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}  = (1-y_{t}^{2}e^{-\log \breve{\hat{\sigma}}^{2}_{t}}) \frac{\partial^{2}\log \breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}+y_{t}^{2}e^{-\log \breve{\hat{\sigma}}_{t}^{2}}\frac{\partial \log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}}\frac{\partial \log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}^{\T}}$. Consider a $\mathbf{w}\neq \mathbf{0}$
+ \begin{equation}
+   \label{sigu}
+ \mathbf{w}^{\T}\frac{\partial^{2}\breve{\hat{l}}_{t}(\mathbf{\theta})}{\partial \mathbf\theta\partial \mathbf\theta^{\T}}\mathbf{w} = \mathbf{w}^{\T}\frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf\theta\partial \mathbf\theta^{\T}}\mathbf{w}+y_{t}^{2}e^{-\log\breve{\hat{\sigma}}^{2}_{t}}\mathbf{w}^{\T}\left(\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}}\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}^{\T}}-\frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf\theta\partial \mathbf\theta^{\T}}\right)\mathbf{w}
+ \end{equation}
+ If $\frac{\partial^{2}\breve{\hat{l}}_{t}(\mathbf{\theta})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}$ is singular, which means formula \ref{sigu} equals $0$.
+ Therefore,
+ $$\mathbf{w}^{\T} \frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}\partial\mathbf{\theta}^{\T}}\mathbf{w}=\epsilon_{t}^{2}\breve{\hat{\sigma}}_{0t}^{2}e^{-\log\breve{\hat{\sigma}}^{2}_{t}}\mathbf{w}^{\T}\left(-\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}}\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}^{\T}}+\frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf\theta\partial \mathbf\theta^{\T}}\right)\mathbf{w}$$
+ Because of independence of $\epsilon_{t}$ and $\mathcal{F}_{t-1}$, it can conclude that
+ $$\mathbf{w}^{\T}\frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}\partial\mathbf{\theta}^{\T}}\mathbf{w}=0$$ $$
+ \breve{\hat{\sigma}}_{0t}^{2}e^{-\log\breve{\hat{\sigma}}^{2}_{t}}\mathbf{w}^{\T}\left(\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}}\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}^{\T}}+\frac{\partial^{2}\log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}\partial \mathbf{\theta^{\T}}}\right)\mathbf{w}=0$$
+ $$\rightarrow \mathbf{w}^{\T} \frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}}\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}^{\T}}\mathbf{w} = 0\rightarrow  \mathbf{w}^{\T}\frac{\partial \log\breve{\hat{\sigma}}_{t}^{2}}{\partial\mathbf{\theta}} = 0$$
+ Because of ergodicity and stationality of $\frac{\partial \log\breve{\hat{\sigma}}^{2}_{t}}{\partial \mathbf{\theta}}$, $\mathbf{w}$ does not exist, which indicates  $\frac{\partial^{2}\breve{\hat{l}}_{t}(\mathbf{\theta})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}$ is invertable.   
+  $$ \sup_{\left(\mathbf{\gamma},\mathbf{\lambda}\right)\in \Theta_{1}\times\Theta_{2}}\left|\breve{\hat{l}}_t(\mathbf{\gamma},\mathbf{\lambda})-\hat{l}_t\left(\mathbf{\gamma},\mathbf{\lambda}\right)\right|= \sum_{j=t+1}^{\infty}a^{j-1}\left(\mathbf{Z}_{t-j+1}^{1}\mathbf{\beta}+\mathbf{B}(\mathbf{Z}_{t-j+1}^{2})\mathbf{\lambda}\right)\log y_{t-j}^{2} = O(\delta^{t})=o_{a.s}(1)$$
+  
+  Hence, $$\sup_{\left(\mathbf{\gamma},\mathbf{\lambda}\right)\in \Theta_{1}\times\Theta_{2}}\mathbf{w}^{\T}\frac{\partial^{2} \hat{l}_{t}(\mathbf{\gamma},\mathbf{\lambda})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}\mathbf{w}\overset{a.s}{\rightarrow}\mathbf{w}^{\T}\frac{\partial^{2}\breve{\hat{l}}_{t}(\mathbf{\gamma},\mathbf{\lambda})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}\mathbf{w},$$
+
+  Thus, $\forall \mathbf{\theta}\in \Theta,\frac{\partial^{2} \hat{l}_{t}(\mathbf{\gamma},\mathbf{\lambda})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}$ is invertable. And so does $ \frac{\partial^{2}\hat{\mathcal{L}}(\mathbf{\theta})}{\partial \mathbf{\theta}\partial \mathbf{\theta}^{\T}}$ is invertable. 
+  
+\end{proof}
+\begin{lemma}
+\label{lem8} Under Assumptions (A1)-(A2) and (A7),
+\begin{equation*}
+\left\Vert \hat{\mathbf{\theta }}-\tilde{\mathbf{\theta }}\right\Vert
+=O\left\{ N^{1/2}\left( h^{p}+T^{-1}\right) \right\} ,a.s.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+
+Let $\hat{\mathcal{L}}_T = T^{-1}\sum_{t=1}^T \hat{l}_t$. By Taylor
+expansion,
+\begin{equation*}
+\left.\frac{\partial \hat{\mathcal{L}}_T}{\partial \mathbf{\theta}}\right|_{%
+\mathbf{\theta}=\hat{\mathbf{\theta}}}-\left.\frac{\partial \hat{\mathcal{L}}%
+_T}{\partial\mathbf{\theta}}\right|_{\mathbf{\theta}=\tilde{\mathbf{\theta}}%
+} = \left.\frac{\partial^2 \hat{\mathcal{L}}_T}{\partial \mathbf{\theta}%
+\partial \mathbf{\theta}^T}\right|_{\theta=\mathbf{\zeta}}\left(\hat{\mathbf{%
+\theta}}-\tilde{\mathbf{\theta}}\right)
+\end{equation*}
+
+where $\mathbf{\zeta }=\mathbf{t\hat{\theta}}+\left( \mathbf{I}-\mathbf{t}%
+\right) \tilde{\mathbf{\theta }}$. Therefore,
+\begin{equation*}
+\hat{\mathbf{\theta }}-\tilde{\mathbf{\theta }}=-\left( \left. \frac{%
+\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial \mathbf{\theta }\partial
+\mathbf{\theta }^{T}}\right\vert _{\mathbf{\theta }=\mathbf{\zeta }}\right)
+^{-1}\left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{\theta }}%
+\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}}
+\end{equation*}%
+First,
+\begin{equation*}
+\left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{\theta }}%
+\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}}=\left. \left\{
+\left( \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{\gamma }}%
+\right) ^{^{{\mbox{\rm\tiny T}}}},\left( \frac{\partial \hat{\mathcal{L}}_{T}%
+}{\partial \mathbf{\lambda }}\right) ^{^{{\mbox{\rm\tiny T}}}}\right\} ^{^{{%
+\mbox{\rm\tiny T}}}}\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}}
+\end{equation*}%
+where
+\begin{equation*}
+\left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{\gamma }}%
+\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}}=\frac{1}{T}%
+\sum_{t=1}^{T}\left\{ \left( 1-\frac{y_{t}^{2}}{\tilde{\sigma}_{t}^{2}}%
+\right) \frac{\log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }}\right\}
+\end{equation*}
+
+Simple computations give,
+\begin{eqnarray*}
+\frac{\log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{\gamma }} &=&\left(
+\begin{array}{c}
+\frac{1-a^{t}}{1-a} \\
+\frac{1-ta^{t-1}+(t-1)a^{t}}{(1-a^{2})}c+\sum_{j=1}^{t}(j-1)a^{j-2}\left(
+\mathbf{Z}_{t-j+1}^{1{\mbox{\rm\tiny T}}}\mathbf{\beta }+\tilde{\eta}\left(
+\mathbf{Z}_{t-j+1}^{2}\right) \right) \log y_{t-j}^{2} \\
+\sum_{j=1}^{t}a^{j-1}\log y_{t-j}^{2}\mathbf{Z}_{t-j+1}^{1}%
+\end{array}%
+\right) \\
+&=&\left(
+\begin{array}{c}
+H_{1,t} \\
+H_{2,t} \\
+H_{3,t}%
+\end{array}%
+\right) .
+\end{eqnarray*}
+
+Under Assumption (A1), the preceding terms are all bounded. To be specific,
+\begin{equation*}
+|H_{1,t}|_{\infty }=|H_{3,t}|_{\infty }=O_{a.s}\left( \frac{1}{1-\delta }\right), \quad {\text{and}} \quad
+|H_{2,t}|_{\infty }=O_{a.s}\left( \frac{1}{\left( 1-\delta \right) ^{2}}%
+\right)
+\end{equation*}%
+We also have
+\begin{equation*}
+|1-y_{t}^{2}e^{-\tilde{h}_{t,t}}|=O\left( \delta ^{t}+h^{p}\right)
+\end{equation*}%
+due to  the fact that $\left\vert 1-\frac{y_{t}^{2}}{\tilde{\sigma}_{t}^{2}}%
+\right\vert \leq \left\vert 1-\frac{y_{t}^{2}}{{\sigma }_{t}^{2}}\right\vert
++{y_{t}^{2}}O(h^{p})$ and the boundness of $y_{t}^{2},e^{-h_{t,t}}$.
+
+These yield
+\begin{eqnarray*}
+&&\left\Vert \left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{%
+\gamma }}\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}}\right\Vert
+_{\infty }=\frac{1}{T}\sum_{t=1}^{T}\left\{ \left( 1-\frac{y_{t}^{2}}{\tilde{%
+\sigma}_{t}^{2}}\right) \frac{\log \tilde{\sigma}_{t}^{2}}{\partial \mathbf{%
+\gamma }}\right\} \\&=&O\left\{ T^{-1}(1-\delta )^{-3}+h^{p}(1-\delta
+)^{-2}\right\} =O(T^{-1}+h^{p})
+\end{eqnarray*}%
+\begin{equation*}
+\left\Vert \left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{%
+\lambda }}\right\vert _{\mathbf{\theta }=\tilde{\mathbf{\theta }}%
+}\right\Vert _{\infty }=\left( T^{-1}\sum_{t=1}^{T}\sum_{j=1}^{t}a^{j-1}\log
+y_{t-j}^{2}\mathbf{B}^{^{{\mbox{\rm\tiny T}}}}\right) =O(T^{-1})
+\end{equation*}%
+Thus,
+\begin{equation*}
+\left. \frac{\partial \hat{\mathcal{L}}_{T}}{\partial \mathbf{\theta }}%
+\right\vert =O(T^{-1}+h^{p}).
+\end{equation*}%
+Let
+
+\begin{equation*}
+V_{T}=\left. \frac{\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial \mathbf{%
+\theta }\partial \mathbf{\theta }^{T}}\right\vert _{\mathbf{\theta }=\mathbf{%
+\zeta }}=\left. \left(
+\begin{array}{cc}
+\frac{\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial \mathbf{\gamma }\partial
+\mathbf{\gamma }^{T}} & \frac{\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial
+\mathbf{\gamma }\partial \mathbf{\lambda }^{T}} \\
+\frac{\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial \mathbf{\lambda }\partial
+\mathbf{\gamma }^{T}} & \frac{\partial ^{2}\hat{\mathcal{L}}_{T}}{\partial
+\mathbf{\lambda }\partial \mathbf{\lambda }^{T}}%
+\end{array}%
+\right) \right\vert _{\mathbf{\theta }=\mathbf{\zeta }}.
+\end{equation*}
+
+% Similarly as in Wang et al. (2011), we conclude $V_{T}^{-1}=O(1)$, $a.s.$
+% under Assumption (A7). Thus,
+Following the Lemma \ref{invertable}, we conclude $V_{T}^{-1}=O(1)$, $a.s.$ 
+\begin{equation*}
+\left\Vert \hat{\mathbf{\theta }}-\tilde{\mathbf{\theta }}\right\Vert \leq
+\left\Vert V_{T}^{-1}\right\Vert \left\Vert \left. \frac{\partial \hat{%
+\mathcal{L}}_{T}}{\partial \mathbf{\theta }}\right\vert _{\mathbf{\theta }=%
+\tilde{\mathbf{\theta }}}\right\Vert =O\left\{ N^{1/2}\left(
+h^{p}+T^{-1}\right) \right\} ,a.s.
+\end{equation*}
+\end{proof}
+
+proof of Theorem \ref{Thm:nonpara}.
+
+According to Lemma \ref{lem8},
+\begin{eqnarray*}
+\left\Vert \hat{\eta}-\tilde{\eta}\right\Vert _{2}^{2} &=&\left\Vert \left(
+\hat{\mathbf{\lambda }}-\tilde{\mathbf{\lambda }}\right) ^{^{{%
+\mbox{\rm\tiny
+T}}}}\mathbf{B})\right\Vert _{2}^{2}=\left( \hat{\mathbf{\lambda }}-\tilde{%
+\mathbf{\lambda }}\right) ^{{\mbox{\rm\tiny T}}}E\left\{ T^{-1}\sum_{j=1}^{T}%
+\mathbf{B}(\mathbf{Z}_{j}^{1})\mathbf{B}(\mathbf{Z}_{j}^{1})\right\} \left(
+\hat{\mathbf{\lambda }}-\tilde{\mathbf{\lambda }}\right)  \\
+&\leq &C\left\Vert \hat{\mathbf{\lambda }}-\tilde{\mathbf{\lambda }}%
+\right\Vert _{2}^{2}
+\end{eqnarray*}%
+Therefore, $\left\Vert \hat{\eta}-\tilde{\eta}\right\Vert _{2}=O_{p}\left\{
+N^{1/2}\left( h^{p}+T^{-1}\right) \right\} $ and
+\begin{eqnarray*}
+\left\Vert \hat{\eta}-{\eta }\right\Vert _{2} &\leq &\left\Vert \hat{\eta}-%
+\tilde{\eta}\right\Vert _{2}+\left\Vert \tilde{\eta}-\eta \right\Vert _{2} \\
+&=&O_{p}\left\{ N^{1/2}\left( h^{p}+T^{-1}\right) \right\} +O_{p}\left(
+h^{p}\right)  \\
+&=&O_{p}\left\{ N^{1/2}\left( h^{p}+T^{-1}\right) \right\}.
+\end{eqnarray*}%
+By Lemma 1 of Stone (1985), $\left\Vert \hat{\eta}_{s_{2}}-\eta
+_{s_{2}}\right\Vert _{2s_2}=O_{p}\left\{ N^{1/2}\left( h^{p}+T^{-1}\right)
+\right\} $, for $1\leq s_{2}\leq d_{2}$. And, similar to Lemma A.8 in Wang
+and Yang(2007), we conclude the same rate for empirical norms, i.e. $\left\Vert \hat{\eta}-\eta \right\Vert
+_{n}=\left\Vert \hat{\eta}_{s_{2}}-\eta _{s_{2}}\right\Vert
+_{ns_2}=O_{p}\left\{ N^{1/2}\left( h^{p}+T^{-1}\right) \right\} $, for $%
+1\leq s_{2}\leq d_{2}$.
+
+Proof of Theorem \ref{Thm:para}. Based on Lemma \ref{lem8}, and Lemma \ref%
+{lem7}, we immediately conclude that
+
+\begin{equation*}
+\sqrt{T}(\mathbf{\hat{\gamma}}-\mathbf{\gamma })\overset{D}{\rightarrow }%
+N(0,c\mathbf{J}^{-1})
+\end{equation*}
+
+
+
+\nocite{*}
+
+\bibliographystyle{apalike}
+\bibliography{reference}
+
+
+
+
+
+
+
+\end{document}

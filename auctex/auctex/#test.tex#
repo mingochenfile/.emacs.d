@@ -1,0 +1,9 @@
+\documentclass[]{article}
+
+\begin{document}
+\begin{equation}
+  \label{[df] elisp error! Symbol's function definition is void: reftex-label}
+  \phi = \sigma
+\end{equation}
+
+\end{document}

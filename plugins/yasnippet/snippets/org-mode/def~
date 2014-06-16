@@ -1,0 +1,8 @@
+# contributor: commanders
+# name: definition
+# key: def
+# --
+
+#+begin_def
+$0
+#+end_def

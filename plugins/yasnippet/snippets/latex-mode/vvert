@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# contributor: Ming Chen(mxc104720@utdallas.edu)
+# key: vvert
+# group: math
+# name: \frac{numerator}{denominator}
+# --
+\left\Vert ${1} \right\Vert $0

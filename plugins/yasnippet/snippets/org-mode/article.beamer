@@ -1,0 +1,57 @@
+# -*- mode: snippet -*-
+# name: #+LaTeX_CLASS: beamer ...
+# key: beamer
+# key: hbeamer
+# --
+#+TITLE: ${1:My Presentation}
+#+AUTHOR: ${2:`user-full-name`}
+#+EMAIL: `user-mail-address`
+#+DATE: \today
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+STARTUP: beamer
+#+BEAMER_FRAME_LEVEL: ${3:2$$(yas/choose-value '("4" "3" "2"))}
+#+BEAMER_HEADER_EXTRA: \usetheme{${4:default$$(yas/choose-value '("Berkeley" "CambridgeUS" "Frankfurt" "PaloAlto" "Montpellier" "Pittsburgh" "Rochester" "boxes" "Goettingen" "default"))}}\usecolortheme{${5:default$$(yas/choose-value '("albatross" "beaver" "beetle" "crane" "dolphin" "dove" "fly" "lily" "orchid" "rose" "seagull" "seahorse" "sidebartab" "structure" "whale" "wolverine" "default"))}}
+#+COLUMNS: ${6:%35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)}
+#+OPTIONS: tags:${7:nil}
+
+$0
+
+# -*- mode: snippet -*-
+# name: #+LaTeX_CLASS: article ...
+# key: beamer
+# key: hbeamer
+# --
+
+#+OPTIONS:   H:3 num:nil toc:t \n:t @:t ::t |:t ^:nil -:t f:t *:t TeX:t 
+LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+BIND: org-export-latex-title-command ""
+#+LaTeX_CLASS: none
+#+LATEX_HEADER: \documentclass[10pt,letterpaper]{article}
+#+LATEX_HEADER: 
+\usepackage[letterpaper,includeheadfoot,top=0.5in,bottom=0.5in,left=0.75in,right=0.75in]{geometry}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage{lastpage}
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \hypersetup{colorlinks,linkcolor=blue}
+#+LATEX_HEADER: \renewcommand{\headrulewidth}{1pt}
+#+LATEX_HEADER: \renewcommand{\footrulewidth}{0.5pt}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{multicol}
+#+LATEX_HEADER: \geometry{headheight=47pt}
+#+LATEX_HEADER:
+#+LATEX_HEADER: \def\ORGTITLE      {Latex Example}
+#+LATEX_HEADER: \def\ORGAUTHOR     {Russell Adams}
+#+LATEX_HEADER:
+#+LATEX_HEADER: % Header
+#+LATEX_HEADER: \fancyhead[L]{\LARGE \ORGTITLE  }
+#+LATEX_HEADER: \fancyhead[R]{\bf    \ORGAUTHOR }
+#+LATEX_HEADER:
+#+LATEX_HEADER: % Footer
+#+LATEX_HEADER: \fancyfoot[L]{\small \ORGTITLE\\ \today}
+#+LATEX_HEADER: \fancyfoot[C]{\small Revision: \Revision \\ Page \thepage\ of 
+\pageref{LastPage}}
+#+LATEX_HEADER: \fancyfoot[R]{\small \ORGAUTHOR }
