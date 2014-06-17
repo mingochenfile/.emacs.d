@@ -112,7 +112,7 @@ LaTeX-section-label))
 (setq TeX-save-query nil)
 
 ;;insert master name directly
-;; (setq-default TeX-master-file "main")
+(setq-default TeX-master-file "main")
 
 ;;;outline
 (defun turn-on-outline-minor-mode ()
@@ -1087,3 +1087,7 @@ search-term
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 
+;; Tramp-derectories
+(defun tamazon ()
+		  (interactive)
+		  (find-file "/ssh:mingche@mingche.desktop.amazon.com:~/"))
