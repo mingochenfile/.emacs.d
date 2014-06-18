@@ -1088,3 +1088,26 @@ search-term
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 
+;; Set up amazon tramp
+(defun tamazonvm ()
+  (interactive)
+  (find-file "/ssh:mingche@mingche.desktop.amazon.com:~/"))
+
+(defun tamazonubuntu ()
+  (interactive)
+  (find-file "/ssh:mingche@mingche.aka.amazon.com:~/"))
+
+;; Return major-mode name of the buffer
+(defun buffer-mode (buffer-or-string)
+  "Returns the major mode associated with a buffer."
+  (with-current-buffer buffer-or-string
+    major-mode))
+
+;; Evil disables some major modes
+(add-to-list 'evil-emacs-state-modes 'nav-mode)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer-mode)
+(add-to-list 'evil-emacs-state-modes 'doc-view-mode)
+
+
+;; Auto refresh docview
+(add-hook 'doc-view-mode-hook 'auto-revert-mode)
