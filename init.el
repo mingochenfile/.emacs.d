@@ -814,6 +814,10 @@ If there is still something left do do start the next latex-command."
 (add-to-list 'load-path "~/.emacs.d/evil")
 (setq evil-toggle-key "C-`")
 (require 'evil)
+(add-to-list 'evil-emacs-state-modes 'nav-mode)
+(add-to-list 'evil-emacs-state-modes 'DocView)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer)
+
 ;(evil-mode 1)
 
 (setq desktop-load-locked-desktop t)
