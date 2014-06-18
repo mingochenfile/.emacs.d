@@ -1091,16 +1091,15 @@ search-term
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 
-<<<<<<< HEAD
 
 ;; Set up amazon tramp
 (defun tamazonvm ()
   (interactive)
-  (find-file "/ssh:mingche@mingche.desktop.amazon.com:~/"))
+  (find-file "/mingche@mingche.desktop.amazon.com:~/"))
 
 (defun tamazonubuntu ()
   (interactive)
-  (find-file "/ssh:mingche@mingche.aka.amazon.com:~/"))
+  (find-file "/mingche@mingche.aka.amazon.com:~/"))
 
 ;; Return major-mode name of the buffer
 (defun buffer-mode (buffer-or-string)
