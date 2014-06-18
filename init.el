@@ -1115,3 +1115,13 @@ search-term
 
 ;; Auto refresh docview
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+;; Set up docview continuous 
+(setq doc-view-continuous t)
+;; Change key-binding of docview
+
+;; To install magit
+(add-to-list 'load-path "~/.emacs.d/magit/")
+(eval-after-load 'info
+  '(progn (info-initialize)
+	  (add-to-list 'Info-directory-list "~/.emacs.d/magit/")))
+(require 'magit)

@@ -2,7 +2,7 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Tue Jun 17 11:12:55 2014
+;; Created Tue Jun 17 23:26:21 2014
 ;; Desktop file format version 206
 ;; Emacs version 24.3.1
 
@@ -13,105 +13,50 @@
 (setq search-ring '("parenthes" "parent" "parenth" "for" "5.9" "boxdaa" "result" "boxnum"))
 (setq regexp-search-ring nil)
 (setq register-alist nil)
-(setq file-name-history '("~/boxsuite/src/WhichSuitePrototype/acwpack.r" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/acwboots" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/acwbootsize.r" "~/boxsuite/src/WhichSuitePrototype/bootsize.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acwupdate.r" "~/boxsuite/src/WhichSuitePrototype/bootsize.r" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py" "~/boxsuite/src/WhichSuitePrototype/acwupdate.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/manybox.r" "~/boxsuite/src/WhichSuitePrototype/canpool.r" "~/boxsuite/src/WhichSuitePrototype/bin/testboxreq.py" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/.emacs.d/init.el" "~/polluted_data.org" "~/polluted_data.tex" "~/Dropbox/Func_TS/manu/ftsband051214.tex" "~/Dropbox/Func_TS/manu/ftsband050914.tex" "~/Dropbox/Func_TS/manu/ftsband050914_ming.tex" "~/Dropbox/Func_TS/manu/ftsband051214.bbl" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.sty" "~/Downloads/10.1007%2Fs11459-009-0019-y.bib" "~/Dropbox/Research/Finance/economtex_2009-11-18/test.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/intr.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/fea.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/data.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/result.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/con.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/pae.tex" "~/Dropbox/Research/Finance/StruturalVARTan/RATS/pic.r" "~/Dropbox/thesis/thesis.tex" "~/Dropbox/thesis/mythesis.sty"))
+(setq file-name-history '("~/test.pdf" "~/test.org" "~/boxsuite/src/WhichSuitePrototype/acwpack.r" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/acwboots" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/acwbootsize.r" "~/boxsuite/src/WhichSuitePrototype/bootsize.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acwupdate.r" "~/boxsuite/src/WhichSuitePrototype/bootsize.r" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py" "~/boxsuite/src/WhichSuitePrototype/acwupdate.r" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/acwbootstrap.r" "~/boxsuite/src/WhichSuitePrototype/acw.r" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/manybox.r" "~/boxsuite/src/WhichSuitePrototype/canpool.r" "~/boxsuite/src/WhichSuitePrototype/bin/testboxreq.py" "~/boxsuite/src/WhichSuitePrototype/evaluation.r" "~/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py" "~/boxsuite/src/WhichSuitePrototype/" "~/boxsuite/src/WhichSuitePrototype/bsis.r" "~/.emacs.d/init.el" "~/polluted_data.org" "~/polluted_data.tex" "~/Dropbox/Func_TS/manu/ftsband051214.tex" "~/Dropbox/Func_TS/manu/ftsband050914.tex" "~/Dropbox/Func_TS/manu/ftsband050914_ming.tex" "~/Dropbox/Func_TS/manu/ftsband051214.bbl" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.sty" "~/Downloads/10.1007%2Fs11459-009-0019-y.bib" "~/Dropbox/Research/Finance/economtex_2009-11-18/test.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/paper.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/intr.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/fea.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/data.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/result.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/con.tex" "~/Dropbox/Research/Finance/economtex_2009-11-18/pae.tex" "~/Dropbox/Research/Finance/StruturalVARTan/RATS/pic.r" "~/Dropbox/thesis/thesis.tex" "~/Dropbox/thesis/mythesis.sty"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 206
-  "/home/mingche/.emacs.d/init.el"
+  "/home/local/ANT/mingche/test.org"
+  "test.org"
+  'org-mode
+  '(global-visual-line-mode folding-mode autopair-mode org-cdlatex-mode linum-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode org2blog/wp-mode flyspell-mode TeX-PDF-mode text-scale-mode)
+  2673
+  '(2677 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/local/ANT/mingche/.emacs.d/init.el"
   "init.el"
   'emacs-lisp-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode auto-complete-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode)
-  36341
-  '(1 nil)
+  '(global-visual-line-mode autopair-mode linum-mode auto-complete-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode TeX-PDF-mode)
+  37093
+  '(37119 nil)
   nil
   nil
-  '((buffer-file-coding-system . utf-8-unix) (truncate-lines)))
+  '((buffer-file-coding-system . utf-8-unix)))
 
 (desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/acw.r"
-  "acw.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  495
-  '(495 nil)
-  nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/acwpack.r"
-  "acwpack.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  160
+  "/home/local/ANT/mingche/test.pdf"
+  "test.pdf"
+  'doc-view-mode
+  '(global-visual-line-mode linum-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode TeX-PDF-mode)
+  1
   '(nil nil)
+  t
   nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . utf-8-unix) (truncate-lines)))
+  '((buffer-file-coding-system . no-conversion)))
 
 (desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/acwboots"
-  "acwboots"
-  'shell-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode)
-  21685
-  '(5014 nil)
-  nil
-  nil
-  '((buffer-file-coding-system . utf-8-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/acwbootsize.r"
-  "acwbootsize.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  10
-  '(634 nil)
-  nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/acwupdate.r"
-  "acwupdate.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  19
-  '(879 nil)
-  nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . utf-8-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/bsis.r"
-  "bsis.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  2213
-  '(1763 nil)
-  nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/bin/compute_air_shipped.py"
-  "compute_air_shipped.py"
-  'python-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode outline-minor-mode linum-mode auto-complete-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode)
+  "/home/local/ANT/mingche/test.tex"
+  "test.tex"
+  'latex-mode
+  '(global-visual-line-mode autopair-mode outline-minor-mode linum-mode auto-complete-mode yas-minor-mode undo-tree-mode rainbow-delimiters-mode reftex-mode flyspell-mode TeX-PDF-mode)
   1
   '(nil nil)
   nil
   nil
-  '((tab-width . 8) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
-
-(desktop-create-buffer 206
-  "/home/mingche/boxsuite/src/WhichSuitePrototype/evaluation.r"
-  "evaluation.r"
-  'ess-mode
-  '(visual-line-mode global-visual-line-mode autopair-mode linum-mode yas-minor-mode eldoc-mode undo-tree-mode rainbow-delimiters-mode ess-roxy-mode)
-  724
-  '(764 nil)
-  nil
-  nil
-  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
+  '((indent-tabs-mode) (buffer-file-coding-system . utf-8-unix) (case-fold-search . t)))
 
