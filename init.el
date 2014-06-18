@@ -1116,9 +1116,3 @@ search-term
 
 ;; Auto refresh docview
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-=======
-;; Tramp-derectories
-(defun tamazon ()
-		  (interactive)
-		  (find-file "/ssh:mingche@mingche.desktop.amazon.com:~/"))
->>>>>>> 6783a5bacddd55754feda1f3caea67585ab93b7a
