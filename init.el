@@ -1114,4 +1114,4 @@ search-term
 
 
 ;; Auto refresh docview
-;; (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+(add-hook 'doc-view-mode-hook 'auto-revert-mode)
