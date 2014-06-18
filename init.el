@@ -112,7 +112,7 @@ LaTeX-section-label))
 (setq TeX-save-query nil)
 
 ;;insert master name directly
-;; (setq-default TeX-master-file "main")
+(setq-default TeX-master-file "main")
 
 ;;;outline
 (defun turn-on-outline-minor-mode ()
@@ -814,6 +814,10 @@ If there is still something left do do start the next latex-command."
 (add-to-list 'load-path "~/.emacs.d/evil")
 (setq evil-toggle-key "C-`")
 (require 'evil)
+(add-to-list 'evil-emacs-state-modes 'nav-mode)
+(add-to-list 'evil-emacs-state-modes 'DocView)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer)
+
 ;(evil-mode 1)
 
 (setq desktop-load-locked-desktop t)
@@ -1087,6 +1091,7 @@ search-term
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 
+<<<<<<< HEAD
 
 ;; Set up amazon tramp
 (defun tamazonvm ()
@@ -1111,3 +1116,9 @@ search-term
 
 ;; Auto refresh docview
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+=======
+;; Tramp-derectories
+(defun tamazon ()
+		  (interactive)
+		  (find-file "/ssh:mingche@mingche.desktop.amazon.com:~/"))
+>>>>>>> 6783a5bacddd55754feda1f3caea67585ab93b7a
