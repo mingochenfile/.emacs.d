@@ -815,8 +815,9 @@ If there is still something left do do start the next latex-command."
 (setq evil-toggle-key "C-`")
 (require 'evil)
 (add-to-list 'evil-emacs-state-modes 'nav-mode)
-(add-to-list 'evil-emacs-state-modes 'DocView)
-(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer)
+(add-to-list 'evil-emacs-state-modes 'doc-view-mode)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer-mode)
+(add-to-list 'evil-emacs-state-modes 'inferior-ess-mode)
 
 ;(evil-mode 1)
 
@@ -1143,3 +1144,4 @@ search-term
 
 ;; allow outside paste
 (setq x-select-enable-clipboard t)
+
