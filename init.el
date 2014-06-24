@@ -1127,3 +1127,4 @@ search-term
 	  (add-to-list 'Info-directory-list "~/.emacs.d/magit/")))
 (require 'magit)
 ;; (require 'git-commit-mode)
+
