@@ -812,12 +812,12 @@ If there is still something left do do start the next latex-command."
 ;; (global-set-key (kbd "<menu>") 'one-key-open-associated-menu-set)
 
 (add-to-list 'load-path "~/.emacs.d/evil")
-(setq evil-toggle-key "jj")
+
 (require 'evil)
 (add-to-list 'evil-emacs-state-modes 'nav-mode)
 (add-to-list 'evil-emacs-state-modes 'doc-view-mode)
 (add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer-mode)
-(add-to-list 'evil-emacs-state-modes 'inferior-ess-mode)
+;; (add-to-list 'evil-emacs-state-modes 'inferior-ess-mode)
 
 ;(evil-mode 1)
 
@@ -958,6 +958,8 @@ If there is still something left do do start the next latex-command."
    (key-chord-define evil-visual-state-map "jk" 'evil-change-to-previous-state)
    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
    (key-chord-define evil-replace-state-map "jk" 'evil-normal-state)
+   (key-chord-define-global "zz" 'evil-emacs-state)
+   (key-chord-define-global "aa" 'other-window)
 (require 'smex)
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
