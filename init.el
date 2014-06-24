@@ -1128,3 +1128,18 @@ search-term
 (require 'magit)
 ;; (require 'git-commit-mode)
 
+;; Highlight
+(auto-image-file-mode t)
+;; yes or no->y/n
+(fset 'yes-or-no-p 'y-or-n-p)
+;; show match parenthesis
+(show-paren-mode t)
+;; display Tue Jun 24 01:07:07 2014
+(display-time-mode 1)
+;; mouse avoid
+(mouse-avoidance-mode 'animate)
+;; paste in middle 
+(setq mouse-yank-at-point t)
+
+;; allow outside paste
+(setq x-select-enable-clipboard t)
