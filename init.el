@@ -812,7 +812,7 @@ If there is still something left do do start the next latex-command."
 ;; (global-set-key (kbd "<menu>") 'one-key-open-associated-menu-set)
 
 (add-to-list 'load-path "~/.emacs.d/evil")
-(setq evil-toggle-key "C-`")
+(setq evil-toggle-key "jj")
 (require 'evil)
 (add-to-list 'evil-emacs-state-modes 'nav-mode)
 (add-to-list 'evil-emacs-state-modes 'doc-view-mode)
