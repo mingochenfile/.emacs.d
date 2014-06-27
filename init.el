@@ -960,6 +960,10 @@ If there is still something left do do start the next latex-command."
    (key-chord-define evil-replace-state-map "jk" 'evil-normal-state)
    (key-chord-define-global "zz" 'evil-emacs-state)
    (key-chord-define-global "aa" 'other-window)
+   (key-chord-define-global "ss" 'save-buffer)
+
+(key-chord-define-global "kl" 'switch-to-buffer)
+(key-chord-define-global "vv" 'save-buffer)
 (require 'smex)
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
