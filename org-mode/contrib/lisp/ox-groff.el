@@ -1,10 +1,12 @@
 ;;; ox-groff.el --- Groff Back-End for Org Export Engine
 
-;; Copyright (C) 2011-2013  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2014  Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou at gmail dot com>
 ;; Author: Luis R Anaya <papoanaya aroba hot mail punto com>
 ;; Keywords: outlines, hypermedia, calendar, wp
+
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -43,68 +45,68 @@
 
 ;;; Define Back-End
 
-(org-export-define-backend groff
-  ((bold . org-groff-bold)
-   (center-block . org-groff-center-block)
-   (clock . org-groff-clock)
-   (code . org-groff-code)
-   (comment . (lambda (&rest args) ""))
-   (comment-block . (lambda (&rest args) ""))
-   (drawer . org-groff-drawer)
-   (dynamic-block . org-groff-dynamic-block)
-   (entity . org-groff-entity)
-   (example-block . org-groff-example-block)
-   (export-block . org-groff-export-block)
-   (export-snippet . org-groff-export-snippet)
-   (fixed-width . org-groff-fixed-width)
-   (footnote-definition . org-groff-footnote-definition)
-   (footnote-reference . org-groff-footnote-reference)
-   (headline . org-groff-headline)
-   (horizontal-rule . org-groff-horizontal-rule)
-   (inline-src-block . org-groff-inline-src-block)
-   (inlinetask . org-groff-inlinetask)
-   (italic . org-groff-italic)
-   (item . org-groff-item)
-   (keyword . org-groff-keyword)
-   (line-break . org-groff-line-break)
-   (link . org-groff-link)
-   (paragraph . org-groff-paragraph)
-   (plain-list . org-groff-plain-list)
-   (plain-text . org-groff-plain-text)
-   (planning . org-groff-planning)
-   (property-drawer . (lambda (&rest args) ""))
-   (quote-block . org-groff-quote-block)
-   (quote-section . org-groff-quote-section)
-   (radio-target . org-groff-radio-target)
-   (section . org-groff-section)
-   (special-block . org-groff-special-block)
-   (src-block . org-groff-src-block)
-   (statistics-cookie . org-groff-statistics-cookie)
-   (strike-through . org-groff-strike-through)
-   (subscript . org-groff-subscript)
-   (superscript . org-groff-superscript)
-   (table . org-groff-table)
-   (table-cell . org-groff-table-cell)
-   (table-row . org-groff-table-row)
-   (target . org-groff-target)
-   (template . org-groff-template)
-   (timestamp . org-groff-timestamp)
-   (underline . org-groff-underline)
-   (verbatim . org-groff-verbatim)
-   (verse-block . org-groff-verse-block))
+(org-export-define-backend 'groff
+  '((bold . org-groff-bold)
+    (center-block . org-groff-center-block)
+    (clock . org-groff-clock)
+    (code . org-groff-code)
+    (comment . (lambda (&rest args) ""))
+    (comment-block . (lambda (&rest args) ""))
+    (drawer . org-groff-drawer)
+    (dynamic-block . org-groff-dynamic-block)
+    (entity . org-groff-entity)
+    (example-block . org-groff-example-block)
+    (export-block . org-groff-export-block)
+    (export-snippet . org-groff-export-snippet)
+    (fixed-width . org-groff-fixed-width)
+    (footnote-definition . org-groff-footnote-definition)
+    (footnote-reference . org-groff-footnote-reference)
+    (headline . org-groff-headline)
+    (horizontal-rule . org-groff-horizontal-rule)
+    (inline-src-block . org-groff-inline-src-block)
+    (inlinetask . org-groff-inlinetask)
+    (italic . org-groff-italic)
+    (item . org-groff-item)
+    (keyword . org-groff-keyword)
+    (line-break . org-groff-line-break)
+    (link . org-groff-link)
+    (node-property . org-groff-node-property)
+    (paragraph . org-groff-paragraph)
+    (plain-list . org-groff-plain-list)
+    (plain-text . org-groff-plain-text)
+    (planning . org-groff-planning)
+    (property-drawer . org-groff-property-drawer)
+    (quote-block . org-groff-quote-block)
+    (radio-target . org-groff-radio-target)
+    (section . org-groff-section)
+    (special-block . org-groff-special-block)
+    (src-block . org-groff-src-block)
+    (statistics-cookie . org-groff-statistics-cookie)
+    (strike-through . org-groff-strike-through)
+    (subscript . org-groff-subscript)
+    (superscript . org-groff-superscript)
+    (table . org-groff-table)
+    (table-cell . org-groff-table-cell)
+    (table-row . org-groff-table-row)
+    (target . org-groff-target)
+    (template . org-groff-template)
+    (timestamp . org-groff-timestamp)
+    (underline . org-groff-underline)
+    (verbatim . org-groff-verbatim)
+    (verse-block . org-groff-verse-block))
   :export-block "GROFF"
   :menu-entry
-  (?g "Export to GROFF"
-      ((?g "As GROFF file" org-groff-export-to-groff)
-       (?p "As PDF file" org-groff-export-to-pdf)
-       (?o "As PDF file and open"
-	   (lambda (a s v b)
-	     (if a (org-groff-export-to-pdf t s v b)
-	       (org-open-file (org-groff-export-to-pdf nil s v b)))))))
+  '(?g "Export to GROFF"
+       ((?g "As GROFF file" org-groff-export-to-groff)
+	(?p "As PDF file" org-groff-export-to-pdf)
+	(?o "As PDF file and open"
+	    (lambda (a s v b)
+	      (if a (org-groff-export-to-pdf t s v b)
+		(org-open-file (org-groff-export-to-pdf nil s v b)))))))
   :options-alist
-  ((:groff-class "GROFF_CLASS" nil org-groff-default-class t)
-   (:groff-class-options "GROFF_CLASS_OPTIONS" nil nil t)
-   (:groff-header-extra "GROFF_HEADER" nil nil newline)))
+  '((:groff-class "GROFF_CLASS" nil org-groff-default-class t)
+    (:groff-class-options "GROFF_CLASS_OPTIONS" nil nil t)
+    (:groff-header-extra "GROFF_HEADER" nil nil newline)))
 
 
 
@@ -620,8 +622,8 @@ See `org-groff-text-markup-alist' for details."
 
    ;; 5. Date.
    (when (plist-get info :with-date)
-     (let ((date (org-export-data (plist-get info :date) info)))
-       (and date (format ".ND \"%s\"\n" date))))
+     (let ((date (org-export-data (org-export-get-date info) info)))
+       (and (org-string-nw-p date) (format ".ND \"%s\"\n" date))))
 
    ;;
    ;; If Abstract, then Populate Abstract
@@ -1209,11 +1211,11 @@ used as a communication channel."
                    (expand-file-name raw-path))))
          (attr (org-export-read-attribute :attr_groff link))
          (placement
-          (case (plist-get attr :position)
-            ('center "")
-            ('left "-L")
-            ('right "-R")
-            (t "")))
+          (let ((pos (plist-get attr :position)))
+	    (cond ((string= pos 'center) "")
+		  ((string= pos 'left) "-L")
+		  ((string= pos 'right) "-R")
+		  (t ""))))
 	 (width  (or (plist-get attr :width) ""))
 	 (height (or (plist-get attr :height) ""))
 	 (caption (and (not (plist-get attr :disable-caption))
@@ -1223,7 +1225,7 @@ used as a communication channel."
     (concat
      (cond
       ((and org-groff-raster-to-ps
-            (or  (string-match ".\.png$" path) 
+            (or  (string-match ".\.png$" path)
                  (string-match ".\.jpg$" path)))
        (let ((eps-path (concat path ".eps")))
          (shell-command (format org-groff-raster-to-ps path eps-path))
@@ -1251,12 +1253,8 @@ INFO is a plist holding contextual information.  See
          (path (cond
                 ((member type '("http" "https" "ftp" "mailto"))
                  (concat type ":" raw-path))
-                ((string= type "file")
-                 (when (string-match "\\(.+\\)::.+" raw-path)
-                   (setq raw-path (match-string 1 raw-path)))
-                 (if (file-name-absolute-p raw-path)
-                     (concat "file://" (expand-file-name raw-path))
-                   (concat "file://" raw-path)))
+                ((and (string= type "file") (file-name-absolute-p raw-path))
+                 (concat "file://" raw-path))
                 (t raw-path)))
          protocol)
     (cond
@@ -1272,7 +1270,8 @@ INFO is a plist holding contextual information.  See
       (let ((destination (org-export-resolve-radio-link link info)))
         (when destination
           (format "\\fI [%s] \\fP"
-                  (org-export-solidify-link-text path)))))
+                  (org-export-solidify-link-text
+		   (org-element-property :value destination))))))
 
      ;; Links pointing to a headline: find destination and build
      ;; appropriate referencing command.
@@ -1291,12 +1290,9 @@ INFO is a plist holding contextual information.  See
                    (or desc
                        (org-export-data
                         (org-element-property :raw-link link) info))))
-          ;; Fuzzy link points to an invisible target.
-          (keyword nil)
-          ;; LINK points to a headline.  If headlines are numbered
-          ;; and the link has no description, display headline's
-          ;; number.  Otherwise, display description or headline's
-          ;; title.
+          ;; LINK points to a headline.  If headlines are numbered and
+          ;; the link has no description, display headline's number.
+          ;; Otherwise, display description or headline's title.
           (headline
            (let ((label ""))
              (if (and (plist-get info :section-numbers) (not desc))
@@ -1316,6 +1312,17 @@ INFO is a plist holding contextual information.  See
      (path (format "\\fI%s\\fP" path))
      ;; No path, only description.  Try to do something useful.
      (t (format org-groff-link-with-unknown-path-format desc)))))
+
+;;; Node Property
+
+(defun org-groff-node-property (node-property contents info)
+  "Transcode a NODE-PROPERTY element from Org to Groff.
+CONTENTS is nil.  INFO is a plist holding contextual
+information."
+  (format "%s:%s"
+          (org-element-property :key node-property)
+          (let ((value (org-element-property :value node-property)))
+            (if value (concat " " value) ""))))
 
 ;;; Paragraph
 
@@ -1427,6 +1434,15 @@ information."
     "")
    ""))
 
+;;;; Property Drawer
+
+(defun org-groff-property-drawer (property-drawer contents info)
+  "Transcode a PROPERTY-DRAWER element from Org to Groff.
+CONTENTS holds the contents of the drawer.  INFO is a plist
+holding contextual information."
+  (and (org-string-nw-p contents)
+       (format "\\fC\n%s\\fP" contents)))
+
 ;;; Quote Block
 
 (defun org-groff-quote-block (quote-block contents info)
@@ -1436,15 +1452,6 @@ holding contextual information."
   (org-groff--wrap-label
    quote-block
    (format ".DS I\n.I\n%s\n.R\n.DE" contents)))
-
-;;; Quote Section
-
-(defun org-groff-quote-section (quote-section contents info)
-  "Transcode a QUOTE-SECTION element from Org to Groff.
-CONTENTS is nil.  INFO is a plist holding contextual information."
-  (let ((value (org-remove-indentation
-                (org-element-property :value quote-section))))
-    (when value (format ".DS L\n\\fI%s\\fP\n.DE\n" value))))
 
 ;;; Radio Target
 
@@ -1658,37 +1665,20 @@ This function assumes TABLE has `org' as its `:type' attribute."
          (lines (org-split-string contents "\n"))
 
          (attr-list
-          (let (result-list)
-            (dolist (attr-item
-                     (list
-                      (if (plist-get attr :expand)
-                          "expand" nil)
-
-                      (case (plist-get attr :placement)
-                        ('center "center")
-                        ('left nil)
-                        (t
-                         (if org-groff-tables-centered
-                             "center" "")))
-
-                      (case (plist-get attr :boxtype)
-                        ('box "box")
-                        ('doublebox "doublebox")
-                        ('allbox "allbox")
-                        ('none nil)
-                        (t "box"))))
-
-              (if (not (null attr-item))
-                  (add-to-list 'result-list attr-item)))
-            result-list))
+	  (delq nil
+		(list (and (plist-get attr :expand) "expand")
+		      (let ((placement (plist-get attr :placement)))
+			(cond ((string= placement 'center) "center")
+			      ((string= placement 'left) nil)
+			      (t (if org-groff-tables-centered "center" ""))))
+		      (or (plist-get attr :boxtype) "box"))))
 
          (title-line  (plist-get attr :title-line))
          (long-cells (plist-get attr :long-cells))
 
          (table-format
           (concat
-           (format "%s"
-                   (or (car attr-list) ""))
+           (or (car attr-list) "")
            (or
             (let (output-list)
 	      (when (cdr attr-list)
@@ -1873,20 +1863,11 @@ file-local settings.
 
 Return output file's name."
   (interactive)
-  (let ((outfile (org-export-output-file-name ".groff" subtreep)))
-    (if async
-	(org-export-async-start
-	    (lambda (f) (org-export-add-to-stack f 'groff))
-	  (let ((org-groff-registered-references nil)
-		(org-groff-special-content nil))
-	    `(expand-file-name
-	      (org-export-to-file
-	       'groff ,outfile ,subtreep ,visible-only ,body-only
-	       ',ext-plist))))
-      (let ((org-groff-registered-references nil)
-	    (org-groff-special-content nil))
-	(org-export-to-file
-	 'groff outfile subtreep visible-only body-only ext-plist)))))
+  (let ((outfile (org-export-output-file-name ".groff" subtreep))
+	(org-groff-registered-references nil)
+	(org-groff-special-content nil))
+    (org-export-to-file 'groff outfile
+      async subtreep visible-only body-only ext-plist)))
 
 (defun org-groff-export-to-pdf
   (&optional async subtreep visible-only body-only ext-plist)
@@ -1914,18 +1895,10 @@ file-local settings.
 
 Return PDF file's name."
   (interactive)
-  (if async
-      (let ((outfile (org-export-output-file-name ".groff" subtreep)))
-	(org-export-async-start
-	    (lambda (f) (org-export-add-to-stack f 'groff))
-	  `(expand-file-name
-	    (org-groff-compile
-	     (org-export-to-file
-	      'groff ,outfile ,subtreep ,visible-only ,body-only
-	      ',ext-plist)))))
-    (org-groff-compile
-     (org-groff-export-to-groff
-      nil subtreep visible-only body-only ext-plist))))
+  (let ((outfile (org-export-output-file-name ".groff" subtreep)))
+    (org-export-to-file 'groff outfile
+      async subtreep visible-only body-only ext-plist
+      (lambda (file) (org-groff-compile file)))))
 
 (defun org-groff-compile (file)
   "Compile a Groff file.
@@ -1937,9 +1910,10 @@ Return PDF file name or an error if it couldn't be produced."
   (let* ((base-name (file-name-sans-extension (file-name-nondirectory file)))
 	 (full-name (file-truename file))
 	 (out-dir (file-name-directory file))
-	 ;; Make sure `default-directory' is set to FILE directory,
-	 ;; not to whatever value the current buffer may have.
-	 (default-directory (file-name-directory full-name))
+	 ;; Properly set working directory for compilation.
+	 (default-directory (if (file-name-absolute-p file)
+				(file-name-directory full-name)
+			      default-directory))
          errors)
     (message (format "Processing Groff file %s ..." file))
     (save-window-excursion

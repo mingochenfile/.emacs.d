@@ -1,6 +1,6 @@
 ;;; org-timer.el --- The relative timer code for Org-mode
 
-;; Copyright (C) 2008-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2014 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -156,14 +156,18 @@ With prefix arg STOP, stop it entirely."
     (org-timer-set-mode-line 'pause)
     (message "Timer paused at %s" (org-timer-value-string)))))
 
+(defvar org-timer-current-timer nil)
 (defun org-timer-stop ()
   "Stop the relative timer."
   (interactive)
-  (run-hooks 'org-timer-stop-hook)
-  (setq org-timer-start-time nil
-	org-timer-pause-time nil)
-  (org-timer-set-mode-line 'off)
-  (message "Timer stopped"))
+  (if (not org-timer-current-timer)
+      (message "No running timer")
+    (run-hooks 'org-timer-stop-hook)
+    (setq org-timer-start-time nil
+	  org-timer-pause-time nil
+	  org-timer-current-timer nil)
+    (org-timer-set-mode-line 'off)
+    (message "Timer stopped")))
 
 ;;;###autoload
 (defun org-timer (&optional restart no-insert-p)
@@ -184,7 +188,10 @@ it in the buffer."
     (insert (org-timer-value-string))))
 
 (defun org-timer-value-string ()
-  (format org-timer-format (org-timer-secs-to-hms (floor (org-timer-seconds)))))
+  "Set the timer string."
+  (format org-timer-format
+	  (org-timer-secs-to-hms
+	   (abs (floor (org-timer-seconds))))))
 
 (defvar org-timer-timer-is-countdown nil)
 (defun org-timer-seconds ()
@@ -344,17 +351,17 @@ VALUE can be `on', `off', or `pause'."
 	  (concat " <" (substring (org-timer-value-string) 0 -1) ">"))
     (force-mode-line-update)))
 
-(defvar org-timer-current-timer nil)
 (defun org-timer-cancel-timer ()
   "Cancel the current timer."
   (interactive)
-  (when (eval org-timer-current-timer)
+  (if (not org-timer-current-timer)
+      (message "No timer to cancel")
     (run-hooks 'org-timer-cancel-hook)
     (cancel-timer org-timer-current-timer)
-    (setq org-timer-current-timer nil)
-    (setq org-timer-timer-is-countdown nil)
-    (org-timer-set-mode-line 'off))
-  (message "Last timer canceled"))
+    (setq org-timer-current-timer nil
+	  org-timer-timer-is-countdown nil)
+    (org-timer-set-mode-line 'off)
+    (message "Last timer canceled")))
 
 (defun org-timer-show-remaining-time ()
   "Display the remaining time before the timer ends."
@@ -369,6 +376,8 @@ VALUE can be `on', `off', or `pause'."
 	   (rmins (nth 1 rtime)))
       (message "%d minute(s) %d seconds left before next time out"
 	       rmins rsecs))))
+
+(defvar org-clock-sound)
 
 ;;;###autoload
 (defun org-timer-set-timer (&optional opt)
@@ -386,9 +395,17 @@ without prompting the user for a duration.
 
 With two `C-u' prefix arguments, use `org-timer-default-timer'
 without prompting the user for a duration and automatically
-replace any running timer."
+replace any running timer.
+
+By default, the timer duration will be set to the number of
+minutes in the Effort property, if any.  You can ignore this by
+using three `C-u' prefix arguments."
   (interactive "P")
-  (let ((minutes (or (and (numberp opt) (number-to-string opt))
+  (let* ((effort-minutes (org-get-at-eol 'effort-minutes 1))
+	 (minutes (or (and (not (equal opt '(64)))
+			   effort-minutes
+			   (number-to-string effort-minutes))
+		     (and (numberp opt) (number-to-string opt))
 		     (and (listp opt) (not (null opt))
 			  (number-to-string org-timer-default-timer))
 		     (read-from-minibuffer
@@ -429,7 +446,7 @@ replace any running timer."
 		    (run-with-timer
 		     secs nil `(lambda ()
 				 (setq org-timer-current-timer nil)
-				 (org-notify ,(format "%s: time out" hl) t)
+				 (org-notify ,(format "%s: time out" hl) ,org-clock-sound)
 				 (setq org-timer-timer-is-countdown nil)
 				 (org-timer-set-mode-line 'off)
 				 (run-hooks 'org-timer-done-hook))))

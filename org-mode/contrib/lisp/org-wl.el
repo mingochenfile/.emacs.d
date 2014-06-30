@@ -1,6 +1,6 @@
 ;;; org-wl.el --- Support for links to Wanderlust messages from within Org-mode
 
-;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2014 Free Software Foundation, Inc.
 
 ;; Author: Tokuya Kameshima <kames at fa2 dot so-net dot ne dot jp>
 ;;         David Maus <dmaus at ictsoc dot de>
@@ -9,12 +9,12 @@
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
-;; GNU Emacs is free software: you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -67,7 +67,7 @@ googlegroups otherwise."
 
 (defcustom org-wl-namazu-default-index nil
   "Default namazu search index."
-  :type 'directory
+  :type '(choice (const nil) (directory))
   :group 'org-wl)
 
 ;; Declare external functions and variables

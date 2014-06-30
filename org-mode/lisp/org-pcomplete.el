@@ -1,6 +1,6 @@
 ;;; org-pcomplete.el --- In-buffer completion code
 
-;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;;         John Wiegley <johnw at gnu dot org>
@@ -36,7 +36,7 @@
 
 (declare-function org-split-string "org" (string &optional separators))
 (declare-function org-make-org-heading-search-string "org"
-		  (&optional string heading))
+		  (&optional string))
 (declare-function org-get-buffer-tags "org" ())
 (declare-function org-get-tags "org" ())
 (declare-function org-buffer-property-keys "org"
@@ -153,13 +153,16 @@ When completing for #+STARTUP, for example, this function returns
 	    (mapcar (lambda (keyword) (concat keyword ": "))
 		    org-element-affiliated-keywords)
 	    (let (block-names)
-	      (mapc (lambda (block-name)
-		      (let ((name (car block-name)))
-			(push (format "END_%s: " name) block-names)
-			(push (format "BEGIN_%s: " name) block-names)
-			(push (format "ATTR_%s: " name) block-names)))
-		    org-element-block-name-alist)
-	      block-names)
+	      (dolist (block-info org-element-block-name-alist block-names)
+		(let ((name (car block-info)))
+		  (push (format "END_%s" name) block-names)
+		  (push (concat "BEGIN_"
+				name
+				;; Since language is compulsory in
+				;; source blocks, add a space.
+				(and (equal name "SRC") " "))
+			block-names)
+		  (push (format "ATTR_%s: " name) block-names))))
 	    (mapcar (lambda (keyword) (concat keyword ": "))
 		    (org-get-export-keywords))))
    (substring pcomplete-stub 2)))
@@ -239,6 +242,7 @@ When completing for #+STARTUP, for example, this function returns
 		 (cond
 		  ((eq :startgroup (car x)) "{")
 		  ((eq :endgroup (car x)) "}")
+		  ((eq :grouptags (car x)) ":")
 		  ((eq :newline (car x)) "\\n")
 		  ((cdr x) (format "%s(%c)" (car x) (cdr x)))
 		  (t (car x))))
@@ -253,6 +257,8 @@ When completing for #+STARTUP, for example, this function returns
 		     (file-name-nondirectory visited-file)))
 	       (buffer-name (buffer-base-buffer)))))))
 
+
+(declare-function org-export-backend-options "org-export" (cl-x))
 (defun pcomplete/org-mode/file-option/options ()
   "Complete arguments for the #+OPTIONS file option."
   (while (pcomplete-here
@@ -265,9 +271,9 @@ When completing for #+STARTUP, for example, this function returns
 	      "|:" "tags:" "tasks:" "<:" "todo:")
 	    ;; OPTION items from registered back-ends.
 	    (let (items)
-	      (dolist (back-end (org-bound-and-true-p
-				 org-export-registered-backends))
-		(dolist (option (plist-get (cdr back-end) :options-alist))
+	      (dolist (backend (org-bound-and-true-p
+				org-export--registered-backends))
+		(dolist (option (org-export-backend-options backend))
 		  (let ((item (nth 2 option)))
 		    (when item (push (concat item ":") items)))))
 	      items))))))
@@ -320,7 +326,7 @@ This needs more work, to handle headings with lots of spaces in them."
 	 (let (tbl)
 	   (while (re-search-forward org-todo-line-regexp nil t)
 	     (push (org-make-org-heading-search-string
-		    (match-string-no-properties 3) t)
+		    (match-string-no-properties 3))
 		   tbl))
 	   (pcomplete-uniqify-list tbl)))
        (substring pcomplete-stub 1))))
@@ -357,25 +363,6 @@ This needs more work, to handle headings with lots of spaces in them."
 	     lst))
    (substring pcomplete-stub 1)))
 
-(defvar org-drawers)
-
-(defun pcomplete/org-mode/drawer ()
-  "Complete a drawer name."
-  (let ((spc (save-excursion
-	       (move-beginning-of-line 1)
-	       (looking-at "^\\([ \t]*\\):")
-	       (match-string 1)))
-	(cpllist (mapcar (lambda (x) (concat x ": ")) org-drawers)))
-    (pcomplete-here cpllist
-		    (substring pcomplete-stub 1)
-		    (unless (or (not (delq
-				      nil
-				      (mapcar (lambda(x)
-						(string-match (substring pcomplete-stub 1) x))
-					      cpllist)))
-				(looking-at "[ \t]*\n.*:END:"))
-		      (save-excursion (insert "\n" spc ":END:"))))))
-
 (defun pcomplete/org-mode/block-option/src ()
   "Complete the arguments of a begin_src block.
 Complete a language in the first field, the header arguments and switches."
@@ -390,16 +377,16 @@ Complete a language in the first field, the header arguments and switches."
 	  '("-n" "-r" "-l"
 	    ":cache" ":colnames" ":comments" ":dir" ":eval" ":exports"
 	    ":file" ":hlines" ":no-expand" ":noweb" ":results" ":rownames"
-	    ":session" ":shebang" ":tangle" ":var"))))
+	    ":session" ":shebang" ":tangle" ":tangle-mode" ":var"))))
 
 (defun pcomplete/org-mode/block-option/clocktable ()
   "Complete keywords in a clocktable line."
-  (while (pcomplete-here '(":maxlevel" ":scope"
+  (while (pcomplete-here '(":maxlevel" ":scope" ":lang"
 			   ":tstart" ":tend" ":block" ":step"
 			   ":stepskip0" ":fileskip0"
 			   ":emphasize" ":link" ":narrow" ":indent"
 			   ":tcolumns" ":level" ":compact" ":timestamp"
-			   ":formula" ":formatter"))))
+			   ":formula" ":formatter" ":wstart" ":mstart"))))
 
 (defun org-pcomplete-case-double (list)
   "Return list with both upcase and downcase version of all strings in LIST."

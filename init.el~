@@ -112,7 +112,7 @@ LaTeX-section-label))
 (setq TeX-save-query nil)
 
 ;;insert master name directly
-;; (setq-default TeX-master-file "main")
+(setq-default TeX-master-file "main")
 
 ;;;outline
 (defun turn-on-outline-minor-mode ()
@@ -157,6 +157,7 @@ LaTeX-section-label))
  '(TeX-command-list (quote (("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("TeX" "%(PDF)%(tex) %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("latexnonint" "%`%l -interaction=nonstopmode %(mode)%'%t" TeX-run-command nil t) ("LaTeX" "%`%l %(mode)%' %t" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document") ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files") ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(column-number-mode t)
  '(display-time-mode t)
+ '(evil-toggle-key "C-~")
  '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t) (python . t) (C \.t))))
  '(org-confirm-babel-evaluate nil)
  '(org-modules (quote (org-bbdb org-bibtex org-docview org-gnus org-id org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-special-blocks org-vm org-wl org-w3m org-mouse org-mairix org-toc)))
@@ -730,7 +731,7 @@ If there is still something left do do start the next latex-command."
   (define-key ess-mode-map "\M-[" 'previous-error)
   (define-key inferior-ess-mode-map "\M-]" 'next-error-no-select)
   (define-key inferior-ess-mode-map "\M-[" 'previous-error-no-select)
-
+;; (define-key )
 (define-key compilation-minor-mode-map [(?n)] 'next-error-no-select)
   (define-key compilation-minor-mode-map [(?p)] 'previous-error-no-select)
 
@@ -812,8 +813,13 @@ If there is still something left do do start the next latex-command."
 ;; (global-set-key (kbd "<menu>") 'one-key-open-associated-menu-set)
 
 (add-to-list 'load-path "~/.emacs.d/evil")
-(setq evil-toggle-key "C-`")
+
 (require 'evil)
+(add-to-list 'evil-emacs-state-modes 'nav-mode)
+(add-to-list 'evil-emacs-state-modes 'doc-view-mode)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer-mode)
+;; (add-to-list 'evil-emacs-state-modes 'inferior-ess-mode)
+
 ;(evil-mode 1)
 
 (setq desktop-load-locked-desktop t)
@@ -947,12 +953,25 @@ If there is still something left do do start the next latex-command."
 
 (require 'evil)
 (evil-mode 1)
+(setq evil-toggle-key "C-")
 (require 'key-chord)
 (key-chord-mode 1)
    (key-chord-define evil-normal-state-map "jk" 'evil-force-normal-state)
    (key-chord-define evil-visual-state-map "jk" 'evil-change-to-previous-state)
    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
    (key-chord-define evil-replace-state-map "jk" 'evil-normal-state)
+(key-chord-define-global "JK" 'other-window)
+(key-chord-define-global "JJ" 'save-buffer)
+(key-chord-define-global "KK" 'kill-buffer)
+(key-chord-define-global "::" 'comment-dwim)
+   ;; (key-chord-define-global "zz" 'evil-emacs-state)
+   ;; (key-chord-define-global "aa" 'other-window) ;
+   ;; (key-chord-define-global "ss" 'save-buffer)
+(key-chord-define-global "kl" 'switch-to-buffer)
+;; (key-chord-define-global "VV" 'evil-emacs-state)
+(key-chord-define-global "UU" (lookup-key (current-global-map) (kbd "C-~")))
+(key-chord-define-global "LL" (lookup-key (current-global-map) (kbd "C-x C-f")))
+;; (key-chord-define-global "vv" 'save-buffer)
 (require 'smex)
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
@@ -1067,6 +1086,89 @@ search-term
 (w3m-goto-url-new-session
 (concat "http://" site)))
 
-
+;; Pymacs for PYthon
 (add-to-list 'load-path "~/.emacs.d/Pymacs")
 ;; (require )
+
+(autoload 'pymacs-apply "pymacs")
+(autoload 'pymacs-call "pymacs")
+(autoload 'pymacs-eval "pymacs" nil t)
+(autoload 'pymacs-exec "pymacs" nil t)
+(autoload 'pymacs-load "pymacs" nil t)
+(autoload 'pymacs-autoload "pymacs")
+(eval-after-load "pymacs"
+ '(add-to-list 'pymacs-load-path "~/.emacs.d/pyinit"))
+
+;; Add new emacs packages
+(require 'package)
+(add-to-list 'package-archives
+	     '("elpa" . "http://tromey.com/elpa/"))
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+
+
+;; Set up amazon tramp
+(defun tamazonvm ()
+  (interactive)
+  (find-file "/mingche@mingche.desktop.amazon.com:~/"))
+
+(defun tamazonubuntu ()
+  (interactive)
+  (find-file "/mingche@mingche.aka.amazon.com:~/"))
+(defun thackthon ()
+(interactive)
+(find-file "/ssh:ec2-user@ec2-54-191-37-83.us-west-2.compute.amazonaws.com:/home/ec2-user/"))
+
+
+;; Return major-mode name of the buffer
+(defun buffer-mode (buffer-or-string)
+  "Returns the major mode associated with a buffer."
+  (with-current-buffer buffer-or-string
+    major-mode))
+
+;; Evil disables some major modes
+(add-to-list 'evil-emacs-state-modes 'nav-mode)
+(add-to-list 'evil-emacs-state-modes 'undo-tree-visualizer-mode)
+(add-to-list 'evil-emacs-state-modes 'doc-view-mode)
+
+
+;; Auto refresh docview
+(add-hook 'doc-view-mode-hook 'auto-revert-mode)
+;; Set up docview continuous 
+(setq doc-view-continuous t)
+;; Change key-binding of docview
+
+;; To install magit
+(add-to-list 'load-path "~/.emacs.d/magit/")
+(add-to-list 'load-path "~/.emacs.d/git-modes/")
+(eval-after-load 'info
+  '(progn (info-initialize)
+	  (add-to-list 'Info-directory-list "~/.emacs.d/magit/")))
+(require 'magit)
+;; (require 'git-commit-mode)
+
+;; Highlight
+(auto-image-file-mode t)
+;; yes or no->y/n
+(fset 'yes-or-no-p 'y-or-n-p)
+;; show match parenthesis
+(show-paren-mode t)
+;; display Tue Jun 24 01:07:07 2014
+(display-time-mode 1)
+;; mouse avoid
+(mouse-avoidance-mode 'animate)
+;; paste in middle 
+(setq mouse-yank-at-point t)
+
+;; allow outside paste
+(setq x-select-enable-clipboard t)
+
+;; org mode export wiki
+(add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
+(add-to-list 'load-path "~/.emacs.d/orgmode-mediawiki")
+;; (require 'ox-mediawiki)
+
+;; Auto-indent-mode.el
+(setq auto-indent-on-visit-file t)
+(require 'auto-indent-mode)
+(auto-indent-global-mode)

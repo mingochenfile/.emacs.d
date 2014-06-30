@@ -1,6 +1,6 @@
 ;;; test-org-list.el --- Tests for org-list.el
 
-;; Copyright (C) 2012, 2013  Nicolas Goaziou
+;; Copyright (C) 2012, 2013, 2014  Nicolas Goaziou
 
 ;; Author: Nicolas Goaziou <n.goaziou at gmail dot com>
 
@@ -174,12 +174,12 @@
 	    (let ((org-plain-list-ordered-item-terminator 41))
 	      (org-cycle-list-bullet)
 	      (buffer-string)))))
-  ;; When `org-alphabetical-lists' is non-nil, cycle to alpha bullets.
+  ;; When `org-list-allow-alphabetical' is non-nil, cycle to alpha bullets.
   (should
    (equal "a. item"
 	  (org-test-with-temp-text "1) item"
 	    (let ((org-plain-list-ordered-item-terminator t)
-		  (org-alphabetical-lists t))
+		  (org-list-allow-alphabetical t))
 	      (org-cycle-list-bullet)
 	      (buffer-string)))))
   ;; Do not cycle to alpha bullets when list has more than 26
@@ -214,7 +214,7 @@
 26) item 26
 27) item 27"
 	    (let ((org-plain-list-ordered-item-terminator t)
-		  (org-alphabetical-lists t))
+		  (org-list-allow-alphabetical t))
 	      (org-cycle-list-bullet)
 	      (buffer-substring (point) (line-end-position)))))))
 
@@ -482,7 +482,7 @@
 		   "- item 2\n- item 1\n  - sub-item 1")))
   ;; Preserve blank lines.
   (org-test-with-temp-text "- item 1\n\n- item 2"
-    (let ((org-empty-line-terminates-plain-lists nil)) (org-move-item-down))
+    (let ((org-list-empty-line-terminates-plain-lists nil)) (org-move-item-down))
     (should (equal (buffer-string) "- item 2\n\n- item 1")))
   ;; Error when trying to move the last item...
   (org-test-with-temp-text "- item 1\n- item 2"
@@ -567,7 +567,7 @@
   ;; Preserve blank lines.
   (org-test-with-temp-text "- item 1\n\n- item 2"
     (search-forward "- item 2")
-    (let ((org-empty-line-terminates-plain-lists nil)) (org-move-item-up))
+    (let ((org-list-empty-line-terminates-plain-lists nil)) (org-move-item-up))
     (should (equal (buffer-string) "- item 2\n\n- item 1")))
   ;; Error when trying to move the first item...
   (org-test-with-temp-text "- item 1\n- item 2"
@@ -631,10 +631,10 @@
   ;; Blank lines specifications.
   ;;
   ;; Non-nil `org-blank-before-new-entry': insert a blank line, unless
-  ;; `org-empty-line-terminates-plain-lists' is non-nil.
+  ;; `org-list-empty-line-terminates-plain-lists' is non-nil.
   (should
    (org-test-with-temp-text "- a"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . t))))
        (end-of-line)
        (org-insert-item)
@@ -642,7 +642,7 @@
        (looking-at "$"))))
   (should-not
    (org-test-with-temp-text "- a"
-     (let ((org-empty-line-terminates-plain-lists t)
+     (let ((org-list-empty-line-terminates-plain-lists t)
 	   (org-blank-before-new-entry '((plain-list-item . t))))
        (end-of-line)
        (org-insert-item)
@@ -651,7 +651,7 @@
   ;; Nil `org-blank-before-new-entry': do not insert a blank line.
   (should-not
    (org-test-with-temp-text "- a"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . nil))))
        (end-of-line)
        (org-insert-item)
@@ -661,7 +661,7 @@
   ;; line already in the sole item, do not insert one.
   (should-not
    (org-test-with-temp-text "- a"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (end-of-line)
        (org-insert-item)
@@ -671,7 +671,7 @@
   ;; line in the sole item, insert another one.
   (should
    (org-test-with-temp-text "- a\n\n  b"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (goto-char (point-max))
        (org-insert-item)
@@ -681,7 +681,7 @@
   ;; a blank line, preserve it.
   (should
    (org-test-with-temp-text "- a\n\n"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (goto-char (point-max))
        (org-insert-item)
@@ -691,7 +691,7 @@
   ;; are already separated by blank lines, insert one.
   (should
    (org-test-with-temp-text "- a\n\n- b"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (goto-char (point-max))
        (org-insert-item)
@@ -699,19 +699,55 @@
        (looking-at "$"))))
   (should
    (org-test-with-temp-text "- a\n\n- b"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (org-insert-item)
        (forward-line)
        (looking-at "$"))))
   (should
    (org-test-with-temp-text "- a\n  #+BEGIN_EXAMPLE\n\n  x\n  #+END_EXAMPLE"
-     (let ((org-empty-line-terminates-plain-lists nil)
+     (let ((org-list-empty-line-terminates-plain-lists nil)
 	   (org-blank-before-new-entry '((plain-list-item . auto))))
        (goto-char (point-max))
        (org-insert-item)
        (forward-line -1)
        (looking-at "$")))))
+
+(ert-deftest test-org-list/repair ()
+  "Test `org-list-repair' specifications."
+  ;; Repair indentation.
+  (should
+   (equal "- item\n  - child"
+	  (org-test-with-temp-text "- item\n - child"
+	    (let ((org-list-indent-offset 0)) (org-list-repair))
+	    (buffer-string))))
+  ;; Repair bullets and numbering.
+  (should
+   (equal "- a\n- b"
+	  (org-test-with-temp-text "- a\n+ b"
+	    (let ((org-list-indent-offset 0))
+	      (org-list-repair))
+	    (buffer-string))))
+  (should
+   (equal "1. a\n2. b"
+	  (org-test-with-temp-text "1. a\n1. b"
+	    (let ((org-list-indent-offset 0)
+		  (org-plain-list-ordered-item-terminator t))
+	      (org-list-repair))
+	    (buffer-string))))
+  ;; Repair check-boxes.
+  (should
+   (equal "- [X] item\n  - [X] child"
+	  (org-test-with-temp-text "- [ ] item\n  - [X] child"
+	    (let ((org-list-indent-offset 0))
+	      (org-list-repair))
+	    (buffer-string))))
+  ;; Special case: do not move contents of an item within its child.
+  (should
+   (equal "- item\n  - child\n  within item"
+	  (org-test-with-temp-text "- item\n    - child\n    within item"
+	    (let ((org-list-indent-offset 0)) (org-list-repair))
+	    (buffer-string)))))
 
 
 
@@ -757,24 +793,25 @@
   "Test `org-list-to-html' specifications."
   (should
    (equal "<ul class=\"org-ul\">\n<li>a\n</li>\n</ul>"
-	  (with-temp-buffer
-	    (insert "<!-- BEGIN RECEIVE ORGLST name -->
+	  (let (org-html-indent)
+	    (with-temp-buffer
+	      (insert "<!-- BEGIN RECEIVE ORGLST name -->
 <!-- END RECEIVE ORGLST name -->
 <!--
 #+ORGLST: SEND name org-list-to-html
 - a
 -->")
-	    (goto-char (point-min))
-	    (re-search-forward "^- a" nil t)
-	    (beginning-of-line)
-	    (org-list-send-list)
-	    (goto-line 2)
-	    (buffer-substring-no-properties
-	     (point)
-	     (progn (re-search-forward "^<!-- END" nil t)
-		    (beginning-of-line)
-		    (skip-chars-backward " \r\t\n")
-		    (point)))))))
+	      (goto-char (point-min))
+	      (re-search-forward "^- a" nil t)
+	      (beginning-of-line)
+	      (org-list-send-list)
+	      (goto-line 2)
+	      (buffer-substring-no-properties
+	       (point)
+	       (progn (re-search-forward "^<!-- END" nil t)
+		      (beginning-of-line)
+		      (skip-chars-backward " \r\t\n")
+		      (point))))))))
 
 (ert-deftest test-org-list/to-latex ()
   "Test `org-list-to-latex' specifications."

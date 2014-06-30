@@ -53,13 +53,3 @@ sombrero;
 #+begin_src octave :session
 sombrero;
 #+end_src
-
-
-* Graphical tests
-#+begin_src octave :results graphics :file chart.png
-sombrero;
-#+end_src
-
-#+begin_src octave :session
-sombrero;
-#+end_src

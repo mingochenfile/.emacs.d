@@ -1,9 +1,11 @@
 ;;; org-notify.el --- Notifications for Org-mode
 
-;; Copyright (C) 2012, 2013  Free Software Foundation, Inc.
+;; Copyright (C) 2012, 2013, 2014  Free Software Foundation, Inc.
 
 ;; Author: Peter Münster <pmrb@free.fr>
 ;; Keywords: notification, todo-list, alarm, reminder, pop-up
+
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

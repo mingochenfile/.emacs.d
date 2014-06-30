@@ -1,8 +1,8 @@
 ;;; org-toc.el --- Table of contents for Org-mode buffer
 
-;; Copyright 2007-2013 Free Software Foundation, Inc.
+;; Copyright 2007-2014 Free Software Foundation, Inc.
 ;;
-;; Author: Bastien Guerry <bzg AT gnu DOT org>
+;; Author: Bastien Guerry <bzg@gnu.org>
 ;; Keywords: Org table of contents
 ;; Homepage: http://www.cognition.ens.fr/~guerry/u/org-toc.el
 ;; Version: 0.8
@@ -20,8 +20,7 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 

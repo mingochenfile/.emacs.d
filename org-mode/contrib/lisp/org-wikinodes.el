@@ -1,6 +1,6 @@
 ;;; org-wikinodes.el --- Wiki-like CamelCase links to outline nodes
 
-;; Copyright (C) 2010-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2010-2014 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -9,12 +9,12 @@
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
-;; GNU Emacs is free software: you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -82,8 +82,6 @@ to `directory'."
 		;; in  heading - deactivate flyspell
 		(org-remove-flyspell-overlays-in (match-beginning 0)
 						 (match-end 0))
-		(add-text-properties (match-beginning 0) (match-end 0)
-				     '(org-no-flyspell t))
 		t)
 	    ;; this is a wiki link
 	    (org-remove-flyspell-overlays-in (match-beginning 0)
@@ -270,7 +268,6 @@ If there is no such wiki target, return nil."
 		    (car org-export-target-aliases))))
       (push (caar target-alist) (cdr a)))))
 
-(defvar org-current-export-file)
 (defun org-wikinodes-process-links-for-export ()
   "Process Wiki links in the export preprocess buffer.
 
@@ -296,12 +293,6 @@ with working links."
 	   ((eq org-wikinodes-scope 'file)
 	    ;; No match in file, and other files are not allowed
 	    (insert (format "%s" link)))
-	   ((setq file
-		  (and (org-string-nw-p org-current-export-file)
-		       (org-wikinodes-which-file
-			link (file-name-directory org-current-export-file))))
-	    ;; Match in another file in the current directory
-	    (insert (format "[[file:%s::%s][%s]]" file link link)))
 	   (t ;; No match for this link
 	    (insert (format "%s" link)))))))))
 

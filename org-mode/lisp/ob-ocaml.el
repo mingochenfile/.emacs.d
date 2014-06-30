@@ -1,6 +1,6 @@
 ;;; ob-ocaml.el --- org-babel functions for ocaml evaluation
 
-;; Copyright (C) 2009-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -51,6 +51,13 @@
 (defvar org-babel-ocaml-eoe-indicator "\"org-babel-ocaml-eoe\";;")
 (defvar org-babel-ocaml-eoe-output "org-babel-ocaml-eoe")
 
+(defcustom org-babel-ocaml-command "ocaml"
+  "Name of the command for executing Ocaml code."
+  :version "24.4"
+  :package-version '(Org . "8.0")
+  :group 'org-babel
+  :type 'string)
+
 (defun org-babel-execute:ocaml (body params)
   "Execute a block of Ocaml code with Babel."
   (let* ((vars (mapcar #'cdr (org-babel-get-header params :var)))
@@ -63,7 +70,8 @@
 		  (session org-babel-ocaml-eoe-output t full-body)
 		(insert
 		 (concat
-		  (org-babel-chomp full-body)"\n"org-babel-ocaml-eoe-indicator))
+		  (org-babel-chomp full-body) ";;\n"
+		  org-babel-ocaml-eoe-indicator))
 		(tuareg-interactive-send-input)))
 	 (clean
 	  (car (let ((re (regexp-quote org-babel-ocaml-eoe-output)) out)
@@ -72,9 +80,25 @@
 					 (progn (setq out nil) line)
 				       (when (string-match re line)
 					 (progn (setq out t) nil))))
-				   (mapcar #'org-babel-trim (reverse raw))))))))
+				   (mapcar #'org-babel-trim (reverse raw)))))))
+	 (raw (org-babel-trim clean))
+	 (result-params (cdr (assoc :result-params params)))
+	 (parsed 
+	  (string-match 
+	   "\\(\\(.*\n\\)*\\)[^:\n]+ : \\([^=\n]+\\) =\\(\n\\| \\)\\(.+\\)$" 
+	   raw))
+	 (output (match-string 1 raw))
+	 (type (match-string 3 raw))
+	 (value (match-string 5 raw)))
     (org-babel-reassemble-table
-     (org-babel-ocaml-parse-output (org-babel-trim clean))
+     (org-babel-result-cond result-params
+       (cond
+	((member "verbatim" result-params) raw)
+	((member "output" result-params) output)
+	(t raw))
+       (if (and value type)
+	   (org-babel-ocaml-parse-output value type)
+	 raw))
      (org-babel-pick-name
       (cdr (assoc :colname-names params)) (cdr (assoc :colnames params)))
      (org-babel-pick-name
@@ -89,9 +113,10 @@
                                                  (stringp session))
                                             session
                                           tuareg-interactive-buffer-name)))
-    (save-window-excursion
-      (if (fboundp 'tuareg-run-caml) (tuareg-run-caml) (tuareg-run-ocaml))
-      (get-buffer tuareg-interactive-buffer-name))))
+    (save-window-excursion (if (fboundp 'tuareg-run-process-if-needed)
+	 (tuareg-run-process-if-needed org-babel-ocaml-command)
+       (tuareg-run-caml)))
+    (get-buffer tuareg-interactive-buffer-name)))
 
 (defun org-babel-variable-assignments:ocaml (params)
   "Return list of ocaml statements assigning the block's variables."
@@ -106,21 +131,20 @@
       (concat "[|" (mapconcat #'org-babel-ocaml-elisp-to-ocaml val "; ") "|]")
     (format "%S" val)))
 
-(defun org-babel-ocaml-parse-output (output)
-  "Parse OUTPUT.
-OUTPUT is string output from an ocaml process."
-  (let ((regexp "%s = \\(.+\\)$"))
-    (cond
-     ((string-match (format regexp "string") output)
-      (org-babel-read (match-string 1 output)))
-     ((or (string-match (format regexp "int") output)
-          (string-match (format regexp "float") output))
-      (string-to-number (match-string 1 output)))
-     ((string-match (format regexp "list") output)
-      (org-babel-ocaml-read-list (match-string 1 output)))
-     ((string-match (format regexp "array") output)
-      (org-babel-ocaml-read-array (match-string 1 output)))
-     (t (message "don't recognize type of %s" output) output))))
+(defun org-babel-ocaml-parse-output (value type)
+  "Parse VALUE of type TYPE.
+VALUE and TYPE are string output from an ocaml process."
+  (cond
+   ((string= "string" type)
+    (org-babel-read value))
+   ((or (string= "int" type)
+	(string= "float" type))
+    (string-to-number value))
+   ((string-match "list" type)
+    (org-babel-ocaml-read-list value))
+   ((string-match "array" type)
+    (org-babel-ocaml-read-array value))
+   (t (message "don't recognize type %s" type) value)))
 
 (defun org-babel-ocaml-read-list (results)
   "Convert RESULTS into an elisp table or string.

@@ -1,6 +1,6 @@
 ;;; test-ob.el --- tests for ob.el
 
-;; Copyright (c) 2010-2013 Eric Schulte
+;; Copyright (c) 2010-2014 Eric Schulte
 ;; Authors: Eric Schulte, Martyn Jago
 
 ;; This file is not part of GNU Emacs.
@@ -99,7 +99,10 @@
 
 (ert-deftest test-org-babel/default-inline-header-args ()
   (should(equal
-	  '((:session . "none") (:results . "replace") (:exports . "results"))
+	  '((:session . "none")
+	    (:results . "replace")
+	    (:exports . "results")
+	    (:hlines  . "yes"))
 	  org-babel-default-inline-header-args)))
 
 (ert-deftest ob-test/org-babel-combine-header-arg-lists ()
@@ -486,7 +489,7 @@ echo \"[[file:./cv.cls]]\"
       (should
        (equal
 	'(error
-	  "variable \"x\" in block \"carre\" must be assigned a default value")
+	  "Variable \"x\" must be assigned a default value")
 	err)))))
 
 (ert-deftest test-org-babel/just-one-results-block ()
@@ -541,7 +544,7 @@ on two lines
 #+END_SRC"
     (org-babel-next-src-block 1)
     (should (string= (org-babel-execute-src-block)
-		     "A literal example\non two lines for me."))))
+		     "A literal example\non two lines\n for me."))))
 
 (ert-deftest test-ob/resolve-code-blocks-before-data-blocks ()
   (org-test-with-temp-text "
@@ -642,7 +645,7 @@ on two lines
     (check-eval "no" nil)
     (check-eval "never-export" t)
     (check-eval "no-export" t)
-    (let ((org-current-export-file "something"))
+    (let ((org-babel-exp-reference-buffer (current-buffer)))
       (check-eval "never" nil)
       (check-eval "no" nil)
       (check-eval "never-export" nil)
@@ -1106,6 +1109,155 @@ Paragraph"
     (widen)
     (should (should (re-search-forward "^: 3" nil t)))))
 
+(ert-deftest test-ob/specific-colnames ()
+  "Test passing specific column names."
+  (should
+   (equal "#+name: input-table
+| id | var1 |
+|----+------|
+|  1 | bar  |
+|  2 | baz  |
+
+#+begin_src sh :var data=input-table :exports results :colnames '(Rev Author)
+echo \"$data\"
+#+end_src
+
+#+RESULTS:
+| Rev | Author |
+|-----+--------|
+|   1 | bar    |
+|   2 | baz    |
+
+"
+	  (org-test-with-temp-text
+	      "#+name: input-table
+| id | var1 |
+|----+------|
+|  1 | bar  |
+|  2 | baz  |
+
+#+begin_src sh :var data=input-table :exports results :colnames '(Rev Author)
+echo \"$data\"
+#+end_src
+"
+	    ;; we should find a code block
+	    (should (re-search-forward org-babel-src-block-regexp nil t))
+	    (goto-char (match-beginning 0))
+	    ;; now that we've located the code block, it may be evaluated
+	    (org-babel-execute-src-block)
+	    (buffer-string)))))
+
+(ert-deftest test-ob/location-of-header-arg-eval ()
+  "Test location of header argument evaluation."
+  (org-test-with-temp-text "
+#+name: top-block
+#+begin_src emacs-lisp :var pt=(point)
+  pt
+#+end_src
+
+#+name: bottom-block
+#+begin_src emacs-lisp :var pt=top-block()
+  pt
+#+end_src
+"
+    ;; the value of the second block should be greater than the first
+    (should
+     (< (progn (re-search-forward org-babel-src-block-regexp nil t)
+	       (goto-char (match-beginning 0))
+	       (prog1 (save-match-data (org-babel-execute-src-block))
+		 (goto-char (match-end 0))))
+	(progn (re-search-forward org-babel-src-block-regexp nil t)
+	       (goto-char (match-beginning 0))
+	       (org-babel-execute-src-block))))))
+
+(ert-deftest test-ob/preserve-results-indentation ()
+  "Preserve indentation when executing a src block."
+  (should
+   (equal '(2 2)
+	  (org-test-with-temp-text
+	      "  #+begin_src emacs-lisp\n  (+ 1 1)\n  #+end_src"
+	    (org-babel-execute-src-block)
+	    (buffer-string)
+	    (let ((case-fold-search t)) (search-forward "#+results:"))
+	    ;; Check if both #+RESULTS: keyword and actual results are
+	    ;; indented by 2 columns.
+	    (list (org-get-indentation)
+		  (progn (forward-line) (org-get-indentation)))))))
+
+(ert-deftest test-ob/safe-header-args ()
+  "Detect safe and unsafe header args."
+  (let ((safe-args '((:cache . "foo")
+		     (:results . "output")
+		     (:eval . "never")
+		     (:eval . "query")))
+	(unsafe-args '((:eval . "yes")
+		       (:results . "output file")
+		       (:foo . "bar")))
+	(malformed-args '((bar . "foo")
+			  ("foo" . "bar")
+			  :foo))
+	(safe-p (org-babel-header-args-safe-fn org-babel-safe-header-args)))
+    (dolist (arg safe-args)
+      (should (org-babel-one-header-arg-safe-p arg org-babel-safe-header-args)))
+    (dolist (arg unsafe-args)
+      (should (not (org-babel-one-header-arg-safe-p arg org-babel-safe-header-args))))
+    (dolist (arg malformed-args)
+      (should (not (org-babel-one-header-arg-safe-p arg org-babel-safe-header-args))))
+    (should (not (funcall safe-p (append safe-args unsafe-args))))))
+
+(ert-deftest test-ob/noweb-expansions-in-cache ()
+  "Ensure that noweb expansions are expanded before caching."
+  (let ((noweb-expansions-in-cache-var 0))
+    (org-test-with-temp-text "
+#+name: foo
+#+begin_src emacs-lisp
+  \"I said\"
+#+end_src
+
+#+name: bar
+#+begin_src emacs-lisp :noweb yes :cache yes
+  (setq noweb-expansions-in-cache-var
+        (+ 1 noweb-expansions-in-cache-var))
+  (concat <<foo>> \" check noweb expansions\")
+#+end_src
+"
+      ;; run the second block to create the cache
+      (goto-char (point-min))
+      (re-search-forward (regexp-quote "#+name: bar"))
+      (should (string= "I said check noweb expansions"
+		       (org-babel-execute-src-block)))
+      (should (= noweb-expansions-in-cache-var 1))
+      ;; change the value of the first block
+      (goto-char (point-min))
+      (re-search-forward (regexp-quote "said"))
+      (goto-char (match-beginning 0))
+      (insert "haven't ")
+      (re-search-forward (regexp-quote "#+name: bar"))
+      (should (string= "I haven't said check noweb expansions"
+		       (org-babel-execute-src-block)))
+      (should (= noweb-expansions-in-cache-var 2)))))
+
+(ert-deftest test-org-babel/file-ext-and-output-dir ()
+  (org-test-at-id "93573e1d-6486-442e-b6d0-3fedbdc37c9b"
+    (org-babel-next-src-block)
+    (should (equal  "file-ext-basic.txt"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    (org-babel-next-src-block)
+    (should (equal "foo/file-ext-dir-relative.txt"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    (org-babel-next-src-block)
+    (should (equal  "foo/file-ext-dir-relative-slash.txt"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    (org-babel-next-src-block)
+    (should (equal  "/tmp/file-ext-dir-absolute.txt"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    (org-babel-next-src-block)
+    (should (equal  "foo.bar"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    (org-babel-next-src-block)
+    (should (equal "xxx/foo.bar"
+		   (cdr (assq :file (nth 2 (org-babel-get-src-block-info t))))))
+    ))
 
 (provide 'test-ob)
 

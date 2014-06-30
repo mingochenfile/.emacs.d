@@ -1,6 +1,6 @@
 ;;; org-colview-xemacs.el --- Column View in Org-mode, XEmacs-specific version
 
-;; Copyright (C) 2004-2013
+;; Copyright (C) 2004-2014
 ;;   Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
@@ -9,18 +9,19 @@
 ;;
 ;; This file is part of Org mode, it is not part of GNU Emacs.
 ;;
-;; You can redistribute it and/or modify it under the terms of the
-;; GNU General Public License as published by the Free Software
-;; Foundation; either version 3, or (at your option) any later
-;; version.
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
-;; This file is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this file; see the file COPYING.
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;; Commentary:
@@ -476,6 +477,7 @@ This is the compiled version of the format.")
 (defvar org-colview-initial-truncate-line-value nil
   "Remember the value of `truncate-lines' across colview.")
 
+;;;###autoload
 (defun org-columns-remove-overlays ()
   "Remove all currently active column overlays."
   (interactive)
@@ -819,6 +821,7 @@ around it."
   (let ((value (get-char-property (point) 'org-columns-value)))
     (org-open-link-from-string value arg)))
 
+;;;###autoload
 (defun org-columns-get-format-and-top-level ()
   (let (fmt)
     (when (condition-case nil (org-back-to-heading) (error nil))
@@ -1090,6 +1093,7 @@ Don't set this, this is meant for dynamic scoping.")
                     (org-overlay-display ov (format fmt val))))))
 	    org-columns-overlays))))
 
+;;;###autoload
 (defun org-columns-compute (property)
   "Sum the values of property PROPERTY hierarchically, for the entire buffer."
   (interactive)
@@ -1186,6 +1190,7 @@ Don't set this, this is meant for dynamic scoping.")
 	(setq sum (+ (string-to-number (pop l)) (/ sum 60))))
       sum)))
 
+;;;###autoload
 (defun org-columns-number-to-string (n fmt &optional printf)
   "Convert a computed column number to a string value, according to FMT."
   (cond

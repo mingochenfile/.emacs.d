@@ -1,9 +1,11 @@
 ;;; ox-deck.el --- deck.js Presentation Back-End for Org Export Engine
 
-;; Copyright (C) 2013  Rick Frankel
+;; Copyright (C) 2013, 2014  Rick Frankel
 
 ;; Author: Rick Frankel <emacs at rickster dot com>
 ;; Keywords: outlines, hypermedia, slideshow
+
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -39,34 +41,35 @@
 (require 'ox-html)
 (eval-when-compile (require 'cl))
 
-(org-export-define-derived-backend deck html
+(org-export-define-derived-backend 'deck 'html
   :menu-entry
-  (?d "Export to deck.js HTML Presentation"
-      ((?H "To temporary buffer" org-deck-export-as-html)
-       (?h "To file" org-deck-export-to-html)
-       (?o "To file and open"
-           (lambda (a s v b)
-             (if a (org-deck-export-to-html t s v b)
-               (org-open-file (org-deck-export-to-html nil s v b)))))))
+  '(?d "Export to deck.js HTML Presentation"
+       ((?H "To temporary buffer" org-deck-export-as-html)
+	(?h "To file" org-deck-export-to-html)
+	(?o "To file and open"
+	    (lambda (a s v b)
+	      (if a (org-deck-export-to-html t s v b)
+		(org-open-file (org-deck-export-to-html nil s v b)))))))
   :options-alist
-  ((:html-link-home "HTML_LINK_HOME" nil nil)
-   (:html-link-up "HTML_LINK_UP" nil nil)
-   (:html-postamble nil "html-postamble" nil t)
-   (:html-preamble nil "html-preamble" nil t)
-   (:html-head-include-default-style "HTML_INCLUDE_DEFAULT_STYLE" nil nil)
-   (:html-head-include-scripts "HTML_INCLUDE_SCRIPTS" nil nil)
-   (:deck-base-url "DECK_BASE_URL" nil org-deck-base-url)
-   (:deck-theme "DECK_THEME" nil org-deck-theme)
-   (:deck-transition "DECK_TRANSITION" nil org-deck-transition)
-   (:deck-include-extensions "DECK_INCLUDE_EXTENSIONS" nil
-                             org-deck-include-extensions split)
-   (:deck-exclude-extensions "DECK_EXCLUDE_EXTENSIONS" nil
-                             org-deck-exclude-extensions split))
+  '((:html-link-home "HTML_LINK_HOME" nil nil)
+    (:html-link-up "HTML_LINK_UP" nil nil)
+    (:deck-postamble "DECK_POSTAMBLE" nil org-deck-postamble newline)
+    (:deck-preamble "DECK_PREAMBLE" nil org-deck-preamble newline)
+    (:html-head-include-default-style "HTML_INCLUDE_DEFAULT_STYLE" "html-style" nil)
+    (:html-head-include-scripts "HTML_INCLUDE_SCRIPTS" nil nil)
+    (:deck-base-url "DECK_BASE_URL" nil org-deck-base-url)
+    (:deck-theme "DECK_THEME" nil org-deck-theme)
+    (:deck-transition "DECK_TRANSITION" nil org-deck-transition)
+    (:deck-include-extensions "DECK_INCLUDE_EXTENSIONS" nil
+			      org-deck-include-extensions split)
+    (:deck-exclude-extensions "DECK_EXCLUDE_EXTENSIONS" nil
+			      org-deck-exclude-extensions split))
   :translate-alist
-  ((headline . org-deck-headline)
-   (inner-template . org-deck-inner-template)
-   (item . org-deck-item)
-   (template . org-deck-template)))
+  '((headline . org-deck-headline)
+    (inner-template . org-deck-inner-template)
+    (item . org-deck-item)
+    (link . org-deck-link)
+    (template . org-deck-template)))
 
 (defgroup org-export-deck nil
   "Options for exporting Org mode files to deck.js HTML Presentations."
@@ -90,7 +93,7 @@ modernizr; core, extensions and themes directories.)"
   "Returns a unique list of all extensions found in
 in the extensions directories under `org-deck-directories'"
   (org-deck--cleanup-components
-   (mapcar				; extensions under existing dirs
+   (mapcar                              ; extensions under existing dirs
     (lambda (dir)
       (when (file-directory-p dir) (directory-files dir t "^[^.]")))
     (mapcar                           ; possible extension directories
@@ -164,89 +167,116 @@ Can be overriden with the DECK_BASE_URL property."
   :group 'org-export-deck
   :type 'string)
 
-(defcustom org-deck-footer-template
-  "<h1>%author - %title</h1>"
-  "Format template to specify footer div.
-Completed using `org-fill-template'.
-Optional keys include %author, %email, %file, %title and %date.
-This is included in a <footer> section."
+(defvar org-deck-pre/postamble-styles
+  `((both "left: 5px; width: 100%;")
+    (preamble "position: absolute; top: 10px;")
+    (postamble ""))
+  "Alist of css styles for the preamble, postamble and both respectively.
+Can be overriden in `org-deck-styles'. See also `org-html-divs'.")
+
+(defcustom org-deck-postamble "<h1>%a - %t</h1>"
+  "Non-nil means insert a postamble in HTML export.
+
+When set to a string, use this string
+as the postamble.  When t, insert a string as defined by the
+formatting string in `org-html-postamble-format'.
+
+When set to a function, apply this function and insert the
+returned string.  The function takes the property list of export
+options as its only argument.
+
+This is included in the document at the bottom of the content
+section, and uses the postamble element and id from
+`org-html-divs'. The default places the author and presentation
+title at the bottom of each slide.
+
+The css styling is controlled by `org-deck-pre/postamble-styles'.
+
+Setting :deck-postamble in publishing projects will take
+precedence over this variable."
+  :group 'org-export-deck
+  :type '(choice (const :tag "No postamble" nil)
+                 (const :tag "Default formatting string" t)
+                 (string :tag "Custom formatting string")
+                 (function :tag "Function (must return a string)")))
+
+(defcustom org-deck-preamble nil
+  "Non-nil means insert a preamble in HTML export.
+
+When set to a string, use this string
+as the preamble.  When t, insert a string as defined by the
+formatting string in `org-html-preamble-format'.
+
+When set to a function, apply this function and insert the
+returned string.  The function takes the property list of export
+options as its only argument.
+
+This is included in the document at the top of  content section, and
+uses the preamble element and id from `org-html-divs'. The css
+styling is controlled by `org-deck-pre/postamble-styles'.
+
+Setting :deck-preamble in publishing projects will take
+precedence over this variable."
+  :group 'org-export-deck
+  :type '(choice (const :tag "No preamble" nil)
+                 (const :tag "Default formatting string" t)
+                 (string :tag "Custom formatting string")
+                 (function :tag "Function (must return a string)")))
+
+(defvar org-deck-toc-styles
+  (mapconcat
+   'identity
+   (list
+    "#table-of-contents a {color: inherit;}"
+    "#table-of-contents ul {margin-bottom: 0;}"
+    "#table-of-contents li {padding: 0;}") "\n")
+  "Default css styles used for formatting a table of contents slide.
+Can be overriden in `org-deck-styles'.
+Note that when the headline numbering option is true, a \"list-style: none\"
+is automatically added to avoid both numbers and bullets on the toc entries.")
+
+(defcustom org-deck-styles
+  "
+#title-slide h1 {
+    position: static; padding: 0;
+    margin-top: 10%;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none;
+}
+#title-slide h2 {
+    text-align: center;
+    border:none;
+    padding: 0;
+    margin: 0;
+}"
+  "Deck specific CSS styles to include in exported html.
+Defaults to styles for the title page."
   :group 'org-export-deck
   :type 'string)
 
-(defcustom org-deck-header-template ""
-  "Format template to specify page. Completed using `org-fill-template'.
-Optional keys include %author, %email, %file, %title and %date.
-This is included in a <header> section."
-  :group 'org-export-deck
-  :type 'string)
+(defcustom org-deck-title-slide-template
+  "<h1>%t</h1>
+<h2>%a</h2>
+<h2>%e</h2>
+<h2>%d</h2>"
+  "Format template to specify title page section.
+See `org-html-postamble-format' for the valid elements which
+can be included.
 
-(defcustom org-deck-title-page-style
-  "<style type='text/css'>
-    header, footer { left: 5px; width: 100% }
-    header { position: absolute; top: 10px; }
-    #title-slide h1 {
-        position: static; padding: 0;
-        margin-top: 10%;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        -o-transform: none;
-        transform: none;
-    }
-    #title-slide h2 {
-        text-align: center;
-        border:none;
-        padding: 0;
-        margin: 0;
-    }
-</style>"
-  "CSS styles to use for title page"
-  :group 'org-export-deck
-  :type 'string)
-
-(defcustom org-deck-title-page-template
-  "<div class='slide' id='title-slide'>
-<h1>%title</h1>
-<h2>%author</h2>
-<h2>%email</h2>
-<h2>%date</h2>
-</div>"
-  "Format template to specify title page div.
-Completed using `org-fill-template'.
-Optional keys include %author, %email, %file, %title and %date.
-Note that the wrapper div must include the class \"slide\"."
-  :group 'org-export-deck
-  :type 'string)
-
-(defcustom org-deck-toc-style
-  "<style type='text/css'>
-    header, footer { left: 5px; width: 100% }
-    header { position: absolute; top: 10px; }
-    #table-of-contents h1 {
-        position: static; padding: 0;
-        margin-top: 10%;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        -o-transform: none;
-        Transform: none;
-    }
-    #title-slide h2 {
-        text-align: center;
-        border:none;
-        padding: 0;
-        margin: 0;
-    }
-</style>"
-  "CSS styles to use for title page"
+It will be wrapped in the element defined in the :html-container
+property, and defaults to the value of `org-html-container-element',
+and have the id \"title-slide\"."
   :group 'org-export-deck
   :type 'string)
 
 (defun org-deck-toc (depth info)
   (concat
-   "<div id=\"table-of-contents\" class=\"slide\">\n"
-   (format "<h2>%s</h2>\n"
-           (org-html--translate "Table of Contents" info))
+   (format "<%s id='table-of-contents' class='slide'>\n"
+           (plist-get info :html-container))
+   (format "<h2>%s</h2>\n" (org-html--translate "Table of Contents" info))
    (org-html--toc-text
     (mapcar
      (lambda (headline)
@@ -271,14 +301,16 @@ Note that the wrapper div must include the class \"slide\"."
               (format
                "<a href='#outline-container-%s'>%s</a>"
                (or (org-element-property :CUSTOM_ID headline)
-                   (mapconcat
-                    'number-to-string
-                    (org-export-get-headline-number headline info) "-"))
+		   (concat
+		    "sec-"
+		    (mapconcat
+		     'number-to-string
+		     (org-export-get-headline-number headline info) "-")))
                title)
             title)
           (org-export-get-relative-level headline info))))
      (org-export-collect-headlines info depth)))
-   "</div>\n"))
+   (format "</%s>\n" (plist-get info :html-container))))
 
 (defun org-deck--get-packages (info)
   (let ((prefix (concat (plist-get info :deck-base-url) "/"))
@@ -287,7 +319,7 @@ Note that the wrapper div must include the class \"slide\"."
         (include (plist-get info :deck-include-extensions))
         (exclude (plist-get info :deck-exclude-extensions))
         (scripts '()) (sheets '()) (snippets '()))
-    (add-to-list 'scripts (concat prefix "jquery-1.7.2.min.js"))
+    (add-to-list 'scripts (concat prefix "jquery.min.js"))
     (add-to-list 'scripts (concat prefix "core/deck.core.js"))
     (add-to-list 'scripts (concat prefix "modernizr.custom.js"))
     (add-to-list 'sheets  (concat prefix "core/deck.core.css"))
@@ -307,14 +339,14 @@ Note that the wrapper div must include the class \"slide\"."
              (add-to-list 'snippets (concat dir base "html"))))))
      (org-deck--find-extensions))
     (if (not (string-match-p "^[[:space:]]*$" theme))
-	(add-to-list 'sheets
-		     (if (file-name-directory theme) theme
-		       (format "%sthemes/style/%s" prefix theme))))
+        (add-to-list 'sheets
+                     (if (file-name-directory theme) theme
+                       (format "%sthemes/style/%s" prefix theme))))
     (if (not (string-match-p "^[[:space:]]*$" transition))
-	(add-to-list
-	 'sheets
-	 (if (file-name-directory transition) transition
-	   (format "%sthemes/transition/%s" prefix transition))))
+        (add-to-list
+         'sheets
+         (if (file-name-directory transition) transition
+           (format "%sthemes/transition/%s" prefix transition))))
     (list :scripts (nreverse scripts) :sheets (nreverse sheets)
           :snippets snippets)))
 
@@ -336,7 +368,7 @@ holding export options."
   "Transcode an ITEM element from Org to HTML.
 CONTENTS holds the contents of the item.  INFO is a plist holding
 contextual information.
-If the containing headline has the property :slide, then
+If the containing headline has the property :STEP, then
 the \"slide\" class will be added to the to the list element,
  which will make the list into a \"build\"."
   (let ((text (org-html-item item contents info)))
@@ -344,33 +376,33 @@ the \"slide\" class will be added to the to the list element,
         (replace-regexp-in-string "^<li>" "<li class='slide'>" text)
       text)))
 
-(defun org-deck-template-alist (info)
-  (list
-   `("title"  . ,(car (plist-get info :title)))
-   `("author" . ,(car (plist-get info :author)))
-   `("email"  . ,(plist-get info :email))
-   `("date"   . ,(nth 0 (plist-get info :date)))
-   `("file"   . ,(plist-get info :input-file))))
+(defun org-deck-link (link desc info)
+  (replace-regexp-in-string "href=\"#" "href=\"#outline-container-"
+			    (org-export-with-backend 'html link desc info)))
 
 (defun org-deck-template (contents info)
   "Return complete document string after HTML conversion.
 CONTENTS is the transcoded contents string.  INFO is a plist
 holding export options."
-  (let ((pkg-info (org-deck--get-packages info)))
+  (let ((pkg-info (org-deck--get-packages info))
+	(org-html--pre/postamble-class "deck-status")
+	(info (plist-put
+	       (plist-put info :html-preamble (plist-get info :deck-preamble))
+	       :html-postamble (plist-get info :deck-postamble))))
     (mapconcat
      'identity
      (list
-      "<!DOCTYPE html>"
+      (org-html-doctype info)
       (let ((lang (plist-get info :language)))
         (mapconcat
          (lambda (x)
            (apply
             'format
-            "<!--%s <html class='no-js %s' lang='%s'> %s<![endif]-->"
+            "<!--%s <html %s lang='%s' xmlns='http://www.w3.org/1999/xhtml'> %s<![endif]-->"
             x))
-         (list `("[if lt IE 7]>" "ie6" ,lang "")
-               `("[if IE 7]>" "ie7" ,lang "")
-               `("[if IE 8]>" "ie8" ,lang "")
+         (list `("[if lt IE 7]>" "class='no-js ie6'" ,lang "")
+               `("[if IE 7]>" "class='no-js ie7'" ,lang "")
+               `("[if IE 8]>" "class='no-js ie8'" ,lang "")
                `("[if gt IE 8]><!-->" "" ,lang "<!--")) "\n"))
       "<head>"
       (org-deck--build-meta-info info)
@@ -379,13 +411,6 @@ holding export options."
          (format
           "<link rel='stylesheet' href='%s' type='text/css' />" sheet))
        (plist-get pkg-info :sheets) "\n")
-      "<style type='text/css'>"
-      "#table-of-contents a {color: inherit;}"
-      "#table-of-contents ul {margin-bottom: 0;}"
-      (when (plist-get info :section-numbers)
-        "#table-of-contents ul li {list-style-type: none;}")
-      "</style>"
-      ""
       (mapconcat
        (lambda (script)
          (format
@@ -396,17 +421,33 @@ holding export options."
       "  $(document).ready(function () { $.deck('.slide'); });"
       "</script>"
       (org-html--build-head info)
-      org-deck-title-page-style
+      "<style type='text/css'>"
+      org-deck-toc-styles
+      (when (plist-get info :section-numbers)
+        "#table-of-contents ul li {list-style-type: none;}")
+      (format "#%s, #%s {%s}"
+              (nth 2 (assq 'preamble org-html-divs))
+              (nth 2 (assq 'postamble org-html-divs))
+              (nth 1 (assq 'both org-deck-pre/postamble-styles)))
+      (format "#%s {%s}"
+              (nth 2 (assq 'preamble org-html-divs))
+              (nth 1 (assq 'preamble org-deck-pre/postamble-styles)))
+      (format "#%s {%s}"
+              (nth 2 (assq 'postamble org-html-divs))
+              (nth 1 (assq 'postamble org-deck-pre/postamble-styles)))
+      org-deck-styles
+      "</style>"
       "</head>"
       "<body>"
-      "<header class='deck-status'>"
-      (org-fill-template
-       org-deck-header-template (org-deck-template-alist info))
-      "</header>"
-      "<div class='deck-container'>"
+      (format "<%s id='%s' class='deck-container'>"
+              (nth 1 (assq 'content org-html-divs))
+              (nth 2 (assq 'content org-html-divs)))
+      (org-html--build-pre/postamble 'preamble info)
       ;; title page
-      (org-fill-template
-       org-deck-title-page-template (org-deck-template-alist info))
+      (format "<%s id='title-slide' class='slide'>"
+              (plist-get info :html-container))
+      (format-spec org-deck-title-slide-template (org-html-format-spec info))
+      (format "</%s>" (plist-get info :html-container))
       ;; toc page
       (let ((depth (plist-get info :with-toc)))
         (when depth (org-deck-toc depth info)))
@@ -416,11 +457,8 @@ holding export options."
          (with-temp-buffer (insert-file-contents snippet)
                            (buffer-string)))
        (plist-get pkg-info :snippets) "\n")
-      "<footer class='deck-status'>"
-      (org-fill-template
-       org-deck-footer-template (org-deck-template-alist info))
-      "</footer>"
-      "</div>"
+      (org-html--build-pre/postamble 'postamble info)
+      (format "</%s>" (nth 1 (assq 'content org-html-divs)))
       "</body>"
       "</html>\n") "\n")))
 
@@ -432,7 +470,7 @@ INFO is a plist used as a communication channel."
                       (let ((auth (plist-get info :author)))
                         (and auth (org-export-data auth info)))))
          (date (and (plist-get info :with-date)
-                    (let ((date (plist-get info :date)))
+                    (let ((date (org-export-get-date info)))
                       (and date (org-export-data date info)))))
          (description (plist-get info :description))
          (keywords (plist-get info :keywords)))
@@ -440,7 +478,7 @@ INFO is a plist used as a communication channel."
      'identity
      (list
       (format "<title>%s</title>" title)
-      (format "<meta charset='%s' />"
+      (format "<meta http-equiv='Content-Type' content='text/html; charset=%s'/>"
               (or (and org-html-coding-system
                        (fboundp 'coding-system-get)
                        (coding-system-get
@@ -486,23 +524,8 @@ Export is done in a buffer named \"*Org deck.js Export*\", which
 will be displayed when `org-export-show-temporary-export-buffer'
 is non-nil."
   (interactive)
-  (if async
-      (org-export-async-start
-          (lambda (output)
-            (with-current-buffer (get-buffer-create "*Org deck.js Export*")
-              (erase-buffer)
-              (insert output)
-              (goto-char (point-min))
-              (nxml-mode)
-              (org-export-add-to-stack (current-buffer) 'deck)))
-        `(org-export-as 'deck ,subtreep ,visible-only ,body-only ',ext-plist))
-    (let ((outbuf (org-export-to-buffer
-                   'deck "*Org deck.js Export*"
-                   subtreep visible-only body-only ext-plist)))
-      ;; Set major mode.
-      (with-current-buffer outbuf (nxml-mode))
-      (when org-export-show-temporary-export-buffer
-        (switch-to-buffer-other-window outbuf)))))
+  (org-export-to-buffer 'deck "*Org deck.js Export*"
+    async subtreep visible-only body-only ext-plist (lambda () (nxml-mode))))
 
 (defun org-deck-export-to-html
   (&optional async subtreep visible-only body-only ext-plist)
@@ -535,17 +558,9 @@ Return output file's name."
   (interactive)
   (let* ((extension (concat "." org-html-extension))
          (file (org-export-output-file-name extension subtreep))
-         (org-export-coding-system org-html-coding-system))
-    (if async
-        (org-export-async-start
-            (lambda (f) (org-export-add-to-stack f 'deck))
-          (let ((org-export-coding-system org-html-coding-system))
-            `(expand-file-name
-              (org-export-to-file
-               'deck ,file ,subtreep ,visible-only ,body-only ',ext-plist))))
-      (let ((org-export-coding-system org-html-coding-system))
-        (org-export-to-file
-         'deck file subtreep visible-only body-only ext-plist)))))
+	 (org-export-coding-system org-html-coding-system))
+    (org-export-to-file 'deck file
+      async subtreep visible-only body-only ext-plist)))
 
 (defun org-deck-publish-to-html (plist filename pub-dir)
   "Publish an org file to deck.js HTML Presentation.
@@ -555,3 +570,5 @@ publishing directory. Returns output file name."
   (org-publish-org-to 'deck filename ".html" plist pub-dir))
 
 (provide 'ox-deck)
+
+;;; ox-deck.el ends here

@@ -1,6 +1,6 @@
 ;;; ob-sql.el --- org-babel functions for sql evaluation
 
-;; Copyright (C) 2009-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -103,10 +103,10 @@ This function is called by `org-babel-execute-src-block'."
                        (org-babel-temp-file "sql-out-")))
 	 (header-delim "")
          (command (case (intern engine)
-                    ('dbi (format "dbish --batch '%s' < %s | sed '%s' > %s"
+                    ('dbi (format "dbish --batch %s < %s | sed '%s' > %s"
 				  (or cmdline "")
 				  (org-babel-process-file-name in-file)
-				  "/^+/d;s/^\|//;$d"
+				  "/^+/d;s/^\|//;s/(NULL)/ /g;$d"
 				  (org-babel-process-file-name out-file)))
                     ('monetdb (format "mclient -f tab %s < %s > %s"
                                       (or cmdline "")
@@ -123,7 +123,8 @@ This function is called by `org-babel-execute-src-block'."
 				    (org-babel-process-file-name in-file)
 				    (org-babel-process-file-name out-file)))
 		    ('postgresql (format
-				  "psql -A -P footer=off -F \"\t\"  -f %s -o %s %s"
+				  "psql --set=\"ON_ERROR_STOP=1\" %s -A -P footer=off -F \"\t\"  -f %s -o %s %s"
+				  (if colnames-p "" "-t")
 				  (org-babel-process-file-name in-file)
 				  (org-babel-process-file-name out-file)
 				  (or cmdline "")))
@@ -142,6 +143,7 @@ This function is called by `org-babel-execute-src-block'."
       (with-temp-buffer
 	(cond
 	  ((or (eq (intern engine) 'mysql)
+	       (eq (intern engine) 'dbi)
 	       (eq (intern engine) 'postgresql))
 	   ;; Add header row delimiter after column-names header in first line
 	   (cond
@@ -185,19 +187,17 @@ This function is called by `org-babel-execute-src-block'."
    (lambda (pair)
      (setq body
 	   (replace-regexp-in-string
-	    (format "\$%s" (car pair))
-	    ((lambda (val)
-	       (if (listp val)
-		   ((lambda (data-file)
-		      (with-temp-file data-file
-			(insert (orgtbl-to-csv
-				 val '(:fmt (lambda (el) (if (stringp el)
-							     el
-							   (format "%S" el)))))))
-		      data-file)
-		    (org-babel-temp-file "sql-data-"))
-		 (if (stringp val) val (format "%S" val))))
-	     (cdr pair))
+	    (format "\$%s" (car pair))  ;FIXME: "\$" == "$"!
+	    (let ((val (cdr pair)))
+              (if (listp val)
+                  (let ((data-file (org-babel-temp-file "sql-data-")))
+                    (with-temp-file data-file
+                      (insert (orgtbl-to-csv
+                               val '(:fmt (lambda (el) (if (stringp el)
+                                                      el
+                                                    (format "%S" el)))))))
+                    data-file)
+                (if (stringp val) val (format "%S" val))))
 	    body)))
    vars)
   body)

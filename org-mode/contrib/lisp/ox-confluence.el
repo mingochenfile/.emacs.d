@@ -1,18 +1,18 @@
 ;;; ox-confluence --- Confluence Wiki Back-End for Org Export Engine
 
-;; Copyright (C) 2012 Sébastien Delafond
+;; Copyright (C) 2012, 2014 Sébastien Delafond
 
-;; Author: Sébastien Delafond <sdelafond at gmx dot net>
+;; Author: Sébastien Delafond <sdelafond@gmail.com>
 ;; Keywords: outlines, confluence, wiki
 
 ;; This file is not part of GNU Emacs.
 
-;; GNU Emacs is free software: you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -37,29 +37,31 @@
 (require 'ox-ascii)
 
 ;; Define the backend itself
-(org-export-define-derived-backend confluence ascii
-  :translate-alist ((bold . org-confluence-bold)
-                    (example-block . org-confluence-example-block)
-                    (fixed-width . org-confluence-fixed-width)
-                    (footnote-definition . org-confluence-empty)
-                    (footnote-reference . org-confluence-empty)
-                    (headline . org-confluence-headline)
-                    (italic . org-confluence-italic)
-                    (link . org-confluence-link)
-                    (section . org-confluence-section)
-                    (src-block . org-confluence-src-block)
-                    (strike-through . org-confluence-strike-through)
-                    (table . org-confluence-table)
-                    (table-cell . org-confluence-table-cell)
-                    (table-row . org-confluence-table-row)
-                    (template . org-confluence-template)
-                    (underline . org-confluence-underline)))
+(org-export-define-derived-backend 'confluence 'ascii
+  :translate-alist '((bold . org-confluence-bold)
+		     (example-block . org-confluence-example-block)
+		     (fixed-width . org-confluence-fixed-width)
+		     (footnote-definition . org-confluence-empty)
+		     (footnote-reference . org-confluence-empty)
+		     (headline . org-confluence-headline)
+		     (italic . org-confluence-italic)
+                     (item . org-confluence-item)
+		     (link . org-confluence-link)
+		     (property-drawer . org-confluence-property-drawer)
+		     (section . org-confluence-section)
+		     (src-block . org-confluence-src-block)
+		     (strike-through . org-confluence-strike-through)
+		     (table . org-confluence-table)
+		     (table-cell . org-confluence-table-cell)
+		     (table-row . org-confluence-table-row)
+		     (template . org-confluence-template)
+		     (underline . org-confluence-underline)))
 
 ;; All the functions we use
 (defun org-confluence-bold (bold contents info)
   (format "*%s*" contents))
 
-(defun org-confluence-empty (empy contents info)
+(defun org-confluence-empty (empty contents info)
   "")
 
 (defun org-confluence-example-block (example-block contents info)
@@ -69,6 +71,11 @@
 
 (defun org-confluence-italic (italic contents info)
   (format "_%s_" contents))
+
+(defun org-confluence-item (item contents info)
+  (concat (make-string (1+ (org-confluence--li-depth item)) ?\-)
+          " "
+          (org-trim contents)))
 
 (defun org-confluence-fixed-width (fixed-width contents info)
   (format "\{\{%s\}\}" contents))
@@ -93,6 +100,11 @@
              (t
               raw-link))
             "]")))
+
+(defun org-confluence-property-drawer (property-drawer contents info)
+  (and (org-string-nw-p contents)
+       (format "\{\{%s\}\}" contents)))
+
 (defun org-confluence-section (section contents info)
   contents)
 
@@ -138,6 +150,22 @@
           contents
           "\{code\}\n"))
 
+(defun org-confluence--li-depth (item)
+  "Return depth of a list item; -1 means not a list item"
+  ;; FIXME check whether it's worth it to cache depth
+  ;;       (it gets recalculated quite a few times while
+  ;;       traversing a list)
+  (let ((depth -1)
+        (tag))
+    (while (and item
+                (setq tag (car item))
+                (or (eq tag 'item) ; list items interleave with plain-list
+                    (eq tag 'plain-list)))
+      (when (eq tag 'item)
+        (incf depth))
+      (setq item (org-export-get-parent item)))
+    depth))
+
 ;; main interactive entrypoint
 (defun org-confluence-export-as-confluence
   (&optional async subtreep visible-only body-only ext-plist)
@@ -166,26 +194,11 @@ EXT-PLIST, when provided, is a property list with external
 parameters overriding Org default settings, but still inferior to
 file-local settings.
 
-Export is done in a buffer named \"*Org E-Confluence Export*\", which
+Export is done in a buffer named \"*Org CONFLUENCE Export*\", which
 will be displayed when `org-export-show-temporary-export-buffer'
 is non-nil."
   (interactive)
-  (if async
-      (org-export-async-start
-	  (lambda (output)
-	    (with-current-buffer (get-buffer-create "*Org E-Confluence Export*")
-	      (erase-buffer)
-	      (insert output)
-	      (goto-char (point-min))
-	      (text-mode)
-	      (org-export-add-to-stack (current-buffer) 'confluence)))
-	`(org-export-as 'confluence ,subtreep ,visible-only ,body-only
-			',ext-plist))
-    (let ((outbuf (org-export-to-buffer
-		   'confluence "*Org E-Confluence Export*"
-		   subtreep visible-only body-only ext-plist)))
-      (with-current-buffer outbuf (text-mode))
-      (when org-export-show-temporary-export-buffer
-	(switch-to-buffer-other-window outbuf)))))
+  (org-export-to-buffer 'confluence "*org CONFLUENCE Export*"
+    async subtreep visible-only body-only ext-plist (lambda () (text-mode))))
 
 (provide 'ox-confluence)

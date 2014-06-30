@@ -1,4 +1,8 @@
+(add-to-list 'load-path "~/.emacs.d/org-mode/lisp/")
+(add-to-list 'load-path "~/.emacs.d/orgmode-mediawiki")
+(add-to-list 'load-path "~/.emacs.d/org-mdoe/contrib/lisp")
 (add-to-list 'load-path "~/.emacs.d/multiple-cursors")
+;; (require 'org-list)
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
@@ -157,6 +161,8 @@ LaTeX-section-label))
  '(TeX-command-list (quote (("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("TeX" "%(PDF)%(tex) %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("latexnonint" "%`%l -interaction=nonstopmode %(mode)%'%t" TeX-run-command nil t) ("LaTeX" "%`%l %(mode)%' %t" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document") ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files") ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(column-number-mode t)
  '(display-time-mode t)
+ ;; '(evil-toggle-key "C-~")
+ '(evil-toggle-key "UU")
  '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t) (python . t) (C \.t))))
  '(org-confirm-babel-evaluate nil)
  '(org-modules (quote (org-bbdb org-bibtex org-docview org-gnus org-id org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-special-blocks org-vm org-wl org-w3m org-mouse org-mairix org-toc)))
@@ -958,11 +964,17 @@ If there is still something left do do start the next latex-command."
    (key-chord-define evil-visual-state-map "jk" 'evil-change-to-previous-state)
    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
    (key-chord-define evil-replace-state-map "jk" 'evil-normal-state)
+(key-chord-define-global "JK" 'other-window)
+(key-chord-define-global "JJ" 'save-buffer)
+(key-chord-define-global "KK" 'kill-buffer)
+(key-chord-define-global "::" 'comment-dwim)
    ;; (key-chord-define-global "zz" 'evil-emacs-state)
    ;; (key-chord-define-global "aa" 'other-window) ;
    ;; (key-chord-define-global "ss" 'save-buffer)
-
 (key-chord-define-global "kl" 'switch-to-buffer)
+;; (key-chord-define-global "VV" 'evil-emacs-state)
+;; (key-chord-define-global "UU" (lookup-key (current-local-map) (kbd "C-~")))
+(key-chord-define-global "LL" (lookup-key (current-global-map) (kbd "C-x C-f")))
 ;; (key-chord-define-global "vv" 'save-buffer)
 (require 'smex)
 (smex-initialize)
@@ -1034,10 +1046,10 @@ If there is still something left do do start the next latex-command."
 ;; (require 'emms-setup)
 ;; (emms-standard)
 ;; (emms-default-players)
-(setq browse-url-browser-function 'w3m-goto-url-new-session)
+;; (setq browse-url-browser-function 'w3m-goto-url-new-session)
  
-;;change w3m user-agent to android
-(setq w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
+;; ;;change w3m user-agent to android
+;; (setq w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
  
 ;;quick access hacker news
 (defun hn ()
@@ -1045,12 +1057,12 @@ If there is still something left do do start the next latex-command."
 (browse-url "http://news.ycombinator.com"))
  
 ;;quick access reddit
-(defun reddit (reddit)
-"Opens the REDDIT in w3m-new-session"
-(interactive (list
-(read-string "Enter the reddit (default: psycology): " nil nil "psychology" nil)))
-(browse-url (format "http://m.reddit.com/r/%s" reddit))
-)
+;; (defun reddit (reddit)
+;; "Opens the REDDIT in w3m-new-session"
+;; (interactive (list
+;; (read-string "Enter the reddit (default: psycology): " nil nil "psychology" nil)))
+;; (browse-url (format "http://m.reddit.com/r/%s" reddit))
+;; )
  
 ;;i need this often
 (defun wikipedia-search (search-term)
@@ -1071,12 +1083,12 @@ search-term
 )
  
 ;;when I want to enter the web address all by hand
-(defun w3m-open-site (site)
-"Opens site in new w3m session with 'http://' appended"
-(interactive
-(list (read-string "inside.amazon.com" nil nil w3m-home-page nil )))
-(w3m-goto-url-new-session
-(concat "http://" site)))
+;; (defun w3m-open-site (site)
+;; "Opens site in new w3m session with 'http://' appended"
+;; (interactive
+;; (list (read-string "inside.amazon.com" nil nil w3m-home-page nil )))
+;; (w3m-goto-url-new-session
+;; (concat "http://" site)))
 
 ;; Pymacs for PYthon
 (add-to-list 'load-path "~/.emacs.d/Pymacs")
@@ -1156,6 +1168,13 @@ search-term
 (setq x-select-enable-clipboard t)
 
 ;; org mode export wiki
-(add-to-list 'load-path "~/.emacs.d/orgmode-mediawiki")
 (require 'ox-mediawiki)
 
+;; Auto-indent-mode.el
+(setq auto-indent-on-visit-file t)
+(require 'auto-indent-mode)
+(auto-indent-global-mode)
+
+;; W3-brower
+(add-to-list 'load-path "~/.emacs.d/w3/lisp")
+(require 'w3)

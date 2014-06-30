@@ -1,6 +1,6 @@
 ;;; org-macs.el --- Top-level definitions for Org-mode
 
-;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2014 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -33,7 +33,9 @@
 
 (eval-and-compile
   (unless (fboundp 'declare-function)
-    (defmacro declare-function (fn file &optional arglist fileonly)))
+    (defmacro declare-function (fn file &optional arglist fileonly)
+      `(autoload ',fn ,file)))
+
   (if (>= emacs-major-version 23)
       (defsubst org-char-to-string(c)
 	"Defsubst to decode UTF-8 character values in emacs 23 and beyond."
@@ -152,9 +154,9 @@ We use a macro so that the test can happen at compilation time."
     `(let ((,mpom ,pom))
        (save-excursion
 	 (if (markerp ,mpom) (set-buffer (marker-buffer ,mpom)))
-	 (save-excursion
-	   (goto-char (or ,mpom (point)))
-	   ,@body)))))
+	 (org-with-wide-buffer
+	  (goto-char (or ,mpom (point)))
+	  ,@body)))))
 (def-edebug-spec org-with-point-at (form body))
 (put 'org-with-point-at 'lisp-indent-function 1)
 
@@ -162,18 +164,17 @@ We use a macro so that the test can happen at compilation time."
   (cons (if (fboundp 'with-no-warnings) 'with-no-warnings 'progn) body))
 (def-edebug-spec org-no-warnings (body))
 
-;; FIXME: Normalize argument names
-(defmacro org-with-remote-undo (_buffer &rest _body)
+(defmacro org-with-remote-undo (buffer &rest body)
   "Execute BODY while recording undo information in two buffers."
   (org-with-gensyms (cline cmd buf1 buf2 undo1 undo2 c1 c2)
     `(let ((,cline (org-current-line))
 	   (,cmd this-command)
 	   (,buf1 (current-buffer))
-	   (,buf2 ,_buffer)
+	   (,buf2 ,buffer)
 	   (,undo1 buffer-undo-list)
-	   (,undo2 (with-current-buffer ,_buffer buffer-undo-list))
+	   (,undo2 (with-current-buffer ,buffer buffer-undo-list))
 	   ,c1 ,c2)
-       ,@_body
+       ,@body
        (when org-agenda-allow-remote-undo
 	 (setq ,c1 (org-verify-change-for-undo
 		    ,undo1 (with-current-buffer ,buf1 buffer-undo-list))
@@ -281,14 +282,6 @@ we turn off invisibility temporarily.  Use this in a `let' form."
   (and (match-beginning n)
        (<= (match-beginning n) pos)
        (>= (match-end n) pos)))
-
-(defun org-autoload (file functions)
-  "Establish autoload for all FUNCTIONS in FILE, if not bound already."
-  (let ((d (format "Documentation will be available after `%s.el' is loaded."
-		   file))
-	f)
-    (while (setq f (pop functions))
-      (or (fboundp f) (autoload f file d t)))))
 
 (defun org-match-line (re)
   "Looking-at at the beginning of the current line."

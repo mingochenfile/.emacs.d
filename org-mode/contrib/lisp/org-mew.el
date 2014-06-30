@@ -1,6 +1,6 @@
 ;;; org-mew.el --- Support for links to Mew messages from within Org-mode
 
-;; Copyright (C) 2008-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2014 Free Software Foundation, Inc.
 
 ;; Author: Tokuya Kameshima <kames at fa2 dot so-net dot ne dot jp>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -8,12 +8,12 @@
 
 ;; This file is not part of GNU Emacs.
 
-;; GNU Emacs is free software: you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -195,7 +195,8 @@ with \"t\" key."
 	   (mark-info (mew-summary-get-mark)))
       (if (and org-mew-link-to-refile-destination
 	       (eq mark-info ?o))	; marked as refile
-	  (nth 1 (mew-refile-get msgnum))
+	  (mew-case-folder (mew-sinfo-get-case)
+			   (nth 1 (mew-refile-get msgnum)))
 	(let ((folder-or-path (mew-summary-folder-name)))
 	  (mew-folder-path-to-folder folder-or-path t))))))
 

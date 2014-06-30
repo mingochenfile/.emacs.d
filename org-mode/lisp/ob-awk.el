@@ -1,6 +1,6 @@
 ;;; ob-awk.el --- org-babel functions for awk evaluation
 
-;; Copyright (C) 2011-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2011-2014 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -44,11 +44,8 @@
 (defvar org-babel-awk-command "awk"
   "Name of the awk executable command.")
 
-(defun org-babel-expand-body:awk (body params &optional processed-params)
+(defun org-babel-expand-body:awk (body params)
   "Expand BODY according to PARAMS, return the expanded body."
-  (dolist (pair (mapcar #'cdr (org-babel-get-header params :var)))
-    (setf body (replace-regexp-in-string
-                (regexp-quote (format "$%s" (car pair))) (cdr pair) body)))
   body)
 
 (defun org-babel-execute:awk (body params)
@@ -59,34 +56,40 @@ called by `org-babel-execute-src-block'"
          (cmd-line (cdr (assoc :cmd-line params)))
          (in-file (cdr (assoc :in-file params)))
 	 (full-body (org-babel-expand-body:awk body params))
-	 (code-file ((lambda (file) (with-temp-file file (insert full-body)) file)
-                     (org-babel-temp-file "awk-")))
-	 (stdin ((lambda (stdin)
+	 (code-file (let ((file (org-babel-temp-file "awk-")))
+                      (with-temp-file file (insert full-body)) file))
+	 (stdin (let ((stdin (cdr (assoc :stdin params))))
 		   (when stdin
 		     (let ((tmp (org-babel-temp-file "awk-stdin-"))
 			   (res (org-babel-ref-resolve stdin)))
 		       (with-temp-file tmp
 			 (insert (org-babel-awk-var-to-awk res)))
-		       tmp)))
-		 (cdr (assoc :stdin params))))
-         (cmd (mapconcat #'identity (remove nil (list org-babel-awk-command
-						      "-f" code-file
-						      cmd-line
-						      in-file))
+		       tmp))))
+         (cmd (mapconcat #'identity
+			 (append
+			  (list org-babel-awk-command
+				"-f" code-file cmd-line)
+			  (mapcar (lambda (pair)
+				    (format "-v %s='%s'"
+					    (cadr pair)
+					    (org-babel-awk-var-to-awk
+					     (cddr pair))))
+				  (org-babel-get-header params :var))
+			  (list in-file))
 			 " ")))
     (org-babel-reassemble-table
-     ((lambda (results)
-	(when results
-	  (org-babel-result-cond result-params
-	    results
-	    (let ((tmp (org-babel-temp-file "awk-results-")))
-	      (with-temp-file tmp (insert results))
-	      (org-babel-import-elisp-from-file tmp)))))
-      (cond
-       (stdin (with-temp-buffer
-		(call-process-shell-command cmd stdin (current-buffer))
-		(buffer-string)))
-       (t (org-babel-eval cmd ""))))
+     (let ((results
+            (cond
+             (stdin (with-temp-buffer
+                      (call-process-shell-command cmd stdin (current-buffer))
+                      (buffer-string)))
+             (t (org-babel-eval cmd "")))))
+       (when results
+         (org-babel-result-cond result-params
+	   results
+	   (let ((tmp (org-babel-temp-file "awk-results-")))
+	     (with-temp-file tmp (insert results))
+	     (org-babel-import-elisp-from-file tmp)))))
      (org-babel-pick-name
       (cdr (assoc :colname-names params)) (cdr (assoc :colnames params)))
      (org-babel-pick-name

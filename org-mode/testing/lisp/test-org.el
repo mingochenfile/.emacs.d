@@ -27,6 +27,64 @@
 
 ;;; Comments
 
+(ert-deftest test-org/toggle-comment ()
+  "Test `org-toggle-comment' specifications."
+  ;; Simple headline.
+  (should
+   (equal "* Test"
+	  (org-test-with-temp-text "* COMMENT Test"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  (should
+   (equal "* COMMENT Test"
+	  (org-test-with-temp-text "* Test"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  ;; Headline with a regular keyword.
+  (should
+   (equal "* TODO Test"
+	  (org-test-with-temp-text "* TODO COMMENT Test"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  (should
+   (equal "* TODO COMMENT Test"
+	  (org-test-with-temp-text "* TODO Test"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  ;; Empty headline.
+  (should
+   (equal "* "
+	  (org-test-with-temp-text "* COMMENT"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  (should
+   (equal "* COMMENT"
+	  (org-test-with-temp-text "* "
+	    (org-toggle-comment)
+	    (buffer-string))))
+  ;; Headline with a single keyword.
+  (should
+   (equal "* TODO "
+	  (org-test-with-temp-text "* TODO COMMENT"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  (should
+   (equal "* TODO COMMENT"
+	  (org-test-with-temp-text "* TODO"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  ;; Headline with a keyword, a priority cookie and contents.
+  (should
+   (equal "* TODO [#A] Headline"
+	  (org-test-with-temp-text "* TODO [#A] COMMENT Headline"
+	    (org-toggle-comment)
+	    (buffer-string))))
+  (should
+   (equal "* TODO [#A] COMMENT Headline"
+	  (org-test-with-temp-text "* TODO [#A] Headline"
+	    (org-toggle-comment)
+	    (buffer-string)))))
+
 (ert-deftest test-org/comment-dwim ()
   "Test `comment-dwim' behaviour in an Org buffer."
   ;; No region selected, no comment on current line and line not
@@ -69,7 +127,8 @@
 	      (goto-char (point-max))
 	      (call-interactively 'comment-dwim)
 	      (buffer-string)))))
-  ;; Region selected without comments: comment all non-blank lines.
+  ;; Region selected without comments: comment all lines if
+  ;; `comment-empty-lines' is non-nil, only non-blank lines otherwise.
   (should
    (equal "# Comment 1\n\n# Comment 2"
 	  (org-test-with-temp-text "Comment 1\n\nComment 2"
@@ -77,14 +136,43 @@
 	      (transient-mark-mode 1)
 	      (push-mark (point) t t)
 	      (goto-char (point-max))
-	      (call-interactively 'comment-dwim)
+	      (let ((comment-empty-lines nil))
+		(call-interactively 'comment-dwim))
+	      (buffer-string)))))
+  (should
+   (equal "# Comment 1\n# \n# Comment 2"
+	  (org-test-with-temp-text "Comment 1\n\nComment 2"
+	    (progn
+	      (transient-mark-mode 1)
+	      (push-mark (point) t t)
+	      (goto-char (point-max))
+	      (let ((comment-empty-lines t))
+		(call-interactively 'comment-dwim))
 	      (buffer-string)))))
   ;; In front of a keyword without region, insert a new comment.
   (should
    (equal "# \n#+KEYWORD: value"
 	  (org-test-with-temp-text "#+KEYWORD: value"
 	    (progn (call-interactively 'comment-dwim)
-		   (buffer-string))))))
+		   (buffer-string)))))
+  ;; In a source block, use appropriate syntax.
+  (should
+   (equal "  ;; "
+	  (org-test-with-temp-text "#+BEGIN_SRC emacs-lisp\n\n#+END_SRC"
+	    (forward-line)
+	    (let ((org-edit-src-content-indentation 2))
+	      (call-interactively 'comment-dwim))
+	    (buffer-substring-no-properties (line-beginning-position) (point)))))
+  (should
+   (equal "#+BEGIN_SRC emacs-lisp\n  ;; a\n  ;; b\n#+END_SRC"
+	  (org-test-with-temp-text "#+BEGIN_SRC emacs-lisp\na\nb\n#+END_SRC"
+	    (forward-line)
+	    (transient-mark-mode 1)
+	    (push-mark (point) t t)
+	    (forward-line 2)
+	    (let ((org-edit-src-content-indentation 2))
+	      (call-interactively 'comment-dwim))
+	    (buffer-string)))))
 
 
 
@@ -124,9 +212,16 @@
 (ert-deftest test-org/fill-paragraph ()
   "Test `org-fill-paragraph' specifications."
   ;; At an Org table, align it.
-  (org-test-with-temp-text "|a|"
-    (org-fill-paragraph)
-    (should (equal (buffer-string) "| a |\n")))
+  (should
+   (equal "| a |\n"
+	  (org-test-with-temp-text "|a|"
+	    (org-fill-paragraph)
+	    (buffer-string))))
+  (should
+   (equal "#+name: table\n| a |\n"
+	  (org-test-with-temp-text "#+name: table\n| a |"
+	    (org-fill-paragraph)
+	    (buffer-string))))
   ;; At a paragraph, preserve line breaks.
   (org-test-with-temp-text "some \\\\\nlong\ntext"
     (let ((fill-column 20))
@@ -155,6 +250,14 @@
 	  (org-test-with-temp-text "01234 6789"
 	    (let ((fill-column 5))
 	      (narrow-to-region 1 8)
+	      (org-fill-paragraph)
+	      (buffer-string)))))
+  ;; Handle `adaptive-fill-regexp' in paragraphs.
+  (should
+   (equal "> a b"
+	  (org-test-with-temp-text "> a\n> b"
+	    (let ((fill-column 5)
+		  (adaptive-fill-regexp "[ \t]*>+[ \t]*"))
 	      (org-fill-paragraph)
 	      (buffer-string)))))
   ;; Special case: Fill first paragraph when point is at an item or
@@ -192,6 +295,28 @@
 	    (let ((fill-column 20))
 	      (org-fill-paragraph)
 	      (buffer-string)))))
+  ;; Do not mix consecutive comments when filling one of them.
+  (should
+   (equal "# A B\n\n# C"
+	  (org-test-with-temp-text "# A\n# B\n\n# C"
+	    (let ((fill-column 20))
+	      (org-fill-paragraph)
+	      (buffer-string)))))
+  ;; Use commented empty lines as separators when filling comments.
+  (should
+   (equal "# A B\n#\n# C"
+	  (org-test-with-temp-text "# A\n# B\n#\n# C"
+	    (let ((fill-column 20))
+	      (org-fill-paragraph)
+	      (buffer-string)))))
+  ;; Handle `adaptive-fill-regexp' in comments.
+  (should
+   (equal "# > a b"
+	  (org-test-with-temp-text "# > a\n# > b"
+	    (let ((fill-column 20)
+		  (adaptive-fill-regexp "[ \t]*>+[ \t]*"))
+	      (org-fill-paragraph)
+	      (buffer-string)))))
   ;; Do nothing at affiliated keywords.
   (org-test-with-temp-text "#+NAME: para\nSome\ntext."
     (let ((fill-column 20))
@@ -220,6 +345,32 @@
 	  (org-test-with-temp-text "- 12345 7890"
 	    (let ((fill-column 7))
 	      (end-of-line)
+	      (org-auto-fill-function)
+	      (buffer-string)))))
+  ;; Auto fill paragraph when `adaptive-fill-regexp' matches.
+  (should
+   (equal "> 12345\n  7890"
+	  (org-test-with-temp-text "> 12345 7890"
+	    (let ((fill-column 10)
+		  (adaptive-fill-regexp "[ \t]*>+[ \t]*")
+		  (adaptive-fill-first-line-regexp "\\`[ 	]*\\'"))
+	      (end-of-line)
+	      (org-auto-fill-function)
+	      (buffer-string)))))
+  (should
+   (equal "> 12345\n> 12345\n> 7890"
+	  (org-test-with-temp-text "> 12345\n> 12345 7890"
+	    (let ((fill-column 10)
+		  (adaptive-fill-regexp "[ \t]*>+[ \t]*"))
+	      (goto-char (point-max))
+	      (org-auto-fill-function)
+	      (buffer-string)))))
+  (should-not
+   (equal " 12345\n *12345\n *12345"
+	  (org-test-with-temp-text " 12345\n *12345 12345"
+	    (let ((fill-column 10)
+		  (adaptive-fill-regexp "[ \t]*>+[ \t]*"))
+	      (goto-char (point-max))
 	      (org-auto-fill-function)
 	      (buffer-string)))))
   ;; Auto fill comments.
@@ -290,44 +441,512 @@
 
 
 
+;;; Indentation
+
+(ert-deftest test-org/indent-line ()
+  "Test `org-indent-line' specifications."
+  ;; Do not indent footnote definitions or headlines.
+  (should
+   (zerop
+    (org-test-with-temp-text "* H"
+      (org-indent-line)
+      (org-get-indentation))))
+  (should
+   (zerop
+    (org-test-with-temp-text "[fn:1] fn"
+      (let ((org-adapt-indentation t)) (org-indent-line))
+      (org-get-indentation))))
+  ;; Do not indent before first headline.
+  (should
+   (zerop
+    (org-test-with-temp-text ""
+      (org-indent-line)
+      (org-get-indentation))))
+  ;; Indent according to headline level otherwise, unless
+  ;; `org-adapt-indentation' is nil.
+  (should
+   (= 2
+      (org-test-with-temp-text "* H\nA"
+	(forward-line)
+	(let ((org-adapt-indentation t)) (org-indent-line))
+	(org-get-indentation))))
+  (should
+   (= 2
+      (org-test-with-temp-text "* H\n\nA"
+	(forward-line)
+	(let ((org-adapt-indentation t)) (org-indent-line))
+	(org-get-indentation))))
+  (should
+   (zerop
+    (org-test-with-temp-text "* H\nA"
+      (forward-line)
+      (let ((org-adapt-indentation nil)) (org-indent-line))
+      (org-get-indentation))))
+  ;; Indenting preserves point position.
+  (should
+   (org-test-with-temp-text "* H\nAB"
+     (forward-line)
+     (forward-char)
+     (let ((org-adapt-indentation t)) (org-indent-line))
+     (looking-at "B")))
+  ;; Do not change indentation at an item.
+  (should
+   (= 1
+      (org-test-with-temp-text "* H\n - A"
+	(forward-line)
+	(let ((org-adapt-indentation t)) (org-indent-line))
+	(org-get-indentation))))
+  ;; On blank lines at the end of a list, indent like last element
+  ;; within it if the line is still in the list.  Otherwise, indent
+  ;; like the whole list.
+  (should
+   (= 4
+      (org-test-with-temp-text "* H\n- A\n  - AA\n"
+	(goto-char (point-max))
+	(let ((org-adapt-indentation t)) (org-indent-line))
+	(org-get-indentation))))
+  (should
+   (zerop
+    (org-test-with-temp-text "* H\n- A\n  - AA\n\n\n\n"
+      (goto-char (point-max))
+      (let ((org-adapt-indentation t)) (org-indent-line))
+      (org-get-indentation))))
+  ;; Likewise, on a blank line at the end of a footnote definition,
+  ;; indent at column 0 if line belongs to the definition.  Otherwise,
+  ;; indent like the definition itself.
+  (should
+   (zerop
+    (org-test-with-temp-text "* H\n[fn:1] Definition\n"
+      (goto-char (point-max))
+      (let ((org-adapt-indentation t)) (org-indent-line))
+      (org-get-indentation))))
+  (should
+   (zerop
+    (org-test-with-temp-text "* H\n[fn:1] Definition\n\n\n\n"
+      (goto-char (point-max))
+      (let ((org-adapt-indentation t)) (org-indent-line))
+      (org-get-indentation))))
+  ;; After the end of the contents of a greater element, indent like
+  ;; the beginning of the element.
+  (should
+   (= 1
+      (org-test-with-temp-text " #+BEGIN_CENTER\n  Contents\n#+END_CENTER"
+	(forward-line 2)
+	(org-indent-line)
+	(org-get-indentation))))
+  ;; At the first line of an element, indent like previous element's
+  ;; first line, ignoring footnotes definitions and inline tasks, or
+  ;; according to parent.
+  (should
+   (= 2
+      (org-test-with-temp-text "A\n\n  B\n\nC"
+	(goto-char (point-max))
+	(org-indent-line)
+	(org-get-indentation))))
+  (should
+   (= 1
+      (org-test-with-temp-text " A\n\n[fn:1] B\n\n\nC"
+	(goto-char (point-max))
+	(org-indent-line)
+	(org-get-indentation))))
+  (should
+   (= 1
+      (org-test-with-temp-text " #+BEGIN_CENTER\n  Contents\n#+END_CENTER"
+	(forward-line 1)
+	(org-indent-line)
+	(org-get-indentation))))
+  ;; Within code part of a source block, use language major mode if
+  ;; `org-src-tab-acts-natively' is non-nil.  Otherwise, indent
+  ;; according to line above.
+  (should
+   (= 6
+      (org-test-with-temp-text "#+BEGIN_SRC emacs-lisp\n (and A\nB)\n#+END_SRC"
+	(forward-line 2)
+	(let ((org-src-tab-acts-natively t)
+	      (org-edit-src-content-indentation 0))
+	  (org-indent-line))
+	(org-get-indentation))))
+  (should
+   (= 1
+      (org-test-with-temp-text "#+BEGIN_SRC emacs-lisp\n (and A\nB)\n#+END_SRC"
+	(forward-line 2)
+	(let ((org-src-tab-acts-natively nil)
+	      (org-edit-src-content-indentation 0))
+	  (org-indent-line))
+	(org-get-indentation))))
+  ;; Otherwise, indent like the first non-blank line above.
+  (should
+   (zerop
+    (org-test-with-temp-text "#+BEGIN_CENTER\nline1\n\n  line2\n#+END_CENTER"
+      (forward-line 3)
+      (org-indent-line)
+      (org-get-indentation))))
+  ;; Align node properties according to `org-property-format'.  Handle
+  ;; nicely empty values.
+  (should
+   (equal ":PROPERTIES:\n:key:      value\n:END:"
+	  (org-test-with-temp-text ":PROPERTIES:\n:key: value\n:END:"
+	    (forward-line)
+	    (let ((org-property-format "%-10s %s"))
+	      (org-indent-line)
+	      (buffer-string)))))
+  (should
+   (equal ":PROPERTIES:\n:key:\n:END:"
+	  (org-test-with-temp-text ":PROPERTIES:\n:key:\n:END:"
+	    (forward-line)
+	    (let ((org-property-format "%-10s %s"))
+	      (org-indent-line)
+	      (buffer-string))))))
+
+(ert-deftest test-org/indent-region ()
+  "Test `org-indent-region' specifications."
+  ;; Indent paragraph.
+  (should
+   (equal "A\nB\nC"
+	  (org-test-with-temp-text " A\nB\n  C"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string))))
+  ;; Indent greater elements along with their contents.
+  (should
+   (equal "#+BEGIN_CENTER\nA\nB\n#+END_CENTER"
+	  (org-test-with-temp-text "#+BEGIN_CENTER\n A\n  B\n#+END_CENTER"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string))))
+  ;; Ignore contents of verse blocks and example blocks.
+  (should
+   (equal "#+BEGIN_VERSE\n A\n  B\n#+END_VERSE"
+	  (org-test-with-temp-text "#+BEGIN_VERSE\n A\n  B\n#+END_VERSE"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string))))
+  (should
+   (equal "#+BEGIN_EXAMPLE\n A\n  B\n#+END_EXAMPLE"
+	  (org-test-with-temp-text "#+BEGIN_EXAMPLE\n A\n  B\n#+END_EXAMPLE"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string))))
+  ;; Indent according to mode if `org-src-tab-acts-natively' is
+  ;; non-nil.  Otherwise, do not indent code at all.
+  (should
+   (equal "#+BEGIN_SRC emacs-lisp\n(and A\n     B)\n#+END_SRC"
+	  (org-test-with-temp-text
+	      "#+BEGIN_SRC emacs-lisp\n (and A\nB)\n#+END_SRC"
+	    (let ((org-src-tab-acts-natively t)
+		  (org-edit-src-content-indentation 0))
+	      (org-indent-region (point-min) (point-max)))
+	    (buffer-string))))
+  (should
+   (equal "#+BEGIN_SRC emacs-lisp\n (and A\nB)\n#+END_SRC"
+	  (org-test-with-temp-text
+	      "#+BEGIN_SRC emacs-lisp\n (and A\nB)\n#+END_SRC"
+	    (let ((org-src-tab-acts-natively nil)
+		  (org-edit-src-content-indentation 0))
+	      (org-indent-region (point-min) (point-max)))
+	    (buffer-string))))
+  ;; Align node properties according to `org-property-format'.  Handle
+  ;; nicely empty values.
+  (should
+   (equal ":PROPERTIES:\n:key:      value\n:END:"
+	  (org-test-with-temp-text ":PROPERTIES:\n:key: value\n:END:"
+	    (let ((org-property-format "%-10s %s"))
+	      (org-indent-region (point-min) (point-max)))
+	    (buffer-string))))
+  (should
+   (equal ":PROPERTIES:\n:key:\n:END:"
+	  (org-test-with-temp-text ":PROPERTIES:\n:key:\n:END:"
+	    (let ((org-property-format "%-10s %s"))
+	      (org-indent-region (point-min) (point-max)))
+	    (buffer-string))))
+  ;; Special case: plain lists and footnote definitions.
+  (should
+   (equal "- A\n  B\n  - C\n\n    D"
+	  (org-test-with-temp-text "- A\n   B\n  - C\n\n     D"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string))))
+  (should
+   (equal "[fn:1] Definition\n\nDefinition"
+	  (org-test-with-temp-text "[fn:1] Definition\n\n  Definition"
+	    (org-indent-region (point-min) (point-max))
+	    (buffer-string)))))
+
+
+
+;;; Editing
+
+;;;; Insert elements
+
+(ert-deftest test-org/meta-return ()
+  "Test M-RET (`org-meta-return')."
+  ;; In a table field insert a row above.
+  (should
+   (org-test-with-temp-text "| a |"
+     (forward-char)
+     (org-meta-return)
+     (forward-line -1)
+     (looking-at "|   |$")))
+  ;; In a paragraph change current line into a header.
+  (should
+   (org-test-with-temp-text "a"
+     (org-meta-return)
+     (beginning-of-line)
+     (looking-at "\* a$")))
+  ;; In an item insert an item, in this case above.
+  (should
+   (org-test-with-temp-text "- a"
+     (org-meta-return)
+     (beginning-of-line)
+     (looking-at "- $")))
+  ;; In a drawer and item insert an item, in this case above.
+  (should
+   (org-test-with-temp-text ":MYDRAWER:\n- a\n:END:"
+     (forward-line)
+     (org-meta-return)
+     (beginning-of-line)
+     (looking-at "- $"))))
+
+(ert-deftest test-org/insert-heading ()
+  "Test `org-insert-heading' specifications."
+  ;; FIXME: Test coverage is incomplete yet.
+  ;;
+  ;; In an empty buffer, insert a new headline.
+  (should
+   (equal "* "
+	  (org-test-with-temp-text ""
+	    (org-insert-heading)
+	    (buffer-string))))
+  ;; At the beginning of a line, turn it into a headline
+  (should
+   (equal "* P"
+	  (org-test-with-temp-text "<point>P"
+	    (org-insert-heading)
+	    (buffer-string))))
+  ;; In the middle of a line, split the line if allowed, otherwise,
+  ;; insert the headline at its end.
+  (should
+   (equal "Para\n* graph"
+	  (org-test-with-temp-text "Para<point>graph"
+	    (let ((org-M-RET-may-split-line '((default . t))))
+	      (org-insert-heading))
+	    (buffer-string))))
+  (should
+   (equal "Paragraph\n* "
+	  (org-test-with-temp-text "Para<point>graph"
+	    (let ((org-M-RET-may-split-line '((default . nil))))
+	      (org-insert-heading))
+	    (buffer-string)))))
+
+(ert-deftest test-org/insert-todo-heading-respect-content ()
+  "Test `org-insert-todo-heading-respect-content' specifications."
+  ;; Create a TODO heading.
+  (should
+   (org-test-with-temp-text "* H1\n Body"
+     (org-insert-todo-heading-respect-content)
+     (nth 2 (org-heading-components))))
+  ;; Add headline at the end of the first subtree
+  (should
+   (org-test-with-temp-text "* H1\nH1Body\n** H2\nH2Body"
+     (search-forward "H1Body")
+     (org-insert-todo-heading-respect-content)
+     (and (eobp) (org-at-heading-p))))
+  ;; In a list, do not create a new item.
+  (should
+   (org-test-with-temp-text "* H\n- an item\n- another one"
+     (search-forward "an ")
+     (org-insert-todo-heading-respect-content)
+     (and (eobp) (org-at-heading-p)))))
+
+
+
+;;; Fixed-Width Areas
+
+(ert-deftest test-org/toggle-fixed-width ()
+  "Test `org-toggle-fixed-width' specifications."
+  ;; No region: Toggle on fixed-width marker in paragraphs.
+  (should
+   (equal ": A"
+	  (org-test-with-temp-text "A"
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; No region: Toggle off fixed-width markers in fixed-width areas.
+  (should
+   (equal "A"
+	  (org-test-with-temp-text ": A"
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; No region: Toggle on marker in blank lines after elements or just
+  ;; after a headline.
+  (should
+   (equal "* H\n: "
+	  (org-test-with-temp-text "* H\n"
+	    (forward-line)
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  (should
+   (equal "#+BEGIN_EXAMPLE\nContents\n#+END_EXAMPLE\n: "
+	  (org-test-with-temp-text "#+BEGIN_EXAMPLE\nContents\n#+END_EXAMPLE\n"
+	    (goto-char (point-max))
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; No region: Toggle on marker in front of one line elements (e.g.,
+  ;; headlines, clocks)
+  (should
+   (equal ": * Headline"
+	  (org-test-with-temp-text "* Headline"
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  (should
+   (equal ": #+KEYWORD: value"
+	  (org-test-with-temp-text "#+KEYWORD: value"
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; No region: error in other situations.
+  (should-error
+   (org-test-with-temp-text "#+BEGIN_EXAMPLE\n: A\n#+END_EXAMPLE"
+     (forward-line)
+     (org-toggle-fixed-width)
+     (buffer-string)))
+  ;; No region: Indentation is preserved.
+  (should
+   (equal "- A\n  : B"
+	  (org-test-with-temp-text "- A\n  B"
+	    (forward-line)
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; Region: If it contains only fixed-width elements and blank lines,
+  ;; toggle off fixed-width markup.
+  (should
+   (equal "A\n\nB"
+	  (org-test-with-temp-text ": A\n\n: B"
+	    (transient-mark-mode 1)
+	    (push-mark (point) t t)
+	    (goto-char (point-max))
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; Region: If it contains anything else, toggle on fixed-width but
+  ;; not on fixed-width areas.
+  (should
+   (equal ": A\n: \n: B\n: \n: C"
+	  (org-test-with-temp-text "A\n\n: B\n\nC"
+	    (transient-mark-mode 1)
+	    (push-mark (point) t t)
+	    (goto-char (point-max))
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  ;; Region: Ignore blank lines at its end, unless it contains only
+  ;; such lines.
+  (should
+   (equal ": A\n\n"
+	  (org-test-with-temp-text "A\n\n"
+	    (transient-mark-mode 1)
+	    (push-mark (point) t t)
+	    (goto-char (point-max))
+	    (org-toggle-fixed-width)
+	    (buffer-string))))
+  (should
+   (equal ": \n: \n"
+	  (org-test-with-temp-text "\n\n"
+	    (transient-mark-mode 1)
+	    (push-mark (point) t t)
+	    (goto-char (point-max))
+	    (org-toggle-fixed-width)
+	    (buffer-string)))))
+
+
+
+;;; Headline
+
+(ert-deftest test-org/in-commented-heading-p ()
+  "Test `org-in-commented-heading-p' specifications."
+  ;; Commented headline.
+  (should
+   (org-test-with-temp-text "* COMMENT Headline\nBody"
+     (goto-char (point-max))
+     (org-in-commented-heading-p)))
+  ;; Commented ancestor.
+  (should
+   (org-test-with-temp-text "* COMMENT Headline\n** Level 2\nBody"
+     (goto-char (point-max))
+     (org-in-commented-heading-p)))
+  ;; Comment keyword is case-sensitive.
+  (should-not
+   (org-test-with-temp-text "* Comment Headline\nBody"
+     (goto-char (point-max))
+     (org-in-commented-heading-p)))
+  ;; Keyword is standalone.
+  (should-not
+   (org-test-with-temp-text "* COMMENTHeadline\nBody"
+     (goto-char (point-max))
+     (org-in-commented-heading-p)))
+  ;; Optional argument.
+  (should-not
+   (org-test-with-temp-text "* COMMENT Headline\n** Level 2\nBody"
+     (goto-char (point-max))
+     (org-in-commented-heading-p t))))
+
+
+
 ;;; Links
+
+;;;; Coderefs
+
+(ert-deftest test-org/coderef ()
+  "Test coderef links specifications."
+  (should
+   (org-test-with-temp-text "
+#+BEGIN_SRC emacs-lisp
+\(+ 1 1)                  (ref:sc)
+#+END_SRC
+\[[(sc)]]"
+     (goto-char (point-max))
+     (org-open-at-point)
+     (looking-at "(ref:sc)"))))
+
+;;;; Custom ID
+
+(ert-deftest test-org/custom-id ()
+  "Test custom ID links specifications."
+  (should
+   (org-test-with-temp-text
+       "* H1\n:PROPERTIES:\n:CUSTOM_ID: custom\n:END:\n* H2\n[[#custom]]"
+     (goto-char (point-max))
+     (org-open-at-point)
+     (org-looking-at-p "\\* H1"))))
 
 ;;;; Fuzzy Links
 
 ;; Fuzzy links [[text]] encompass links to a target (<<text>>), to
-;; a target keyword (aka an invisible target: #+TARGET: text), to
 ;; a named element (#+name: text) and to headlines (* Text).
 
 (ert-deftest test-org/fuzzy-links ()
   "Test fuzzy links specifications."
-  ;; 1. Fuzzy link goes in priority to a matching target.
-  (org-test-with-temp-text
-      "#+TARGET: Test\n#+NAME: Test\n|a|b|\n<<Test>>\n* Test\n[[Test]]"
-    (goto-line 6)
-    (org-open-at-point)
-    (should (looking-at "<<Test>>")))
-  ;; 2. Fuzzy link should then go to a matching target keyword.
-  (org-test-with-temp-text
-      "#+NAME: Test\n|a|b|\n#+TARGET: Test\n* Test\n[[Test]]"
-    (goto-line 5)
-    (org-open-at-point)
-    (should (looking-at "#\\+TARGET: Test")))
-  ;; 3. Then fuzzy link points to an element with a given name.
-  (org-test-with-temp-text "Test\n#+NAME: Test\n|a|b|\n* Test\n[[Test]]"
-    (goto-line 5)
-    (org-open-at-point)
-    (should (looking-at "#\\+NAME: Test")))
-  ;; 4. A target still lead to a matching headline otherwise.
-  (org-test-with-temp-text "* Head1\n* Head2\n*Head3\n[[Head2]]"
-    (goto-line 4)
-    (org-open-at-point)
-    (should (looking-at "\\* Head2")))
-  ;; 5. With a leading star in link, enforce heading match.
-  (org-test-with-temp-text "#+TARGET: Test\n* Test\n<<Test>>\n[[*Test]]"
-    (goto-line 4)
-    (org-open-at-point)
-    (should (looking-at "\\* Test"))))
-
+  ;; Fuzzy link goes in priority to a matching target.
+  (should
+   (org-test-with-temp-text "#+NAME: Test\n|a|b|\n<<Test>>\n* Test\n[[Test]]"
+     (goto-line 5)
+     (org-open-at-point)
+     (looking-at "<<Test>>")))
+  ;; Then fuzzy link points to an element with a given name.
+  (should
+   (org-test-with-temp-text "Test\n#+NAME: Test\n|a|b|\n* Test\n[[Test]]"
+     (goto-line 5)
+     (org-open-at-point)
+     (looking-at "#\\+NAME: Test")))
+  ;; A target still lead to a matching headline otherwise.
+  (should
+   (org-test-with-temp-text "* Head1\n* Head2\n*Head3\n[[Head2]]"
+     (goto-line 4)
+     (org-open-at-point)
+     (looking-at "\\* Head2")))
+  ;; With a leading star in link, enforce heading match.
+  (should
+   (org-test-with-temp-text "* Test\n<<Test>>\n[[*Test]]"
+     (goto-line 3)
+     (org-open-at-point)
+     (looking-at "\\* Test")))
+  ;; Correctly un-hexify fuzzy links.
+  (should
+   (org-test-with-temp-text "* With space\n[[*With%20space][With space]]"
+     (goto-char (point-max))
+     (org-open-at-point)
+     (bobp))))
 
 ;;;; Link Escaping
 
@@ -392,16 +1011,60 @@
   (should
    (string=
     "àâçèéêîôùû"
-        (decode-coding-string (org-link-unescape "%E0%E2%E7%E8%E9%EA%EE%F4%F9%FB") 'latin-1))))
+        (decode-coding-string
+	 (org-link-unescape "%E0%E2%E7%E8%E9%EA%EE%F4%F9%FB") 'latin-1))))
 
 (ert-deftest test-org/org-link-escape-url-with-escaped-char ()
-  "Escape and unscape a URL that includes an escaped char.
+  "Escape and unescape a URL that includes an escaped char.
 http://article.gmane.org/gmane.emacs.orgmode/21459/"
   (should
    (string=
     "http://some.host.com/form?&id=blah%2Bblah25"
-    (org-link-unescape (org-link-escape "http://some.host.com/form?&id=blah%2Bblah25")))))
+    (org-link-unescape
+     (org-link-escape "http://some.host.com/form?&id=blah%2Bblah25")))))
 
+(ert-deftest test-org/org-link-escape-chars-browser ()
+  "Test of the constant `org-link-escape-chars-browser'.
+See there why this test is a candidate to be removed once Org
+drops support for Emacs 24.1 and 24.2."
+  (should
+   (string=
+    (concat "http://lists.gnu.org/archive/cgi-bin/namazu.cgi?query="
+	    "%22Release%208.2%22&idxname=emacs-orgmode")
+    (org-link-escape-browser ; Do not replace with `url-encode-url',
+			     ; see docstring above.
+     (concat "http://lists.gnu.org/archive/cgi-bin/namazu.cgi?query="
+	     "\"Release 8.2\"&idxname=emacs-orgmode")))))
+
+;;;; Open at point
+
+(ert-deftest test-org/open-at-point-in-property ()
+  "Does `org-open-at-point' open link in property drawer?"
+  (should
+   (org-test-with-temp-text
+    "* Headline
+:PROPERTIES:
+:URL: <point>[[info:org#Top]]
+:END:"
+    (org-open-at-point) t)))
+
+(ert-deftest test-org/open-at-point-in-comment ()
+  "Does `org-open-at-point' open link in a commented line?"
+  (should
+   (org-test-with-temp-text
+    "# <point>[[info:org#Top]]"
+    (org-open-at-point) t)))
+
+(ert-deftest test-org/open-at-point/info ()
+  "Test `org-open-at-point' on info links."
+  (should
+   (org-test-with-temp-text
+    "<point>[[info:org#Top]]"
+    (org-open-at-point)
+    (and (switch-to-buffer "*info*")
+	 (prog1
+	     (looking-at "\nOrg Mode Manual")
+	   (kill-buffer))))))
 
 
 ;;; Node Properties
@@ -524,6 +1187,155 @@ http://article.gmane.org/gmane.emacs.orgmode/21459/"
        (org-hide-block-toggle)
        (org-end-of-line)
        (eobp)))))
+
+(ert-deftest test-org/forward-paragraph ()
+  "Test `org-forward-paragraph' specifications."
+  ;; At end of buffer, return an error.
+  (should-error
+   (org-test-with-temp-text "Paragraph"
+     (goto-char (point-max))
+     (org-forward-paragraph)))
+  ;; Standard test.
+  (should
+   (org-test-with-temp-text "P1\n\nP2\n\nP3"
+     (org-forward-paragraph)
+     (looking-at "P2")))
+  ;; Ignore depth.
+  (should
+   (org-test-with-temp-text "#+BEGIN_CENTER\nP1\n#+END_CENTER\nP2"
+     (org-forward-paragraph)
+     (looking-at "P1")))
+  ;; Do not enter elements with invisible contents.
+  (should
+   (org-test-with-temp-text "#+BEGIN_CENTER\nP1\n\nP2\n#+END_CENTER\nP3"
+     (org-hide-block-toggle)
+     (org-forward-paragraph)
+     (looking-at "P3")))
+  ;; On an affiliated keyword, jump to the beginning of the element.
+  (should
+   (org-test-with-temp-text "#+name: para\n#+caption: caption\nPara"
+     (org-forward-paragraph)
+     (looking-at "Para")))
+  ;; On an item or a footnote definition, move to the second element
+  ;; inside, if any.
+  (should
+   (org-test-with-temp-text "- Item1\n\n  Paragraph\n- Item2"
+     (org-forward-paragraph)
+     (looking-at "  Paragraph")))
+  (should
+   (org-test-with-temp-text "[fn:1] Def1\n\nParagraph\n\n[fn:2] Def2"
+     (org-forward-paragraph)
+     (looking-at "Paragraph")))
+  ;; On an item, or a footnote definition, when the first line is
+  ;; empty, move to the first item.
+  (should
+   (org-test-with-temp-text "- \n\n  Paragraph\n- Item2"
+     (org-forward-paragraph)
+     (looking-at "  Paragraph")))
+  (should
+   (org-test-with-temp-text "[fn:1]\n\nParagraph\n\n[fn:2] Def2"
+     (org-forward-paragraph)
+     (looking-at "Paragraph")))
+  ;; On a table (resp. a property drawer) do not move through table
+  ;; rows (resp. node properties).
+  (should
+   (org-test-with-temp-text "| a | b |\n| c | d |\nParagraph"
+     (org-forward-paragraph)
+     (looking-at "Paragraph")))
+  (should
+   (org-test-with-temp-text ":PROPERTIES:\n:prop: value\n:END:\nParagraph"
+     (org-forward-paragraph)
+     (looking-at "Paragraph")))
+  ;; On a verse or source block, stop after blank lines.
+  (should
+   (org-test-with-temp-text "#+BEGIN_VERSE\nL1\n\nL2\n#+END_VERSE"
+     (org-forward-paragraph)
+     (looking-at "L2")))
+  (should
+   (org-test-with-temp-text "#+BEGIN_SRC\nL1\n\nL2\n#+END_SRC"
+     (org-forward-paragraph)
+     (looking-at "L2"))))
+
+(ert-deftest test-org/backward-paragraph ()
+  "Test `org-backward-paragraph' specifications."
+  ;; Error at beginning of buffer.
+  (should-error
+   (org-test-with-temp-text "Paragraph"
+     (org-backward-paragraph)))
+  ;; Regular test.
+  (should
+   (org-test-with-temp-text "P1\n\nP2\n\nP3"
+     (goto-char (point-max))
+     (org-backward-paragraph)
+     (looking-at "P3")))
+  (should
+   (org-test-with-temp-text "P1\n\nP2\n\nP3"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "P2")))
+  ;; Ignore depth.
+  (should
+   (org-test-with-temp-text "P1\n\n#+BEGIN_CENTER\nP2\n#+END_CENTER\nP3"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "P2")))
+  ;; Ignore invisible elements.
+  (should
+   (org-test-with-temp-text "* H1\n  P1\n* H2"
+     (org-cycle)
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (bobp)))
+  ;; On an affiliated keyword, jump to the first one.
+  (should
+   (org-test-with-temp-text "P1\n#+name: n\n#+caption: c1\n#+caption: c2\nP2"
+     (search-forward "c2")
+     (org-backward-paragraph)
+     (looking-at "#\\+name")))
+  ;; On the second element in an item or a footnote definition, jump
+  ;; to item or the definition.
+  (should
+   (org-test-with-temp-text "- line1\n\n  line2"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "- line1")))
+  (should
+   (org-test-with-temp-text "[fn:1] line1\n\n  line2"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "\\[fn:1\\] line1")))
+  ;; On a table (resp. a property drawer), ignore table rows
+  ;; (resp. node properties).
+  (should
+   (org-test-with-temp-text "| a | b |\n| c | d |\nP1"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (bobp)))
+  (should
+   (org-test-with-temp-text ":PROPERTIES:\n:prop: value\n:END:\nP1"
+     (goto-char (point-max))
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (bobp)))
+  ;; On a source or verse block, stop before blank lines.
+  (should
+   (org-test-with-temp-text "#+BEGIN_VERSE\nL1\n\nL2\n\nL3\n#+END_VERSE"
+     (search-forward "L3")
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "L2")))
+  (should
+   (org-test-with-temp-text "#+BEGIN_SRC\nL1\n\nL2\n\nL3#+END_SRC"
+     (search-forward "L3")
+     (beginning-of-line)
+     (org-backward-paragraph)
+     (looking-at "L2"))))
 
 (ert-deftest test-org/forward-element ()
   "Test `org-forward-element' specifications."
@@ -775,27 +1587,50 @@ Outside."
 
 (ert-deftest test-org/drag-element-backward ()
   "Test `org-drag-element-backward' specifications."
-  ;; 1. Error when trying to move first element of buffer.
-  (org-test-with-temp-text "Paragraph 1.\n\nParagraph 2."
-    (should-error (org-drag-element-backward)))
-  ;; 2. Error when trying to swap nested elements.
-  (org-test-with-temp-text "#+BEGIN_CENTER\nTest.\n#+END_CENTER"
-    (forward-line)
-    (should-error (org-drag-element-backward)))
-  ;; 3. Error when trying to swap an headline element and
-  ;;    a non-headline element.
-  (org-test-with-temp-text "Test.\n* Head 1"
-    (forward-line)
-    (should-error (org-drag-element-backward)))
-  ;; 4. Otherwise, swap elements, preserving column and blank lines
-  ;;    between elements.
-  (org-test-with-temp-text "Para1\n\n\nParagraph 2\n\nPara3"
-    (search-forward "graph")
-    (org-drag-element-backward)
-    (should (equal (buffer-string) "Paragraph 2\n\n\nPara1\n\nPara3"))
-    (should (looking-at " 2")))
-  ;; 5. Preserve visibility of elements and their contents.
-  (org-test-with-temp-text "
+  ;; Standard test.
+  (should
+   (equal
+    "#+key2: val2\n#+key1: val1\n#+key3: val3"
+    (org-test-with-temp-text "#+key1: val1\n<point>#+key2: val2\n#+key3: val3"
+      (org-drag-element-backward)
+      (buffer-string))))
+  (should
+   (equal
+    "#+BEGIN_CENTER\n#+B: 2\n#+A: 1\n#+END_CENTER"
+    (org-test-with-temp-text
+	"#+BEGIN_CENTER\n#+A: 1\n<point>#+B: 2\n#+END_CENTER"
+      (org-drag-element-backward)
+      (buffer-string))))
+  ;; Preserve blank lines.
+  (should
+   (equal "Paragraph 2\n\n\nPara1\n\nPara3"
+	  (org-test-with-temp-text "Para1\n\n\n<point>Paragraph 2\n\nPara3"
+	    (org-drag-element-backward)
+	    (buffer-string))))
+  ;; Preserve column.
+  (should
+   (org-test-with-temp-text "#+key1: v\n#+key<point>2: v\n#+key3: v"
+     (org-drag-element-backward)
+     (org-looking-at-p "2")))
+  ;; Error when trying to move first element of buffer.
+  (should-error
+   (org-test-with-temp-text "Paragraph 1.\n\nParagraph 2."
+     (org-drag-element-backward)))
+  ;; Error when trying to swap nested elements.
+  (should-error
+   (org-test-with-temp-text "#+BEGIN_CENTER\nTest.\n#+END_CENTER"
+     (forward-line)
+     (org-drag-element-backward)))
+  ;; Error when trying to swap an headline element and a non-headline
+  ;; element.
+  (should-error
+   (org-test-with-temp-text "Test.\n* Head 1"
+     (forward-line)
+     (org-drag-element-backward)))
+  ;; Preserve visibility of elements and their contents.
+  (should
+   (equal '((63 . 82) (26 . 48))
+	  (org-test-with-temp-text "
 #+BEGIN_CENTER
 Text.
 #+END_CENTER
@@ -803,14 +1638,11 @@ Text.
   #+BEGIN_QUOTE
   Text.
   #+END_QUOTE"
-    (while (search-forward "BEGIN_" nil t) (org-cycle))
-    (search-backward "- item 1")
-    (org-drag-element-backward)
-    (should
-     (equal
-      '((63 . 82) (26 . 48))
-      (mapcar (lambda (ov) (cons (overlay-start ov) (overlay-end ov)))
-	      (overlays-in (point-min) (point-max)))))))
+	    (while (search-forward "BEGIN_" nil t) (org-cycle))
+	    (search-backward "- item 1")
+	    (org-drag-element-backward)
+	    (mapcar (lambda (ov) (cons (overlay-start ov) (overlay-end ov)))
+		    (overlays-in (point-min) (point-max)))))))
 
 (ert-deftest test-org/drag-element-forward ()
   "Test `org-drag-element-forward' specifications."
@@ -979,23 +1811,96 @@ Text.
 
 
 
-;;; Targets and Radio Targets
+;;; Radio Targets
 
-(ert-deftest test-org/all-targets ()
-  "Test `org-all-targets' specifications."
-  ;; Without an argument.
+(ert-deftest test-org/update-radio-target-regexp ()
+  "Test `org-update-radio-target-regexp' specifications."
+  ;; Properly update cache with no previous radio target regexp.
   (should
-   (equal '("radio-target" "target")
-	  (org-test-with-temp-text "<<target>> <<<radio-target>>>\n: <<verb>>"
-	    (org-all-targets))))
+   (eq 'link
+       (org-test-with-temp-text "radio\n\nParagraph\n\nradio"
+	 (save-excursion (goto-char (point-max)) (org-element-context))
+	 (insert "<<<")
+	 (search-forward "o")
+	 (insert ">>>")
+	 (org-update-radio-target-regexp)
+	 (goto-char (point-max))
+	 (org-element-type (org-element-context)))))
+  ;; Properly update cache with previous radio target regexp.
   (should
-   (equal '("radio-target")
-	  (org-test-with-temp-text "<<<radio-target>>>!" (org-all-targets))))
-  ;; With argument.
+   (eq 'link
+       (org-test-with-temp-text "radio\n\nParagraph\n\nradio"
+	 (save-excursion (goto-char (point-max)) (org-element-context))
+	 (insert "<<<")
+	 (search-forward "o")
+	 (insert ">>>")
+	 (org-update-radio-target-regexp)
+	 (search-backward "r")
+	 (delete-char 5)
+	 (insert "new")
+	 (org-update-radio-target-regexp)
+	 (goto-char (point-max))
+	 (delete-region (line-beginning-position) (point))
+	 (insert "new")
+	 (org-element-type (org-element-context))))))
+
+
+
+;;; Visibility
+
+(ert-deftest test-org/flag-drawer ()
+  "Test `org-flag-drawer' specifications."
+  ;; Hide drawer.
   (should
-   (equal '("radio-target")
-	  (org-test-with-temp-text "<<target>> <<<radio-target>>>"
-	    (org-all-targets t)))))
+   (org-test-with-temp-text ":DRAWER:\ncontents\n:END:"
+     (org-flag-drawer t)
+     (get-char-property (line-end-position) 'invisible)))
+  ;; Show drawer.
+  (should-not
+   (org-test-with-temp-text ":DRAWER:\ncontents\n:END:"
+     (org-flag-drawer t)
+     (org-flag-drawer nil)
+     (get-char-property (line-end-position) 'invisible)))
+  ;; Test optional argument.
+  (should
+   (org-test-with-temp-text ":D1:\nc1\n:END:\n\n:D2:\nc2\n:END:"
+     (let ((drawer (save-excursion (search-forward ":D2")
+				   (org-element-at-point))))
+       (org-flag-drawer t drawer)
+       (get-char-property (progn (search-forward ":D2") (line-end-position))
+			  'invisible))))
+  (should-not
+   (org-test-with-temp-text ":D1:\nc1\n:END:\n\n:D2:\nc2\n:END:"
+     (let ((drawer (save-excursion (search-forward ":D2")
+				   (org-element-at-point))))
+       (org-flag-drawer t drawer)
+       (get-char-property (line-end-position) 'invisible))))
+  ;; Do not hide fake drawers.
+  (should-not
+   (org-test-with-temp-text "#+begin_example\n:D:\nc\n:END:\n#+end_example"
+     (forward-line 1)
+     (org-flag-drawer t)
+     (get-char-property (line-end-position) 'invisible)))
+  ;; Do not hide incomplete drawers.
+  (should-not
+   (org-test-with-temp-text ":D:\nparagraph"
+     (forward-line 1)
+     (org-flag-drawer t)
+     (get-char-property (line-end-position) 'invisible)))
+  ;; Do not hide drawers when called from final blank lines.
+  (should-not
+   (org-test-with-temp-text ":DRAWER:\nA\n:END:\n\n"
+     (goto-char (point-max))
+     (org-flag-drawer t)
+     (goto-char (point-min))
+     (get-char-property (line-end-position) 'invisible)))
+  ;; Don't leave point in an invisible part of the buffer when hiding
+  ;; a drawer away.
+  (should-not
+   (org-test-with-temp-text ":DRAWER:\ncontents\n:END:"
+     (goto-char (point-max))
+     (org-flag-drawer t)
+     (get-char-property (point) 'invisible))))
 
 
 (provide 'test-org)

@@ -1,6 +1,6 @@
 ;; ox-man.el --- Man Back-End for Org Export Engine
 
-;; Copyright (C) 2011-2013  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2014 Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou at gmail dot com>
 ;;      Luis R Anaya <papoanaya aroba hot mail punto com>
@@ -49,70 +49,79 @@
 
 ;;; Define Back-End
 
-(org-export-define-backend man
-  ((babel-call . org-man-babel-call)
-   (bold . org-man-bold)
-   (center-block . org-man-center-block)
-   (clock . org-man-clock)
-   (code . org-man-code)
-   (comment . (lambda (&rest args) ""))
-   (comment-block . (lambda (&rest args) ""))
-   (drawer . org-man-drawer)
-   (dynamic-block . org-man-dynamic-block)
-   (entity . org-man-entity)
-   (example-block . org-man-example-block)
-   (export-block . org-man-export-block)
-   (export-snippet . org-man-export-snippet)
-   (fixed-width . org-man-fixed-width)
-   (footnote-definition . org-man-footnote-definition)
-   (footnote-reference . org-man-footnote-reference)
-   (headline . org-man-headline)
-   (horizontal-rule . org-man-horizontal-rule)
-   (inline-babel-call . org-man-inline-babel-call)
-   (inline-src-block . org-man-inline-src-block)
-   (inlinetask . org-man-inlinetask)
-   (italic . org-man-italic)
-   (item . org-man-item)
-   (keyword . org-man-keyword)
-   (line-break . org-man-line-break)
-   (link . org-man-link)
-   (paragraph . org-man-paragraph)
-   (plain-list . org-man-plain-list)
-   (plain-text . org-man-plain-text)
-   (planning . org-man-planning)
-   (property-drawer . (lambda (&rest args) ""))
-   (quote-block . org-man-quote-block)
-   (quote-section . org-man-quote-section)
-   (radio-target . org-man-radio-target)
-   (section . org-man-section)
-   (special-block . org-man-special-block)
-   (src-block . org-man-src-block)
-   (statistics-cookie . org-man-statistics-cookie)
-   (strike-through . org-man-strike-through)
-   (subscript . org-man-subscript)
-   (superscript . org-man-superscript)
-   (table . org-man-table)
-   (table-cell . org-man-table-cell)
-   (table-row . org-man-table-row)
-   (target . org-man-target)
-   (template . org-man-template)
-   (timestamp . org-man-timestamp)
-   (underline . org-man-underline)
-   (verbatim . org-man-verbatim)
-   (verse-block . org-man-verse-block))
+(org-export-define-backend 'man
+  '((babel-call . org-man-babel-call)
+    (bold . org-man-bold)
+    (center-block . org-man-center-block)
+    (clock . org-man-clock)
+    (code . org-man-code)
+    (comment . (lambda (&rest args) ""))
+    (comment-block . (lambda (&rest args) ""))
+    (drawer . org-man-drawer)
+    (dynamic-block . org-man-dynamic-block)
+    (entity . org-man-entity)
+    (example-block . org-man-example-block)
+    (export-block . org-man-export-block)
+    (export-snippet . org-man-export-snippet)
+    (fixed-width . org-man-fixed-width)
+    (footnote-definition . org-man-footnote-definition)
+    (footnote-reference . org-man-footnote-reference)
+    (headline . org-man-headline)
+    (horizontal-rule . org-man-horizontal-rule)
+    (inline-babel-call . org-man-inline-babel-call)
+    (inline-src-block . org-man-inline-src-block)
+    (inlinetask . org-man-inlinetask)
+    (italic . org-man-italic)
+    (item . org-man-item)
+    (keyword . org-man-keyword)
+    (line-break . org-man-line-break)
+    (link . org-man-link)
+    (node-property . org-man-node-property)
+    (paragraph . org-man-paragraph)
+    (plain-list . org-man-plain-list)
+    (plain-text . org-man-plain-text)
+    (planning . org-man-planning)
+    (property-drawer . org-man-property-drawer)
+    (quote-block . org-man-quote-block)
+    (radio-target . org-man-radio-target)
+    (section . org-man-section)
+    (special-block . org-man-special-block)
+    (src-block . org-man-src-block)
+    (statistics-cookie . org-man-statistics-cookie)
+    (strike-through . org-man-strike-through)
+    (subscript . org-man-subscript)
+    (superscript . org-man-superscript)
+    (table . org-man-table)
+    (table-cell . org-man-table-cell)
+    (table-row . org-man-table-row)
+    (target . org-man-target)
+    (template . org-man-template)
+    (timestamp . org-man-timestamp)
+    (underline . org-man-underline)
+    (verbatim . org-man-verbatim)
+    (verse-block . org-man-verse-block))
   :export-block "MAN"
   :menu-entry
-  (?m "Export to MAN"
-      ((?m "As MAN file" org-man-export-to-man)
-       (?p "As PDF file" org-man-export-to-pdf)
-       (?o "As PDF file and open"
-	   (lambda (a s v b)
-	     (if a (org-man-export-to-pdf t s v b)
-	       (org-open-file (org-man-export-to-pdf nil s v b)))))))
+  '(?m "Export to MAN"
+       ((?m "As MAN file" org-man-export-to-man)
+	(?p "As PDF file" org-man-export-to-pdf)
+	(?o "As PDF file and open"
+	    (lambda (a s v b)
+	      (if a (org-man-export-to-pdf t s v b)
+		(org-open-file (org-man-export-to-pdf nil s v b)))))))
   :options-alist
-  ((:man-class "MAN_CLASS" nil nil t)
-   (:man-class-options "MAN_CLASS_OPTIONS" nil nil t)
-   (:man-header-extra "MAN_HEADER" nil nil newline)))
+  '((:man-class "MAN_CLASS" nil nil t)
+    (:man-class-options "MAN_CLASS_OPTIONS" nil nil t)
+    (:man-header-extra "MAN_HEADER" nil nil newline)
+    ;; Other variables.
+    (:man-tables-centered nil nil org-man-tables-centered)
+    (:man-tables-verbatim nil nil org-man-tables-verbatim)
+    (:man-table-scientific-notation nil nil org-man-table-scientific-notation)
+    (:man-source-highlight nil nil org-man-source-highlight)
+    (:man-source-highlight-langs nil nil org-man-source-highlight-langs)
+    (:man-pdf-process nil nil org-man-pdf-process)
+    (:man-logfiles-extensions nil nil org-man-logfiles-extensions)
+    (:man-remove-logfiles nil nil org-man-remove-logfiles)))
 
 
 
@@ -618,8 +627,6 @@ CONTENTS is nil.  INFO is a plist holding contextual information."
     (cond
      ((string= key "MAN") value)
      ((string= key "INDEX") nil)
-     ;; Invisible targets.
-     ((string= key "TARGET") nil)
      ((string= key "TOC"   ) nil))))
 
 
@@ -640,21 +647,15 @@ CONTENTS is nil.  INFO is a plist holding contextual information."
 DESC is the description part of the link, or the empty string.
 INFO is a plist holding contextual information.  See
 `org-export-data'."
-
   (let* ((type (org-element-property :type link))
          (raw-path (org-element-property :path link))
          ;; Ensure DESC really exists, or set it to nil.
          (desc (and (not (string= desc "")) desc))
-
          (path (cond
                 ((member type '("http" "https" "ftp" "mailto"))
                  (concat type ":" raw-path))
-                ((string= type "file")
-                 (when (string-match "\\(.+\\)::.+" raw-path)
-                   (setq raw-path (match-string 1 raw-path)))
-                 (if (file-name-absolute-p raw-path)
-                     (concat "file://" (expand-file-name raw-path))
-                   (concat "file://" raw-path)))
+                ((and (string= type "file") (file-name-absolute-p raw-path))
+                 (concat "file:" raw-path))
                 (t raw-path)))
          protocol)
     (cond
@@ -665,6 +666,16 @@ INFO is a plist holding contextual information.  See
      ;; No path, only description.  Try to do something useful.
      (t (format "\\fI%s\\fP" desc)))))
 
+;;;; Node Property
+
+(defun org-man-node-property (node-property contents info)
+  "Transcode a NODE-PROPERTY element from Org to Man.
+CONTENTS is nil.  INFO is a plist holding contextual
+information."
+  (format "%s:%s"
+          (org-element-property :key node-property)
+          (let ((value (org-element-property :value node-property)))
+            (if value (concat " " value) ""))))
 
 ;;; Paragraph
 
@@ -724,6 +735,12 @@ contextual information."
 
 ;;; Property Drawer
 
+(defun org-man-property-drawer (property-drawer contents info)
+  "Transcode a PROPERTY-DRAWER element from Org to Man.
+CONTENTS holds the contents of the drawer.  INFO is a plist
+holding contextual information."
+  (and (org-string-nw-p contents)
+       (format ".RS\n.nf\n%s\n.fi\n.RE" contents)))
 
 ;;; Quote Block
 
@@ -734,15 +751,6 @@ holding contextual information."
   (org-man--wrap-label
    quote-block
    (format ".RS\n%s\n.RE" contents)))
-
-;;; Quote Section
-
-(defun org-man-quote-section (quote-section contents info)
-  "Transcode a QUOTE-SECTION element from Org to Man.
-CONTENTS is nil.  INFO is a plist holding contextual information."
-  (let ((value (org-remove-indentation
-                (org-element-property :value quote-section))))
-    (when value (format ".RS\\fI%s\\fP\n.RE\n" value))))
 
 
 ;;; Radio Target
@@ -945,28 +953,14 @@ This function assumes TABLE has `org' as its `:type' attribute."
          (lines (org-split-string contents "\n"))
 
          (attr-list
-          (let ((result-list '()))
-            (dolist (attr-item
-                     (list
-                      (if (plist-get attr :expand)
-                          "expand" nil)
-
-                      (case (plist-get attr :placement)
-                        ('center "center")
-                        ('left nil)
-                        (t (if org-man-tables-centered "center" "")))
-
-                      (case (plist-get attr :boxtype)
-                        ('box "box")
-                        ('doublebox "doublebox")
-                        ('allbox "allbox")
-                        ('none nil)
-                        (t "box"))))
-
-              (if attr-item
-                  (add-to-list 'result-list attr-item)))
-            result-list ))
-
+	  (delq nil
+		(list
+		 (and (plist-get attr :expand) "expand")
+		 (let ((placement (plist-get attr :placement)))
+		   (cond ((string= placement 'center) "center")
+			 ((string= placement 'left) nil)
+			 (t (if org-man-tables-centered "center" ""))))
+		 (or (plist-get attr :boxtype) "box"))))
 
          (title-line  (plist-get attr :title-line))
          (long-cells (plist-get attr :long-cells))
@@ -1160,14 +1154,8 @@ file-local settings.
 Return output file's name."
   (interactive)
   (let ((outfile (org-export-output-file-name ".man" subtreep)))
-    (if async
-	(org-export-async-start
-	    (lambda (f) (org-export-add-to-stack f 'man))
-	  `(expand-file-name
-	    (org-export-to-file
-	     'man ,outfile ,subtreep ,visible-only ,body-only ',ext-plist)))
-      (org-export-to-file
-       'man outfile subtreep visible-only body-only ext-plist))))
+    (org-export-to-file 'man outfile
+      async subtreep visible-only body-only ext-plist)))
 
 (defun org-man-export-to-pdf
   (&optional async subtreep visible-only body-only ext-plist)
@@ -1198,17 +1186,10 @@ file-local settings.
 
 Return PDF file's name."
   (interactive)
-  (if async
-      (let ((outfile (org-export-output-file-name ".man" subtreep)))
-	(org-export-async-start
-	    (lambda (f) (org-export-add-to-stack f 'man))
-	  `(expand-file-name
-	    (org-man-compile
-	     (org-export-to-file
-	      'man ,outfile ,subtreep ,visible-only ,body-only
-	      ',ext-plist)))))
-    (org-man-compile
-     (org-man-export-to-man nil subtreep visible-only body-only ext-plist))))
+  (let ((outfile (org-export-output-file-name ".man" subtreep)))
+    (org-export-to-file 'man outfile
+      async subtreep visible-only body-only ext-plist
+      (lambda (file) (org-latex-compile file)))))
 
 (defun org-man-compile (file)
   "Compile a Groff file.
@@ -1220,11 +1201,12 @@ Return PDF file name or an error if it couldn't be produced."
   (let* ((base-name (file-name-sans-extension (file-name-nondirectory file)))
 	 (full-name (file-truename file))
 	 (out-dir (file-name-directory file))
-	 ;; Make sure `default-directory' is set to FILE directory,
-	 ;; not to whatever value the current buffer may have.
-	 (default-directory (file-name-directory full-name))
+	 ;; Properly set working directory for compilation.
+	 (default-directory (if (file-name-absolute-p file)
+				(file-name-directory full-name)
+			      default-directory))
          errors)
-    (message (format "Processing Groff file %s ..." file))
+    (message (format "Processing Groff file %s..." file))
     (save-window-excursion
       (cond
        ;; A function is provided: Apply it.

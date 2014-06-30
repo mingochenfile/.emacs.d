@@ -1,6 +1,6 @@
 ;;; org-archive.el --- Archiving for Org-mode
 
-;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2014 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -121,7 +121,7 @@ information."
 
 (defun org-get-local-archive-location ()
   "Get the archive location applicable at point."
-  (let ((re "^#\\+ARCHIVE:[ \t]+\\(\\S-.*\\S-\\)[ \t]*$")
+  (let ((re "^[ \t]*#\\+ARCHIVE:[ \t]+\\(\\S-.*\\S-\\)[ \t]*$")
 	prop)
     (save-excursion
       (save-restriction
@@ -135,6 +135,7 @@ information."
 	  (match-string 1))
 	 (t org-archive-location))))))
 
+;;;###autoload
 (defun org-add-archive-files (files)
   "Splice the archive files into the list of files.
 This implies visiting all these files and finding out what the
@@ -157,7 +158,7 @@ archive file is."
       (save-restriction
 	(goto-char (point-min))
 	(while (re-search-forward
-		"^\\(#\\+\\|[ \t]*:\\)ARCHIVE:[ \t]+\\(.*\\)"
+		"^[ \t]*\\(#\\+\\|:\\)ARCHIVE:[ \t]+\\(.*\\)"
 		nil t)
 	  (setq file (org-extract-archive-file
 		      (org-match-string-no-properties 2)))
