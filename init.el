@@ -730,7 +730,7 @@ If there is still something left do do start the next latex-command."
   (define-key ess-mode-map "\M-[" 'previous-error)
   (define-key inferior-ess-mode-map "\M-]" 'next-error-no-select)
   (define-key inferior-ess-mode-map "\M-[" 'previous-error-no-select)
-
+;; (define-key )
 (define-key compilation-minor-mode-map [(?n)] 'next-error-no-select)
   (define-key compilation-minor-mode-map [(?p)] 'previous-error-no-select)
 
@@ -958,12 +958,12 @@ If there is still something left do do start the next latex-command."
    (key-chord-define evil-visual-state-map "jk" 'evil-change-to-previous-state)
    (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
    (key-chord-define evil-replace-state-map "jk" 'evil-normal-state)
-   (key-chord-define-global "zz" 'evil-emacs-state)
-   (key-chord-define-global "aa" 'other-window)
-   (key-chord-define-global "ss" 'save-buffer)
+   ;; (key-chord-define-global "zz" 'evil-emacs-state)
+   ;; (key-chord-define-global "aa" 'other-window) ;
+   ;; (key-chord-define-global "ss" 'save-buffer)
 
 (key-chord-define-global "kl" 'switch-to-buffer)
-(key-chord-define-global "vv" 'save-buffer)
+;; (key-chord-define-global "vv" 'save-buffer)
 (require 'smex)
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
@@ -1107,6 +1107,10 @@ search-term
 (defun tamazonubuntu ()
   (interactive)
   (find-file "/mingche@mingche.aka.amazon.com:~/"))
+(defun thackthon ()
+(interactive)
+(find-file "/ssh:ec2-user@ec2-54-191-37-83.us-west-2.compute.amazonaws.com:/home/ec2-user/"))
+
 
 ;; Return major-mode name of the buffer
 (defun buffer-mode (buffer-or-string)
@@ -1150,4 +1154,8 @@ search-term
 
 ;; allow outside paste
 (setq x-select-enable-clipboard t)
+
+;; org mode export wiki
+(add-to-list 'load-path "~/.emacs.d/orgmode-mediawiki")
+(require 'ox-mediawiki)
 
