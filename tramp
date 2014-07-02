@@ -1,4 +1,4 @@
-;; -*- emacs-lisp -*- <14/06/29 11:16:38 /Users/mingchen/.emacs.d/tramp>
+;; -*- emacs-lisp -*- <14/06/30 10:44:27 /home/mingche/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
@@ -226,4 +226,23 @@
   ("uid-integer" 500)
   ("file-exists" "test -e")
   ("stat" "\\stat")
-  ("ls" "/bin/ls --color=never")))
+  ("ls" "/bin/ls --color=never"))
+ (["ssh" "mingche" "mingche.aka.amazon.com" nil nil]
+  ("uname" "Linux 3.8.0-42-generic")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("busybox" nil)
+  ("~" "/home/local/ANT/mingche")
+  ("file-exists" "test -e")
+  ("ls" "/bin/ls --color=never")
+  ("ls-dired" t)
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 1419772417)
+  ("readlink" "\\readlink")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("uid-integer" 1419870065)))
