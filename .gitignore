@@ -4,3 +4,10 @@
 .save*
 *#
 /.emacs.desktop
+<<<<<<< HEAD
+=======
+/.emacs.desktop.lock
+/init.el~
+/ac-comphist.dat
+>>>>>>> mac
+>>>>>>> 673ca1464e8309dfea995576b9d033fe2f9cb4d2
