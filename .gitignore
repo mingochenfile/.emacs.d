@@ -2,4 +2,12 @@
 *.elc
 *~
 .save*
+<<<<<<< HEAD
 *#
+=======
+*#
+/.emacs.desktop
+/.emacs.desktop.lock
+/init.el~
+/ac-comphist.dat
+>>>>>>> mac

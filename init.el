@@ -161,8 +161,8 @@ LaTeX-section-label))
  '(TeX-command-list (quote (("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("TeX" "%(PDF)%(tex) %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("latexnonint" "%`%l -interaction=nonstopmode %(mode)%'%t" TeX-run-command nil t) ("LaTeX" "%`%l %(mode)%' %t" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document") ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files") ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(column-number-mode t)
  '(display-time-mode t)
- ;; '(evil-toggle-key "C-~")
  '(evil-toggle-key "UU")
+ '(magit-diff-options (quote ("--minimal")))
  '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t) (python . t) (C \.t))))
  '(org-confirm-babel-evaluate nil)
  '(org-modules (quote (org-bbdb org-bibtex org-docview org-gnus org-id org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-special-blocks org-vm org-wl org-w3m org-mouse org-mairix org-toc)))
@@ -1180,8 +1180,14 @@ search-term
 ;; W3-brower
 (add-to-list 'load-path "~/.emacs.d/w3/lisp")
 (require 'w3)
+<<<<<<< HEAD
 
 (add-to-list 'load-path "~/.emacs.d/vlfi")
 (require 'vlf-integrate)
 ;; (custom-set-variables
 ;;  '(vlf-application 'dont-ask))
+=======
+;; git auto-mode 
+(add-to-list 'load-path "~/.emacs.d/git-auto-commit-mode")
+(autoload 'git-auto-commit-mode "git-auto-commit-mode")
+>>>>>>> mac
