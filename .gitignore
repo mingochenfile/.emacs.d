@@ -2,9 +2,6 @@
 *.elc
 *~
 .save*
-<<<<<<< HEAD
-*#
-=======
 *#
 /.emacs.desktop
 /.emacs.desktop.lock
