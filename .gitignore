@@ -3,3 +3,7 @@
 *~
 .save*
 *#
+/.emacs.desktop
+/.emacs.desktop.lock
+/init.el~
+/ac-comphist.dat
