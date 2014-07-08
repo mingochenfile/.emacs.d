@@ -1178,3 +1178,6 @@ search-term
 ;; W3-brower
 (add-to-list 'load-path "~/.emacs.d/w3/lisp")
 (require 'w3)
+;; git auto-mode 
+(add-to-list 'load-path "~/.emacs.d/git-auto-commit-mode")
+(autoload 'git-auto-commit-mode "git-auto-commit-mode")
