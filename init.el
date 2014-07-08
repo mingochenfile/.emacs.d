@@ -1180,14 +1180,10 @@ search-term
 ;; W3-brower
 (add-to-list 'load-path "~/.emacs.d/w3/lisp")
 (require 'w3)
-<<<<<<< HEAD
-
 (add-to-list 'load-path "~/.emacs.d/vlfi")
 (require 'vlf-integrate)
 ;; (custom-set-variables
 ;;  '(vlf-application 'dont-ask))
-=======
 ;; git auto-mode 
 (add-to-list 'load-path "~/.emacs.d/git-auto-commit-mode")
 (autoload 'git-auto-commit-mode "git-auto-commit-mode")
->>>>>>> mac
