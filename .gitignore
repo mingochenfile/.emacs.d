@@ -2,3 +2,6 @@
 *.elc
 *~
 .save*
+*#
+.emacs.desktop*
+*tramp*
