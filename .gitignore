@@ -5,3 +5,7 @@
 *#
 .emacs.desktop*
 *tramp*
+/.emacs.desktop
+/.emacs.desktop.lock
+/init.el~
+/ac-comphist.dat

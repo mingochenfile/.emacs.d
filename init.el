@@ -2,6 +2,8 @@
 (add-to-list 'load-path "~/.emacs.d/orgmode-mediawiki")
 (add-to-list 'load-path "~/.emacs.d/org-mdoe/contrib/lisp")
 (add-to-list 'load-path "~/.emacs.d/multiple-cursors")
+;; org mode export wiki
+(require 'ox-mediawiki)
 ;; (require 'org-list)
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -161,8 +163,9 @@ LaTeX-section-label))
  '(TeX-command-list (quote (("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t :help "Run latexmk on file") ("TeX" "%(PDF)%(tex) %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (plain-tex-mode texinfo-mode ams-tex-mode) :help "Run plain TeX") ("latexnonint" "%`%l -interaction=nonstopmode %(mode)%'%t" TeX-run-command nil t) ("LaTeX" "%`%l %(mode)%' %t" TeX-run-TeX nil (latex-mode doctex-mode) :help "Run LaTeX") ("Makeinfo" "makeinfo %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with Info output") ("Makeinfo HTML" "makeinfo --html %t" TeX-run-compile nil (texinfo-mode) :help "Run Makeinfo with HTML output") ("AmSTeX" "%(PDF)amstex %`%S%(PDFout)%(mode)%' %t" TeX-run-TeX nil (ams-tex-mode) :help "Run AMSTeX") ("ConTeXt" "texexec --once --texutil %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt once") ("ConTeXt Full" "texexec %(execopts)%t" TeX-run-TeX nil (context-mode) :help "Run ConTeXt until completion") ("BibTeX" "bibtex %s" TeX-run-BibTeX nil t :help "Run BibTeX") ("View" "%V" TeX-run-discard-or-function t t :help "Run Viewer") ("Print" "%p" TeX-run-command t t :help "Print the file") ("Queue" "%q" TeX-run-background nil t :help "View the printer queue" :visible TeX-queue-command) ("File" "%(o?)dvips %d -o %f " TeX-run-command t t :help "Generate PostScript file") ("Index" "makeindex %s" TeX-run-command nil t :help "Create index file") ("Check" "lacheck %s" TeX-run-compile nil (latex-mode) :help "Check LaTeX file for correctness") ("Spell" "(TeX-ispell-document \"\")" TeX-run-function nil t :help "Spell-check the document") ("Clean" "TeX-clean" TeX-run-function nil t :help "Delete generated intermediate files") ("Clean All" "(TeX-clean t)" TeX-run-function nil t :help "Delete generated intermediate and output files") ("Other" "" TeX-run-command t t :help "Run an arbitrary command"))))
  '(column-number-mode t)
  '(display-time-mode t)
- ;; '(evil-toggle-key "C-~")
- '(evil-toggle-key "UU")
+ '(evil-toggle-key "C-~")
+ ;; '(evil-toggle-key "UU")
+ '(magit-diff-options (quote ("--minimal")))
  '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t) (python . t) (C \.t))))
  '(org-confirm-babel-evaluate nil)
  '(org-modules (quote (org-bbdb org-bibtex org-docview org-gnus org-id org-info org-jsinfo org-irc org-mew org-mhe org-rmail org-special-blocks org-vm org-wl org-w3m org-mouse org-mairix org-toc)))
@@ -967,7 +970,7 @@ If there is still something left do do start the next latex-command."
 (key-chord-define-global "JK" 'other-window)
 (key-chord-define-global "JJ" 'save-buffer)
 (key-chord-define-global "KK" 'kill-buffer)
-(key-chord-define-global "::" 'comment-dwim)
+;; (key-chord-define-global "::" 'comment-dwim)
    ;; (key-chord-define-global "zz" 'evil-emacs-state)
    ;; (key-chord-define-global "aa" 'other-window) ;
    ;; (key-chord-define-global "ss" 'save-buffer)
@@ -1115,9 +1118,9 @@ search-term
 (defun tamazonvm ()
   (interactive)
   (find-file "/mingche@mingche.desktop.amazon.com:~/"))
-defun tserver()
+(defun tserver()
   (interactive)
-  (find-file "/box-tod-workers-prod-iad-1001.vdc.amazon.com:~/")
+  (find-file "/mingche@box-tod-workers-prod-iad-1001.vdc.amazon.com:~/"))
 (defun tamazonubuntu ()
   (interactive)
   (find-file "/mingche@mingche.aka.amazon.com:~/"))
@@ -1169,8 +1172,6 @@ defun tserver()
 ;; allow outside paste
 (setq x-select-enable-clipboard t)
 
-;; org mode export wiki
-(require 'ox-mediawiki)
 
 ;; Auto-indent-mode.el
 (setq auto-indent-on-visit-file t)
@@ -1180,8 +1181,21 @@ defun tserver()
 ;; W3-brower
 (add-to-list 'load-path "~/.emacs.d/w3/lisp")
 (require 'w3)
-
 (add-to-list 'load-path "~/.emacs.d/vlfi")
 (require 'vlf-integrate)
 ;; (custom-set-variables
 ;;  '(vlf-application 'dont-ask))
+;; set recent bash
+(setq explicit-shell-file-name "/bin/bash")
+;; Set env
+(getenv "PATH")
+
+(setenv "PATH"
+	(concat
+	 "/apollo/env/MLEnvImprovement/bin/" ";"
+	 (getenv "PATH")
+	 )
+	)
+;; git auto-mode 
+(add-to-list 'load-path "~/.emacs.d/git-auto-commit-mode")
+(autoload 'git-auto-commit-mode "git-auto-commit-mode")
